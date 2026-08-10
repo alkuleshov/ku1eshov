@@ -23,7 +23,7 @@
     --gold: #d8b164;
     --thread: #ecdfba;
 
-    --angle: -7deg;
+    --angle: -12deg;
   }
 
   *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
@@ -40,12 +40,18 @@
     position:relative;
     isolation:isolate;
 
-    /* ===================== SMOOTH LEATHER, LIT FROM ABOVE ===================== */
+    /* ===================== SOFT LEATHER, WHISPER OF WEAVE ===================== */
     background-color: var(--leather-2);
     background-image:
-      radial-gradient(85% 55% at 50% 0%, rgba(255,255,255,.35), transparent 60%),
-      radial-gradient(70% 50% at 90% 8%, rgba(255,255,255,.16), transparent 65%),
+      radial-gradient(85% 55% at 50% 0%, rgba(255,255,255,.30), transparent 60%),
+      radial-gradient(70% 50% at 92% 8%, rgba(255,255,255,.15), transparent 65%),
+      radial-gradient(50% 40% at 10% 90%, rgba(70,55,26,.18), transparent 65%),
+      radial-gradient(60% 45% at 95% 95%, rgba(70,55,26,.16), transparent 60%),
+      /* pique knit — present, but felt more than seen */
+      repeating-linear-gradient(45deg, rgba(255,255,255,.08) 0px, rgba(255,255,255,.08) 1px, transparent 1px, transparent 3px),
+      repeating-linear-gradient(-45deg, rgba(70,55,20,.06) 0px, rgba(70,55,20,.06) 1px, transparent 1px, transparent 3px),
       linear-gradient(190deg, var(--leather-1) 0%, var(--leather-2) 40%, var(--leather-3) 75%, var(--leather-4) 100%);
+    background-blend-mode: normal, normal, normal, normal, overlay, overlay, normal;
   }
 
   /* soft leather grain */
@@ -71,24 +77,27 @@
     align-items:center;
     justify-content:center;
     padding: max(6vh, env(safe-area-inset-top) + 20px) 24px max(6vh, env(safe-area-inset-bottom) + 20px);
+    perspective: 900px;
   }
 
-  /* one rigid group, lying on the leather at a single shared angle */
+  /* one rigid group, lying on the leather at a single shared angle, receding into the distance */
   .mark{
     width:100%;
-    max-width: min(78vw, 300px);
+    max-width: min(84vw, 320px);
     display:flex;
     flex-direction:column;
     align-items:center;
-    transform: rotate(var(--angle));
+    transform: rotateX(32deg) rotateZ(var(--angle));
+    transform-style: preserve-3d;
   }
 
   /* ===== CREST ===== */
   .crest{
-    width: 44%;
+    width: 50%;
     min-width:96px;
-    max-width:140px;
-    filter: drop-shadow(0 10px 14px rgba(60,46,20,.4));
+    max-width:130px;
+    /* tight, grounded contact shadow only — no halo/glow */
+    filter: drop-shadow(0 4px 4px rgba(35,26,10,.45));
   }
   .crest img{
     display:block;
@@ -99,11 +108,11 @@
   /* ===== PLAQUES — bronze bezel, navy lacquer fill ===== */
   .stickers{
     width:100%;
-    margin-top: 6px;
+    margin-top: 18px;
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap: 14px;
+    gap: 34px;
   }
 
   .sticker{
@@ -114,37 +123,35 @@
     text-align:center;
     text-decoration:none;
     width:100%;
-    max-width: 280px;
-    border-radius: 12px;
-    padding: 5px;
+    max-width: 190px;
+    border-radius: 10px;
+    padding: 11px 13px;
     -webkit-user-select:none;
     user-select:none;
-    transition: transform .15s ease, filter .15s ease;
+    transform: translateY(0);
+    transition: transform .38s cubic-bezier(.34,1.56,.64,1), box-shadow .32s ease-out, filter .25s ease;
+    will-change: transform;
 
-    /* bronze bezel frame, beveled */
-    background: linear-gradient(155deg, var(--bronze-hi) 0%, var(--bronze) 55%, var(--bronze-deep) 100%);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.5),
-      inset 0 -2px 3px rgba(0,0,0,.35),
-      0 10px 16px rgba(50,38,16,.35),
-      0 3px 4px rgba(50,38,16,.25);
-  }
-
-  /* the navy lacquered fill, inset from the bronze bezel */
-  .sticker__fill{
-    position:relative;
-    width:100%;
-    border-radius: 8px;
-    padding: 14px 16px;
-    overflow:hidden;
+    /* fabric-textured navy face — subtle sheen, not a printed pattern */
     background:
-      repeating-linear-gradient(52deg, rgba(255,255,255,.04) 0px, rgba(255,255,255,.04) 1px, transparent 1px, transparent 3px),
-      linear-gradient(165deg, var(--navy) 0%, var(--navy-mid) 50%, var(--navy-deep) 100%);
+      repeating-linear-gradient(48deg, rgba(255,255,255,.045) 0px, rgba(255,255,255,.045) 1px, transparent 1px, transparent 3px),
+      repeating-linear-gradient(-42deg, rgba(0,0,0,.07) 0px, rgba(0,0,0,.07) 1px, transparent 1px, transparent 3px),
+      linear-gradient(165deg, var(--navy) 0%, var(--navy-mid) 55%, var(--navy-deep) 100%);
+    background-blend-mode: overlay, overlay, normal;
+
+    /* single fine gold hairline, like the reference's restrained bezel */
     box-shadow:
-      inset 0 0 0 1px rgba(0,0,0,.4),
-      inset 0 3px 6px rgba(0,0,0,.55),
-      inset 0 1px 0 rgba(255,255,255,.06);
+      inset 0 0 0 1px rgba(216,177,100,.55),
+      inset 0 1px 0 rgba(255,255,255,.08),
+      /* extruded side wall — real thickness, stepped down toward the light */
+      0 2px 0 var(--bronze-hi),
+      0 4px 0 var(--bronze),
+      0 6px 0 var(--bronze-deep),
+      /* soft contact shadow cast on the leather below */
+      0 12px 14px rgba(45,35,15,.32);
   }
+
+  /* both plaques share the same axis — no stagger */
 
   .sticker span{
     position:relative;
@@ -155,15 +162,14 @@
     font-family: Georgia, "Times New Roman", serif;
     font-weight:700;
     text-transform:uppercase;
-    letter-spacing:.04em;
+    letter-spacing:.03em;
     text-shadow:
       0 1px 0 rgba(0,0,0,.6),
-      0 -1px 0 rgba(255,255,255,.15),
-      0 0 10px rgba(216,177,100,.20);
+      0 -1px 0 rgba(255,255,255,.15);
   }
 
-  .sticker--main span{ font-size: 14px; line-height:1.55; }
-  .sticker--guide span{ font-size: 12px; line-height:1.55; }
+  .sticker--main span{ font-size: 10.5px; line-height:1.5; }
+  .sticker--guide span{ font-size: 9px; line-height:1.5; }
 
   .sticker .diamond{
     color: var(--gold);
@@ -172,10 +178,23 @@
     text-shadow: 0 1px 0 rgba(0,0,0,.6);
   }
 
-  .sticker:active{ transform: scale(.97); filter:brightness(.96); }
+  .sticker:active{
+    transform: translateY(6px);
+    transition: transform .16s cubic-bezier(.4,0,.2,1), box-shadow .16s ease-in, filter .16s ease-in;
+    filter: brightness(.85);
+    box-shadow:
+      inset 0 0 0 1px rgba(216,177,100,.55),
+      inset 0 3px 5px rgba(0,0,0,.45),
+      0 0 0 var(--bronze-deep),
+      0 1px 2px rgba(45,35,15,.2);
+  }
+
+  .sticker--guide:active{
+    transform: translateY(6px);
+  }
 
   @media (hover:hover){
-    .sticker:hover{ transform: translateY(-2px) scale(1.015); filter:brightness(1.04); }
+    .sticker:hover{ filter:brightness(1.05); }
   }
 </style>
 </head>
@@ -190,19 +209,11 @@
 
       <div class="stickers">
         <a class="sticker sticker--main" href="https://t.me/ai2arch" target="_blank" rel="noopener">
-          <div class="sticker__fill">
-            <span>Тёмно-синий вайб</span>
-            <span><span class="diamond">◆</span></span>
-            <span>Мой канал</span>
-          </div>
+          <span>Тёмно-синий вайб <span class="diamond">◆</span> Мой канал</span>
         </a>
 
         <a class="sticker sticker--guide" href="https://t.me/ai2arch_bot" target="_blank" rel="noopener">
-          <div class="sticker__fill">
-            <span>Забрать гайд</span>
-            <span><span class="diamond">◆</span></span>
-            <span>«53 способа использовать ИИ для архитекторов»</span>
-          </div>
+          <span>Забрать гайд <span class="diamond">◆</span> «53 способа использовать ИИ для архитекторов»</span>
         </a>
       </div>
 
