@@ -154,6 +154,18 @@
       0 -1px 1px rgba(0,0,0,.25);
   }
 
+  /* ===== COPYRIGHT — same tilted plane, small and quiet ===== */
+  .copyright{
+    margin-top: 22px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 10px;
+    letter-spacing:.04em;
+    color: #4a3822;
+    opacity:.75;
+    text-shadow: 0 1px 0 rgba(255,255,255,.25);
+    backface-visibility: hidden;
+  }
+
   /* ===== SPONSOR PATCHES — same ribbon navy + gold thread as the crest banner ===== */
   .stickers{
     width:100%;
@@ -167,8 +179,6 @@
   .sticker{
     position:relative;
     display:flex;
-    align-items:center;
-    justify-content:center;
     text-align:center;
     text-decoration:none;
     width:100%;
@@ -182,6 +192,8 @@
     touch-action: manipulation;
     outline: none;
     transform: translateY(0) scale(1);
+    align-items:stretch;
+    justify-content:stretch;
     transition: transform .16s ease-out, filter .16s ease-out;
     will-change: transform;
 
@@ -192,9 +204,12 @@
       0 10px 16px rgba(45,35,15,.26);
   }
 
-  /* the navy embroidered fill, inset from the cream binding */
+  /* the navy embroidered fill, inset from the cream binding — always fills the backing exactly */
   .sticker__fill{
     position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     width:100%;
     border-radius: 8px;
     padding: 12px 14px;
@@ -258,6 +273,47 @@
     .sticker:hover{ transform: translateY(-2px) scale(1.015); filter:brightness(1.04); }
   }
 
+  /* ===================== LANGUAGE SWITCH — fixed, flat, always reachable ===================== */
+  .langswitch{
+    position:fixed;
+    top: max(14px, env(safe-area-inset-top, 0px) + 10px);
+    right: max(14px, env(safe-area-inset-right, 0px) + 10px);
+    z-index:2;
+    display:flex;
+    align-items:center;
+    gap:2px;
+    padding:3px;
+    border-radius:999px;
+    background: rgba(20,48,79,.92);
+    box-shadow: 0 2px 8px rgba(35,26,10,.35), inset 0 0 0 1px rgba(216,177,100,.4);
+  }
+
+  .langswitch button{
+    appearance:none;
+    border:none;
+    background:transparent;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size:9px;
+    font-weight:700;
+    letter-spacing:.03em;
+    color: rgba(230,216,179,.55);
+    padding:4px 7px;
+    border-radius:999px;
+    cursor:pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: color .15s ease, background .15s ease;
+  }
+
+  .langswitch button.active{
+    color: var(--navy-deep);
+    background: var(--gold);
+  }
+
+  @media (min-width:720px){
+    .langswitch button{ font-size:10px; padding:5px 9px; }
+  }
+
   /* ===================== LARGER SCREENS / DESKTOP ===================== */
   @media (min-width: 720px){
     .stage{ perspective: 1500px; gap: 46px; }
@@ -305,6 +361,11 @@
 </head>
 <body>
 
+  <div class="langswitch" id="langswitch">
+    <button type="button" data-lang="ru">RU</button>
+    <button type="button" data-lang="en">EN</button>
+  </div>
+
   <div class="stage">
     <div class="mark">
 
@@ -313,29 +374,31 @@
       </div>
 
       <div class="bio">
-        <div class="name">Александр Кулешов</div>
-        <div class="role">Практикующий архитектор и разработчик образовательных ИИ-систем. 10+ лет опыта управления проектами в сфере градостроительства и инноваций.</div>
+        <div class="name" data-i18n="name">Александр Кулешов</div>
+        <div class="role" data-i18n="role">Практикующий архитектор и разработчик образовательных ИИ-систем. 10+ лет опыта управления проектами в сфере градостроительства и инноваций.</div>
       </div>
 
       <div class="stickers">
         <a class="sticker sticker--main" href="https://t.me/ai2arch" target="_blank" rel="noopener">
           <div class="sticker__fill">
-            <span>Тёмно-синий вайб <span class="diamond">◆</span> Мой канал</span>
+            <span data-i18n="btn1">Тёмно-синий вайб <span class="diamond">◆</span> Мой канал</span>
           </div>
         </a>
 
         <a class="sticker sticker--guide" href="https://t.me/ai2arch_bot" target="_blank" rel="noopener">
           <div class="sticker__fill">
-            <span>Забрать гайд <span class="diamond">◆</span> «53 способа использовать ИИ для архитекторов»</span>
+            <span data-i18n="btn2">Забрать гайд <span class="diamond">◆</span> «53 способа использовать ИИ для архитекторов»</span>
           </div>
         </a>
 
         <a class="sticker sticker--course" href="https://ai2arch.ru" target="_blank" rel="noopener">
           <div class="sticker__fill">
-            <span>Курс для архитекторов <span class="diamond">◆</span> Повышение квалификации ЮФУ</span>
+            <span data-i18n="btn3">Курс для архитекторов <span class="diamond">◆</span> Повышение квалификации ЮФУ</span>
           </div>
         </a>
       </div>
+
+      <div class="copyright" data-i18n="copyright">© 2026 Александр Кулешов</div>
 
     </div>
   </div>
@@ -343,6 +406,56 @@
   <script>
     // iOS Safari won't trigger :active on <a> taps without a touch listener bound somewhere in the tree
     document.addEventListener('touchstart', function(){}, {passive:true});
+
+    var translations = {
+      ru: {
+        title: "Кулешов — Кулиджанов",
+        name: "Александр Кулешов",
+        role: "Практикующий архитектор и разработчик образовательных ИИ-систем. 10+ лет опыта управления проектами в сфере градостроительства и инноваций.",
+        btn1: 'Тёмно-синий вайб <span class="diamond">◆</span> Мой канал',
+        btn2: 'Забрать гайд <span class="diamond">◆</span> «53 способа использовать ИИ для архитекторов»',
+        btn3: 'Курс для архитекторов <span class="diamond">◆</span> Повышение квалификации ЮФУ',
+        copyright: "© 2026 Александр Кулешов"
+      },
+      en: {
+        title: "Kuleshov — Kulidzhanov",
+        name: "Aleksandr Kuleshov",
+        role: "Practicing architect and developer of educational AI systems. 10+ years managing projects in urban development and innovation.",
+        btn1: 'Dark-navy vibes <span class="diamond">◆</span> My channel',
+        btn2: 'Get the guide <span class="diamond">◆</span> “53 ways to use AI for architects”',
+        btn3: 'Course for architects <span class="diamond">◆</span> Professional development at SFedU',
+        copyright: "© 2026 Aleksandr Kuleshov"
+      }
+    };
+
+    function applyLang(lang){
+      if (!translations[lang]) lang = 'ru';
+      var dict = translations[lang];
+      document.querySelectorAll('[data-i18n]').forEach(function(el){
+        var key = el.getAttribute('data-i18n');
+        if (dict[key] !== undefined) el.innerHTML = dict[key];
+      });
+      document.title = dict.title;
+      document.documentElement.lang = lang;
+      document.querySelectorAll('.langswitch button').forEach(function(btn){
+        btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+      });
+      try { localStorage.setItem('ai2arch_lang', lang); } catch(e){}
+    }
+
+    function detectLang(){
+      var saved;
+      try { saved = localStorage.getItem('ai2arch_lang'); } catch(e){}
+      if (saved === 'ru' || saved === 'en') return saved;
+      var nav = (navigator.language || navigator.userLanguage || 'ru').toLowerCase();
+      return nav.indexOf('ru') === 0 ? 'ru' : 'en';
+    }
+
+    document.querySelectorAll('.langswitch button').forEach(function(btn){
+      btn.addEventListener('click', function(){ applyLang(btn.getAttribute('data-lang')); });
+    });
+
+    applyLang(detectLang());
   </script>
 
 </body>
