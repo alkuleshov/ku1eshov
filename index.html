@@ -38,8 +38,8 @@
      this forces our real colors back no matter what */
   @media (prefers-color-scheme: dark){
     html, body{ background-color:#F6F4F0 !important; color:#0A0F1A !important; }
-    .name, .role, .bio, .tags, .founder{ color:#0A0F1A !important; }
-    .founder .brand{ color:#1A82FF !important; }
+    .name, .role, .bio{ color:#0A0F1A !important; }
+    .role .brand{ color:#1A82FF !important; }
     .cta{ background-color:#ffffff !important; }
     .cta__label{ color:#0A0F1A !important; }
     .cta__sub{ color:rgba(10,15,26,.5) !important; }
@@ -102,44 +102,19 @@
   }
 
   .role{
-    margin-top: 6px;
+    margin-top: 8px;
     font-size: 12.5px;
     font-weight: 700;
     color: var(--navy);
   }
-
-  .founder{
-    margin-top: 2px;
-    font-size: 11px;
-    color: rgba(10,15,26,.55);
-  }
-  .founder .brand{ color: var(--azure); font-weight:700; }
-
-  .tags{
-    margin-top: 10px;
-    display:flex;
-    flex-wrap:wrap;
-    align-items:center;
-    justify-content:center;
-    gap: 3px 0;
-    font-size: 8.5px;
-    font-weight:700;
-    letter-spacing:.06em;
-    text-transform:uppercase;
-    color: rgba(10,15,26,.7);
-  }
-  .tags span.dot{
-    width:2.5px; height:2.5px; border-radius:50%;
-    background: var(--gold);
-    margin: 0 6px;
-  }
+  .role .brand{ color: var(--azure); font-weight:700; }
 
   .bio{
     margin: 12px auto 0;
     font-size: 12.5px;
     line-height: 1.5;
     color: rgba(10,15,26,.75);
-    max-width: 34ch;
+    max-width: 36ch;
   }
 
   .ctas{
@@ -176,11 +151,12 @@
     display:block;
     margin-top:1px;
     font-size: 10.5px;
-    line-height:1.3;
+    line-height:1.35;
     color: rgba(10,15,26,.5);
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
     overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
   }
   .cta__arrow{
     flex:none;
@@ -246,31 +222,23 @@
     </div>
 
     <h1 class="name" data-i18n="name">Александр Кулешов</h1>
-    <div class="role" data-i18n="role">Стратег ИИ-продуктов и пространственного интеллекта</div>
-    <div class="founder" data-i18n="founder">Основатель <span class="brand">AI2ARCH</span></div>
+    <div class="role" data-i18n="role">Архитектор • Основатель <span class="brand">AI2ARCH</span></div>
 
-    <div class="tags" data-i18n="tags">
-      <span class="tag">ИИ-системы</span><span class="dot"></span>
-      <span class="tag">Пространственный интеллект</span><span class="dot"></span>
-      <span class="tag">ИИ-продукты</span><span class="dot"></span>
-      <span class="tag">Территории</span>
-    </div>
-
-    <p class="bio" data-i18n="bio">Проектирую ИИ-системы и воркфлоу на стыке ИИ и пространственной среды.</p>
+    <p class="bio" data-i18n="bio">15 лет практики в развитии среды: запуск креативных кластеров, редевелопмент зданий и благоустройство территорий. Создаю прикладные ИИ-инструменты, воркфлоу и обучающие программы для архитекторов.</p>
 
     <div class="ctas">
-      <a class="cta cta--primary" href="https://t.me/ai2arch" target="_blank" rel="noopener">
+      <a class="cta cta--primary" href="https://t.me/ai2arch_bot" target="_blank" rel="noopener">
         <span class="cta__text">
-          <span class="cta__label" data-i18n="btn1label">Телеграм-канал</span>
-          <span class="cta__sub" data-i18n="btn1sub">Заметки на стыке ИИ и пространства</span>
+          <span class="cta__label" data-i18n="btn1label">Гайд по ИИ для архитекторов</span>
+          <span class="cta__sub" data-i18n="btn1sub">53 практических сценария и связки инструментов</span>
         </span>
         <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
 
-      <a class="cta" href="https://t.me/ai2arch_bot" target="_blank" rel="noopener">
+      <a class="cta" href="https://t.me/ai2arch" target="_blank" rel="noopener">
         <span class="cta__text">
-          <span class="cta__label" data-i18n="btn2label">Гайд</span>
-          <span class="cta__sub" data-i18n="btn2sub">53 способа использовать ИИ для архитекторов</span>
+          <span class="cta__label" data-i18n="btn2label">Telegram-канал «Тёмно-синий»</span>
+          <span class="cta__sub" data-i18n="btn2sub">Мысли об архитектуре, урбанистике, ИИ и lifestyle</span>
         </span>
         <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
@@ -278,7 +246,15 @@
       <a class="cta" href="https://ai2arch.ru" target="_blank" rel="noopener">
         <span class="cta__text">
           <span class="cta__label" data-i18n="btn3label">Курс для архитекторов</span>
-          <span class="cta__sub" data-i18n="btn3sub">Повышение квалификации, ЮФУ</span>
+          <span class="cta__sub" data-i18n="btn3sub">Официальная программа повышения квалификации, ЮФУ</span>
+        </span>
+        <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+
+      <a class="cta" href="timeline.html">
+        <span class="cta__text">
+          <span class="cta__label" data-i18n="btn4label">Опыт и проекты (15 лет)</span>
+          <span class="cta__sub" data-i18n="btn4sub">Кластер «С52», бюро «Среда», трекинг и благоустройство</span>
         </span>
         <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
@@ -296,34 +272,34 @@
 
     var translations = {
       ru: {
-        title: "Александр Кулешов — Стратег ИИ-продуктов и пространственного интеллекта",
+        title: "Александр Кулешов — Архитектор, основатель AI2ARCH",
         name: "Александр Кулешов",
-        role: "Стратег ИИ-продуктов и пространственного интеллекта",
-        founder: 'Основатель <span class="brand">AI2ARCH</span>',
-        tags: '<span class="tag">ИИ-системы</span><span class="dot"></span><span class="tag">Пространственный интеллект</span><span class="dot"></span><span class="tag">ИИ-продукты</span><span class="dot"></span><span class="tag">Территории</span>',
-        bio: "Проектирую ИИ-системы и воркфлоу на стыке ИИ и пространственной среды.",
-        btn1label: "Телеграм-канал",
-        btn1sub: "Заметки на стыке ИИ и пространства",
-        btn2label: "Гайд",
-        btn2sub: "53 способа использовать ИИ для архитекторов",
+        role: 'Архитектор • Основатель <span class="brand">AI2ARCH</span>',
+        bio: "15 лет практики в развитии среды: запуск креативных кластеров, редевелопмент зданий и благоустройство территорий. Создаю прикладные ИИ-инструменты, воркфлоу и обучающие программы для архитекторов.",
+        btn1label: "Гайд по ИИ для архитекторов",
+        btn1sub: "53 практических сценария и связки инструментов",
+        btn2label: "Telegram-канал «Тёмно-синий»",
+        btn2sub: "Мысли об архитектуре, урбанистике, ИИ и lifestyle",
         btn3label: "Курс для архитекторов",
-        btn3sub: "Повышение квалификации, ЮФУ",
+        btn3sub: "Официальная программа повышения квалификации, ЮФУ",
+        btn4label: "Опыт и проекты (15 лет)",
+        btn4sub: "Кластер «С52», бюро «Среда», трекинг и благоустройство",
         copyright: "© 2026 Александр Кулешов"
       },
       en: {
-        title: "Aleksandr Kuleshov — AI Product & Spatial Intelligence Strategist",
-        name: "Aleksandr Kuleshov",
-        role: "AI Product & Spatial Intelligence Strategist",
-        founder: 'Founder of <span class="brand">AI2ARCH</span>',
-        tags: '<span class="tag">AI Systems</span><span class="dot"></span><span class="tag">Spatial Intelligence</span><span class="dot"></span><span class="tag">AI Products</span><span class="dot"></span><span class="tag">Territories</span>',
-        bio: "I design AI systems and workflows at the intersection of AI and the built environment.",
-        btn1label: "Telegram channel",
-        btn1sub: "Notes on AI and spatial thinking",
-        btn2label: "Guide",
-        btn2sub: "53 ways to use AI for architects",
-        btn3label: "Course for architects",
-        btn3sub: "Professional development, SFedU",
-        copyright: "© 2026 Aleksandr Kuleshov"
+        title: "Alexander Kuleshov — Architect, Founder of AI2ARCH",
+        name: "Alexander Kuleshov",
+        role: 'Architect • Founder of <span class="brand">AI2ARCH</span>',
+        bio: "15 years in spatial development: launching creative hubs, adaptive reuse, and public space design. Building generative AI workflows, tools, and educational programs for architects.",
+        btn1label: "AI Guide for Architects",
+        btn1sub: "53 practical use cases and workflows",
+        btn2label: 'Telegram Channel "Navy Blue"',
+        btn2sub: "Thoughts on architecture, urbanism, AI, and lifestyle",
+        btn3label: "AI Course for Architects",
+        btn3sub: "Executive education program at SFedU",
+        btn4label: "Experience & Projects (15 Years)",
+        btn4sub: "C52 cluster, Sreda bureau, tech mentoring & public realms",
+        copyright: "© 2026 Alexander Kuleshov"
       }
     };
 

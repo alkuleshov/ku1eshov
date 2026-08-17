@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Александр Кулешов — Опыт и проекты</title>
+<meta name="theme-color" content="#F6F4F0">
+<meta name="color-scheme" content="light">
+<style>
+  :root{
+    color-scheme: light;
+    --navy: #0A0F1A;
+    --offwhite: #F6F4F0;
+    --white: #ffffff;
+    --azure: #1A82FF;
+    --gold: #C29B38;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+  html,body{ margin:0; padding:0; min-height:100%; background-color:#F6F4F0; }
+
+  body{
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    background-color: #F6F4F0;
+    color: #0A0F1A;
+    width:100%;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  @media (prefers-color-scheme: dark){
+    html, body{ background-color:#F6F4F0 !important; color:#0A0F1A !important; }
+    .block__title, .block__lede, .block__body, .sub__label, .sub__text, .page-title, .back{ color:#0A0F1A !important; }
+    .period{ color:#1A82FF !important; }
+  }
+
+  a{ color:inherit; }
+
+  /* ===================== TOP BAR ===================== */
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:5;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: max(14px, env(safe-area-inset-top, 0px) + 12px) 20px 12px;
+    background: rgba(246,244,240,.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(10,15,26,.08);
+  }
+
+  .back{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    text-decoration:none;
+    font-size:12px;
+    font-weight:700;
+    color: var(--navy);
+  }
+  .back svg{ width:14px; height:14px; }
+
+  .langswitch{
+    display:flex;
+    padding:2px;
+    border-radius:999px;
+    background: rgba(10,15,26,.5);
+  }
+  .langswitch button{
+    appearance:none; border:none; cursor:pointer;
+    font-family:inherit; font-size:9px; font-weight:700; letter-spacing:.05em;
+    padding:5px 8px; border-radius:999px;
+    background:transparent; color: rgba(246,244,240,.6);
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  }
+  .langswitch button.active{ background: var(--azure); color:#fff; }
+
+  /* ===================== PAGE ===================== */
+  .page{
+    max-width: 560px;
+    margin:0 auto;
+    padding: 26px 22px max(50px, env(safe-area-inset-bottom, 0px) + 30px);
+  }
+
+  .page-title{
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -.01em;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin: 0 0 4px;
+  }
+  .page-sub{
+    font-size: 13px;
+    color: rgba(10,15,26,.55);
+    margin: 0 0 30px;
+  }
+
+  /* ===================== TIMELINE ===================== */
+  .timeline{
+    position:relative;
+    padding-left: 22px;
+  }
+  .timeline::before{
+    content:"";
+    position:absolute;
+    left: 4px;
+    top: 6px;
+    bottom: 6px;
+    width: 1px;
+    background: repeating-linear-gradient(180deg, rgba(10,15,26,.2) 0, rgba(10,15,26,.2) 3px, transparent 3px, transparent 7px);
+  }
+
+  .block{
+    position:relative;
+    padding-bottom: 34px;
+  }
+  .block:last-child{ padding-bottom:0; }
+
+  .block::before{
+    content:"";
+    position:absolute;
+    left: -22px;
+    top: 3px;
+    width: 9px; height:9px;
+    border-radius:50%;
+    background: var(--azure);
+    box-shadow: 0 0 0 4px var(--offwhite);
+  }
+  .block--current::before{ background: var(--gold); }
+
+  .period{
+    font-size: 11px;
+    font-weight:800;
+    letter-spacing:.06em;
+    color: var(--azure);
+    text-transform:uppercase;
+  }
+  .block--current .period{ color: var(--gold); }
+
+  .block__title{
+    margin: 4px 0 0;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--navy);
+  }
+
+  .block__lede{
+    margin: 2px 0 0;
+    font-size: 12px;
+    font-weight:600;
+    color: rgba(10,15,26,.5);
+  }
+
+  .block__body{
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height:1.55;
+    color: rgba(10,15,26,.78);
+  }
+
+  .subs{
+    margin-top: 12px;
+    display:flex;
+    flex-direction:column;
+    gap: 8px;
+  }
+  .sub{
+    display:flex;
+    gap: 14px;
+    align-items:baseline;
+  }
+  .sub__label{
+    flex:none;
+    width: 92px;
+    font-size: 9.5px;
+    font-weight:800;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color: rgba(10,15,26,.4);
+  }
+  .sub__text{
+    font-size: 12.5px;
+    line-height:1.5;
+    color: rgba(10,15,26,.7);
+  }
+
+  footer{
+    margin-top: 44px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+  }
+  footer .compass{ width:11px; height:11px; color: var(--gold); flex:none; }
+  footer .copyright{
+    font-size: 9px;
+    letter-spacing:.02em;
+    color: rgba(10,15,26,.4);
+  }
+
+  @media (min-width: 720px){
+    .page{ padding-top:40px; }
+    .page-title{ font-size:32px; }
+    .timeline{ padding-left:32px; }
+    .block::before{ left:-32px; width:11px; height:11px; }
+    .block__title{ font-size:20px; }
+    .block__body{ font-size:14px; max-width:60ch; }
+    .sub__label{ width:96px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <a class="back" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+      <span data-i18n="backlabel">Александр Кулешов</span>
+    </a>
+    <div class="langswitch" id="langswitch">
+      <button type="button" data-lang="ru">RU</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <h1 class="page-title" data-i18n="pagetitle">Опыт и проекты</h1>
+    <p class="page-sub" data-i18n="pagesub">15 лет в развитии архитектурной и городской среды</p>
+
+    <div class="timeline">
+
+      <div class="block">
+        <div class="period" data-i18n="p1period">2011–2017</div>
+        <h2 class="block__title" data-i18n="p1title">Архитектурный базис и редевелопмент</h2>
+        <div class="block__lede" data-i18n="p1lede">Креативный кластер «С52» — сооснователь</div>
+        <p class="block__body" data-i18n="p1body">Первый креативный кластер на юге России — проекту 15 лет. Редевелопмент сложного объекта, создание устойчивого комьюнити, привлечение грантов, представление проекта на саммите European Creative Hubs Network в Белграде.</p>
+        <div class="subs">
+          <div class="sub">
+            <span class="sub__label" data-i18n="p1s1label">Консалтинг</span>
+            <span class="sub__text" data-i18n="p1s1text">Участие в запуске пространств «Колос» (Краснодар), «P5» и Инженерного центра «Фабрика» в Ростове-на-Дону</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="period" data-i18n="p2period">2017–2021</div>
+        <h2 class="block__title" data-i18n="p2title">Территории, КРТ и управление</h2>
+        <div class="block__lede" data-i18n="p2lede">Проектное бюро «Среда» — соучредитель, руководитель</div>
+        <p class="block__body" data-i18n="p2body">Проекты комплексного благоустройства общественных пространств, дворовых территорий, развитие городской среды и комплексного развития территорий (КРТ).</p>
+        <div class="subs">
+          <div class="sub">
+            <span class="sub__label" data-i18n="p2s1label">Менеджмент</span>
+            <span class="sub__text" data-i18n="p2s1text">Президентская программа подготовки управленческих кадров, диплом по менеджменту, 2018</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="period" data-i18n="p3period">2021 — настоящее время</div>
+        <h2 class="block__title" data-i18n="p3title">Технологическое предпринимательство и EdTech</h2>
+        <div class="block__lede" data-i18n="p3lede">Трекинг стартапов, акселерационные программы, университетские тренинги</div>
+        <p class="block__body" data-i18n="p3body">Сертифицированный трекер. Проведение федеральных тренингов предпринимательских компетенций от МФТИ и Университета Иннополис.</p>
+        <div class="subs">
+          <div class="sub">
+            <span class="sub__label" data-i18n="p3s1label">Академия</span>
+            <span class="sub__text" data-i18n="p3s1text">Преподаватель подразделения НОЦ Про ЮФУ; магистратура Академии архитектуры и искусств; «Школа молодого преподавателя» ЮФУ</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="block block--current">
+        <div class="period" data-i18n="p4period">2026</div>
+        <h2 class="block__title" data-i18n="p4title">Архитектор 3.0 и лаборатория AI2ARCH</h2>
+        <div class="block__lede" data-i18n="p4lede">AI2ARCH — образовательная платформа и R&amp;D-лаборатория проектного интеллекта</div>
+        <p class="block__body" data-i18n="p4body">Запуск авторского курса повышения квалификации «Искусственный интеллект для архитекторов» — официальная программа ДПО ЮФУ. Разработка методических баз знаний, гайдов (53 прикладных сценария) и внедрение ИИ-пайплайнов для архитекторов и девелоперов.</p>
+      </div>
+
+    </div>
+
+    <footer>
+      <svg class="compass" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1"><path d="M10 1 L11.4 8.6 L19 10 L11.4 11.4 L10 19 L8.6 11.4 L1 10 L8.6 8.6 Z"/></svg>
+      <span class="copyright" data-i18n="copyright">© 2026 Александр Кулешов</span>
+    </footer>
+
+  </div>
+
+  <script>
+    document.addEventListener('touchstart', function(){}, {passive:true});
+
+    var translations = {
+      ru: {
+        title: "Александр Кулешов — Опыт и проекты",
+        backlabel: "Александр Кулешов",
+        pagetitle: "Опыт и проекты",
+        pagesub: "15 лет в развитии архитектурной и городской среды",
+
+        p1period: "2011–2017",
+        p1title: "Архитектурный базис и редевелопмент",
+        p1lede: "Креативный кластер «С52» — сооснователь",
+        p1body: "Первый креативный кластер на юге России — проекту 15 лет. Редевелопмент сложного объекта, создание устойчивого комьюнити, привлечение грантов, представление проекта на саммите European Creative Hubs Network в Белграде.",
+        p1s1label: "Консалтинг",
+        p1s1text: "Участие в запуске пространств «Колос» (Краснодар), «P5» и Инженерного центра «Фабрика» в Ростове-на-Дону",
+
+        p2period: "2017–2021",
+        p2title: "Территории, КРТ и управление",
+        p2lede: "Проектное бюро «Среда» — соучредитель, руководитель",
+        p2body: "Проекты комплексного благоустройства общественных пространств, дворовых территорий, развитие городской среды и комплексного развития территорий (КРТ).",
+        p2s1label: "Менеджмент",
+        p2s1text: "Президентская программа подготовки управленческих кадров, диплом по менеджменту, 2018",
+
+        p3period: "2021 — настоящее время",
+        p3title: "Технологическое предпринимательство и EdTech",
+        p3lede: "Трекинг стартапов, акселерационные программы, университетские тренинги",
+        p3body: "Сертифицированный трекер. Проведение федеральных тренингов предпринимательских компетенций от МФТИ и Университета Иннополис.",
+        p3s1label: "Академия",
+        p3s1text: "Преподаватель подразделения НОЦ Про ЮФУ; магистратура Академии архитектуры и искусств; «Школа молодого преподавателя» ЮФУ",
+
+        p4period: "2026",
+        p4title: "Архитектор 3.0 и лаборатория AI2ARCH",
+        p4lede: "AI2ARCH — образовательная платформа и R&D-лаборатория проектного интеллекта",
+        p4body: "Запуск авторского курса повышения квалификации «Искусственный интеллект для архитекторов» — официальная программа ДПО ЮФУ. Разработка методических баз знаний, гайдов (53 прикладных сценария) и внедрение ИИ-пайплайнов для архитекторов и девелоперов.",
+
+        copyright: "© 2026 Александр Кулешов"
+      },
+      en: {
+        title: "Alexander Kuleshov — Experience & Projects",
+        backlabel: "Alexander Kuleshov",
+        pagetitle: "Experience & Projects",
+        pagesub: "15 years in architectural and urban development",
+
+        p1period: "2011–2017",
+        p1title: "Architectural Foundation & Redevelopment",
+        p1lede: "C52 Creative Cluster — co-founder",
+        p1body: "The first creative cluster in southern Russia — the project just turned 15. Redevelopment of a complex site, building a resilient community, securing grants, and presenting the project at the European Creative Hubs Network summit in Belgrade.",
+        p1s1label: "Consulting",
+        p1s1text: "Contributed to the launch of Kolos (Krasnodar), P5, and the Fabrika Engineering Center in Rostov-on-Don",
+
+        p2period: "2017–2021",
+        p2title: "Territories, Urban Redevelopment & Management",
+        p2lede: "Sreda Design Bureau — co-founder, director",
+        p2body: "Comprehensive public space improvement projects, courtyard redevelopment, urban environment development, and integrated urban redevelopment (KRT).",
+        p2s1label: "Management",
+        p2s1text: "Presidential Program for Management Personnel Training, management diploma, 2018",
+
+        p3period: "2021 — present",
+        p3title: "Tech Entrepreneurship & EdTech",
+        p3lede: "Startup tracking, accelerator programs, university training",
+        p3body: "Certified startup tracker. Delivered federal entrepreneurial-skills training programs for MIPT and Innopolis University.",
+        p3s1label: "Academic",
+        p3s1text: "Instructor at the NOC Pro division of Southern Federal University (SFedU); graduate studies at the Academy of Architecture and Arts; participant in SFedU's Young Faculty School",
+
+        p4period: "2026",
+        p4title: "Architect 3.0 & the AI2ARCH Lab",
+        p4lede: "AI2ARCH — an educational platform and R&D lab for design intelligence",
+        p4body: 'Launch of the proprietary professional-development course "Artificial Intelligence for Architects" — an official SFedU continuing-education program. Development of knowledge bases, guides (53 applied scenarios), and implementation of AI pipelines for architects and developers.',
+
+        copyright: "© 2026 Alexander Kuleshov"
+      }
+    };
+
+    function applyLang(lang){
+      if (!translations[lang]) lang = 'ru';
+      var dict = translations[lang];
+      var nodes = document.querySelectorAll('[data-i18n]');
+      for (var i = 0; i < nodes.length; i++) {
+        var key = nodes[i].getAttribute('data-i18n');
+        if (dict[key] !== undefined) nodes[i].innerHTML = dict[key];
+      }
+      document.title = dict.title;
+      document.documentElement.lang = lang;
+      var btns = document.querySelectorAll('.langswitch button');
+      for (var j = 0; j < btns.length; j++) {
+        if (btns[j].getAttribute('data-lang') === lang) {
+          btns[j].className = 'active';
+        } else {
+          btns[j].className = '';
+        }
+      }
+      try { localStorage.setItem('ai2arch_lang', lang); } catch(e){}
+    }
+
+    function detectLang(){
+      var saved;
+      try { saved = localStorage.getItem('ai2arch_lang'); } catch(e){}
+      if (saved === 'ru' || saved === 'en') return saved;
+      var nav = (navigator.language || navigator.userLanguage || 'ru').toLowerCase();
+      return nav.indexOf('ru') === 0 ? 'ru' : 'en';
+    }
+
+    var switchBtns = document.querySelectorAll('.langswitch button');
+    for (var k = 0; k < switchBtns.length; k++) {
+      switchBtns[k].addEventListener('click', (function(btn){
+        return function(){ applyLang(btn.getAttribute('data-lang')); };
+      })(switchBtns[k]));
+    }
+
+    applyLang(detectLang());
+  </script>
+
+</body>
+</html>
