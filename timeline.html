@@ -170,13 +170,12 @@
   }
   .sub{
     display:flex;
-    gap: 14px;
-    align-items:baseline;
+    flex-direction:column;
+    gap: 3px;
   }
   .sub__label{
     flex:none;
-    width: 92px;
-    font-size: 9.5px;
+    font-size: 9px;
     font-weight:800;
     letter-spacing:.05em;
     text-transform:uppercase;
@@ -231,7 +230,8 @@
     .block::before{ left:-32px; width:11px; height:11px; }
     .block__title{ font-size:20px; }
     .block__body{ font-size:14px; max-width:60ch; }
-    .sub__label{ width:96px; }
+    .sub{ flex-direction:row; align-items:baseline; gap:16px; }
+    .sub__label{ width:110px; font-size:10px; }
   }
 </style>
 </head>
@@ -289,11 +289,15 @@
         <div class="period" data-i18n="p3period">2021 — настоящее время</div>
         <h2 class="block__title" data-i18n="p3title">Технологическое предпринимательство и EdTech</h2>
         <div class="block__lede" data-i18n="p3lede">Трекинг стартапов, акселерационные программы, университетские тренинги</div>
-        <p class="block__body" data-i18n="p3body">Сертифицированный трекер. Проведение федеральных тренингов предпринимательских компетенций от МФТИ и Университета Иннополис.</p>
+        <p class="block__body" data-i18n="p3body">Сертифицированный трекер (Академия трекеров, 2022). Проведение федеральных тренингов предпринимательских компетенций от МФТИ и Университета Иннополис.</p>
         <div class="subs">
           <div class="sub">
-            <span class="sub__label" data-i18n="p3s1label">Академия</span>
-            <span class="sub__text" data-i18n="p3s1text">Преподаватель подразделения НОЦ Про ЮФУ; магистратура Академии архитектуры и искусств; «Школа молодого преподавателя» ЮФУ</span>
+            <span class="sub__label" data-i18n="p3s1label">Акселераторы</span>
+            <span class="sub__text" data-i18n="p3s1text">14 акселерационных программ в России и Казахстане — Университет Иннополис, УрФУ, ТюмГУ, MOST и AlmaU (Алматы, Казахстан); соорганизатор акселератора «Т-Шейп» на площадке ДГТУ — набор экспертов и организация программы</span>
+          </div>
+          <div class="sub">
+            <span class="sub__label" data-i18n="p3s2label">Университет</span>
+            <span class="sub__text" data-i18n="p3s2text">Преподаватель подразделения НОЦ ПРО ЮФУ; магистратура университета архитектуры и искусств; «Школа молодого преподавателя» ЮФУ</span>
           </div>
         </div>
       </div>
@@ -342,9 +346,11 @@
         p3period: "2021 — настоящее время",
         p3title: "Технологическое предпринимательство и EdTech",
         p3lede: "Трекинг стартапов, акселерационные программы, университетские тренинги",
-        p3body: "Сертифицированный трекер. Проведение федеральных тренингов предпринимательских компетенций от МФТИ и Университета Иннополис.",
-        p3s1label: "Академия",
-        p3s1text: "Преподаватель подразделения НОЦ Про ЮФУ; магистратура Академии архитектуры и искусств; «Школа молодого преподавателя» ЮФУ",
+        p3body: "Сертифицированный трекер (Академия трекеров, 2022). Проведение федеральных тренингов предпринимательских компетенций от МФТИ и Университета Иннополис.",
+        p3s1label: "Акселераторы",
+        p3s1text: "14 акселерационных программ в России и Казахстане — Университет Иннополис, УрФУ, ТюмГУ, MOST и AlmaU (Алматы, Казахстан); соорганизатор акселератора «Т-Шейп» на площадке ДГТУ — набор экспертов и организация программы",
+        p3s2label: "Университет",
+        p3s2text: "Преподаватель подразделения НОЦ ПРО ЮФУ; магистратура университета архитектуры и искусств; «Школа молодого преподавателя» ЮФУ",
 
         p4period: "2026",
         p4title: "Архитектор 3.0 и лаборатория AI2ARCH",
@@ -377,9 +383,11 @@
         p3period: "2021 — present",
         p3title: "Tech Entrepreneurship & EdTech",
         p3lede: "Startup tracking, accelerator programs, university training",
-        p3body: "Certified startup tracker. Delivered federal entrepreneurial-skills training programs for MIPT and Innopolis University.",
-        p3s1label: "Academic",
-        p3s1text: "Instructor at the NOC Pro division of Southern Federal University (SFedU); graduate studies at the Academy of Architecture and Arts; participant in SFedU's Young Faculty School",
+        p3body: "Certified startup tracker (Trackers Academy, 2022). Delivered federal entrepreneurial-skills training programs for MIPT and Innopolis University.",
+        p3s1label: "Accelerators",
+        p3s1text: '14 accelerator programs across Russia and Kazakhstan — Innopolis University, UrFU, Tyumen State University, MOST and AlmaU (Almaty, Kazakhstan); co-organizer of the "T-Shape" tech accelerator at DSTU, responsible for expert recruitment and program design',
+        p3s2label: "University",
+        p3s2text: "Instructor at the NOC PRO division of Southern Federal University (SFedU); graduate studies at the University's Faculty of Architecture and Arts; participant in SFedU's Young Faculty School",
 
         p4period: "2026",
         p4title: "Architect 3.0 & the AI2ARCH Lab",
