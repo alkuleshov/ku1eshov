@@ -178,7 +178,15 @@
     .cta:hover{ border-color: var(--azure); }
   }
 
-  .cta--primary{ border-left: 2px solid var(--azure); }
+  .cta--timeline{
+    border-left: 2px solid var(--gold);
+    background: linear-gradient(180deg, #fbf6ea 0%, #ffffff 60%);
+  }
+  .cta--timeline .cta__arrow{ color: var(--gold); }
+  .cta--timeline:active{ border-color: var(--navy); }
+  @media (hover:hover){
+    .cta--timeline:hover{ border-color: var(--gold); box-shadow: 0 2px 10px rgba(194,155,56,.18); }
+  }
 
   /* ===================== SOCIAL — small circles ===================== */
   .social{
@@ -262,7 +270,7 @@
     <p class="bio" data-i18n="bio">15 лет практики в развитии среды: запуск креативных кластеров, редевелопмент зданий и благоустройство территорий. Создаю прикладные ИИ-инструменты, воркфлоу и обучающие программы для архитекторов.</p>
 
     <div class="ctas">
-      <a class="cta cta--primary" href="https://t.me/ai2arch_bot" target="_blank" rel="noopener">
+      <a class="cta" href="https://t.me/ai2arch_bot" target="_blank" rel="noopener">
         <span class="cta__text">
           <span class="cta__label" data-i18n="btn1label">Гайд по ИИ для архитекторов</span>
           <span class="cta__sub" data-i18n="btn1sub">53 практических сценария и связки инструментов</span>
@@ -286,7 +294,7 @@
         <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
 
-      <a class="cta" href="timeline.html">
+      <a class="cta cta--timeline" href="timeline.html">
         <span class="cta__text">
           <span class="cta__label" data-i18n="btn4label">Опыт и проекты (15 лет)</span>
           <span class="cta__sub" data-i18n="btn4sub">Кластер «С52», бюро «Среда», трекинг и благоустройство</span>
