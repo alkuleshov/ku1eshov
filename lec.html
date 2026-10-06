@@ -71,6 +71,22 @@
   footer .compass{ width:11px; height:11px; color: var(--gold); flex:none; }
   footer .copyright{ font-size: 9px; letter-spacing:.02em; color: rgba(10,15,26,.4); }
 
+  .langswitch{
+    display:flex;
+    flex:none;
+    padding:2px;
+    border-radius:999px;
+    background: rgba(10,15,26,.5);
+  }
+  .langswitch button{
+    appearance:none; border:none; cursor:pointer;
+    font-family:inherit; font-size:9px; font-weight:700; letter-spacing:.05em;
+    padding:5px 8px; border-radius:999px;
+    background:transparent; color: rgba(246,244,240,.6);
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  }
+  .langswitch button.active{ background: var(--azure); color:#fff; }
+
   @media (min-width: 720px){
     .page{ padding-top:40px; }
     .page-title{ font-size:32px; }
@@ -84,29 +100,92 @@
   <div class="topbar">
     <a class="back" href="index.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
-      <span>Александр Кулешов</span>
+      <span data-i18n="backLabel">Александр Кулешов</span>
     </a>
+    <div class="langswitch" id="langswitch">
+      <button type="button" data-lang="ru">RU</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
   </div>
 
   <div class="page">
-    <h1 class="page-title">Лекционные программы</h1>
-    <p class="page-sub">Авторские курсы и лекции по пространственному развитию, градостроительству и прикладному ИИ для архитекторов</p>
+    <h1 class="page-title" data-i18n="pageTitle">Лекционные программы</h1>
+    <p class="page-sub" data-i18n="pageSub">Авторские курсы и лекции по пространственному развитию, градостроительству и прикладному ИИ для архитекторов</p>
 
     <a class="prog" href="spdev.html">
-      <div class="prog__meta">РАНХиГС</div>
-      <h2 class="prog__title">Пространственное развитие территорий</h2>
-      <p class="prog__body">Курс для управленческих кадров: от теоретических основ до практических инструментов анализа и принятия решений.</p>
+      <div class="prog__meta" data-i18n="progMeta">РАНХиГС</div>
+      <h2 class="prog__title" data-i18n="progTitle">Пространственное развитие территорий</h2>
+      <p class="prog__body" data-i18n="progBody">Курс для управленческих кадров: от теоретических основ до практических инструментов анализа и принятия решений.</p>
       <div class="prog__foot">
-        <span>1 из 5 лекций доступно</span>
+        <span data-i18n="progFoot">2 из 5 лекций доступно</span>
         <svg class="prog__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </div>
     </a>
 
     <footer>
       <svg class="compass" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1"><path d="M10 1 L11.4 8.6 L19 10 L11.4 11.4 L10 19 L8.6 11.4 L1 10 L8.6 8.6 Z"/></svg>
-      <span class="copyright">© 2026 Александр Кулешов</span>
+      <span class="copyright" data-i18n="copyright">© 2026 Александр Кулешов</span>
     </footer>
   </div>
+
+  <script>
+    (function(){
+      var translations = {
+        ru: {
+          title: "Александр Кулешов — Лекционные программы",
+          backLabel: "Александр Кулешов",
+          pageTitle: "Лекционные программы",
+          pageSub: "Авторские курсы и лекции по пространственному развитию, градостроительству и прикладному ИИ для архитекторов",
+          progMeta: "РАНХиГС",
+          progTitle: "Пространственное развитие территорий",
+          progBody: "Курс для управленческих кадров: от теоретических основ до практических инструментов анализа и принятия решений.",
+          progFoot: "2 из 5 лекций доступно",
+          copyright: "© 2026 Александр Кулешов"
+        },
+        en: {
+          title: "Alexander Kuleshov — Lecture Programs",
+          backLabel: "Alexander Kuleshov",
+          pageTitle: "Lecture Programs",
+          pageSub: "Original courses and lectures on spatial development, urban planning, and applied AI for architects",
+          progMeta: "RANEPA",
+          progTitle: "Spatial Development of Territories",
+          progBody: "A course for public-sector managers: from theoretical foundations to practical analysis and decision-making tools.",
+          progFoot: "2 of 5 lectures available",
+          copyright: "© 2026 Alexander Kuleshov"
+        }
+      };
+      function applyLang(lang){
+        if (!translations[lang]) lang = 'ru';
+        var dict = translations[lang];
+        var nodes = document.querySelectorAll('[data-i18n]');
+        for (var i=0;i<nodes.length;i++){
+          var key = nodes[i].getAttribute('data-i18n');
+          if (dict[key] !== undefined) nodes[i].innerHTML = dict[key];
+        }
+        if (dict.title) document.title = dict.title;
+        document.documentElement.lang = lang;
+        var btns = document.querySelectorAll('.langswitch button');
+        for (var j=0;j<btns.length;j++){
+          btns[j].className = (btns[j].getAttribute('data-lang')===lang) ? 'active' : '';
+        }
+        try { localStorage.setItem('ai2arch_lang', lang); } catch(e){}
+      }
+      function detectLang(){
+        var saved;
+        try { saved = localStorage.getItem('ai2arch_lang'); } catch(e){}
+        if (saved === 'ru' || saved === 'en') return saved;
+        var nav = (navigator.language || navigator.userLanguage || 'ru').toLowerCase();
+        return nav.indexOf('ru') === 0 ? 'ru' : 'en';
+      }
+      var switchBtns = document.querySelectorAll('.langswitch button');
+      for (var k=0;k<switchBtns.length;k++){
+        switchBtns[k].addEventListener('click', (function(btn){
+          return function(){ applyLang(btn.getAttribute('data-lang')); };
+        })(switchBtns[k]));
+      }
+      applyLang(detectLang());
+    })();
+  </script>
 
 </body>
 </html>

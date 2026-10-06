@@ -55,7 +55,7 @@
   .page-title{ font-size: 21px; font-weight: 800; letter-spacing: -.01em; color: var(--navy); margin: 0 0 18px; line-height:1.3; }
 
   /* ============ SLIDE GALLERY ============ */
-  .gallery-wrap{ margin: 0 0 8px; }
+  .gallery-wrap{ margin: 0 0 8px; position:relative; }
   .gallery{
     display:flex;
     gap: 12px;
@@ -66,6 +66,29 @@
     scroll-padding-left: 7vw;
   }
   .gallery::-webkit-scrollbar{ display:none; }
+  .gallery-arrow{
+    position:absolute;
+    top: calc(50% - 14px);
+    width:36px; height:36px;
+    border-radius:50%;
+    border: 1px solid rgba(10,15,26,.1);
+    background: rgba(255,255,255,.92);
+    box-shadow: 0 2px 8px rgba(10,15,26,.12);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    z-index:4;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .gallery-arrow svg{ width:16px; height:16px; color: var(--navy); }
+  .gallery-arrow.prev{ left:2px; }
+  .gallery-arrow.next{ right:2px; }
+  .gallery-arrow:hover{ background:#fff; }
+  .gallery-arrow:active{ transform: scale(0.94); }
+  .gallery-arrow[disabled]{ opacity:.25; pointer-events:none; }
+  @media (hover: none) and (pointer: coarse){
+    .gallery-arrow{ display:none; }
+  }
   .slide{
     flex: 0 0 86vw;
     max-width: 560px;
@@ -119,6 +142,20 @@
 
   .promo-box{ border:1px solid var(--s-accent); border-radius:3px; padding: clamp(6px,2vw,10px); font-family:-apple-system, Arial, sans-serif; font-size: clamp(6.5px,1.7vw,9px); line-height:1.4; color: var(--s-text); margin-top:auto; }
 
+  /* diagram components */
+  .diagram-wrap{ display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; gap: clamp(4px,1.5vw,8px); }
+  .diagram-wrap svg{ width: 80px; width: clamp(62px,20vw,100px); height:auto; }
+  .diagram-row{ display:flex; gap: clamp(10px,4vw,22px); flex:1; align-items:center; justify-content:center; }
+  .diagram-col{ display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; }
+  .diagram-col svg{ width: 56px; width: clamp(46px,15vw,70px); height:auto; }
+  .diagram-cap{ font-family:-apple-system, Arial, sans-serif; font-size: clamp(6.5px,1.7vw,9px); color: var(--s-muted); text-align:center; line-height:1.3; }
+  .diagram-cap b{ color: var(--s-text); }
+  .legend-row{ display:flex; flex-wrap:wrap; gap: clamp(4px,1.5vw,9px); justify-content:center; font-family:-apple-system, Arial, sans-serif; font-size: clamp(6px,1.5vw,8px); color: var(--s-muted); }
+  .legend-row .dot{ display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:3px; vertical-align:middle; }
+  .method-icon{ margin-bottom:4px; }
+  .method-icon svg{ width: 30px; width: clamp(26px,8vw,36px); height:auto; display:block; }
+  .merge-badge{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:22px; height:22px; border-radius:50%; background:var(--s-bg); border:1.5px solid var(--s-accent); color:var(--s-accent); font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center; line-height:1; }
+
   .dark-slide{ background: var(--s-text); color: var(--s-bg); }
   .dark-slide .kicker span{ color: #BFBAAC; }
   .dark-slide h3{ color: var(--s-bg); }
@@ -143,6 +180,22 @@
   footer{ margin-top: 40px; display:flex; align-items:center; justify-content:center; gap:6px; }
   footer .compass{ width:11px; height:11px; color: var(--gold); flex:none; }
   footer .copyright{ font-size: 9px; letter-spacing:.02em; color: rgba(10,15,26,.4); }
+
+  .langswitch{
+    display:flex;
+    flex:none;
+    padding:2px;
+    border-radius:999px;
+    background: rgba(10,15,26,.5);
+  }
+  .langswitch button{
+    appearance:none; border:none; cursor:pointer;
+    font-family:inherit; font-size:9px; font-weight:700; letter-spacing:.05em;
+    padding:5px 8px; border-radius:999px;
+    background:transparent; color: rgba(246,244,240,.6);
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  }
+  .langswitch button.active{ background: var(--azure); color:#fff; }
 </style>
 </head>
 <body>
@@ -150,14 +203,18 @@
   <div class="topbar">
     <a class="back" href="spdev.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
-      <span>Лекционная программа</span>
+      <span data-i18n="backLabel">Лекционная программа</span>
     </a>
+    <div class="langswitch" id="langswitch">
+      <button type="button" data-lang="ru">RU</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
   </div>
 
   <div class="page">
     <div class="page-head">
-      <div class="prog-meta">Лекция 02</div>
-      <h1 class="page-title">Методология и инструменты анализа пространственного развития</h1>
+      <div class="prog-meta" data-i18n="progMeta">Лекция 02</div>
+      <h1 class="page-title" data-i18n="pageTitle">Методология и инструменты анализа пространственного развития</h1>
     </div>
 
     <!-- ============ SWIPEABLE SLIDE GALLERY ============ -->
@@ -166,136 +223,180 @@
 
         <!-- Slide 1 -->
         <div class="slide">
-          <div class="kicker"><div class="dash"></div><span>Лекция 02</span></div>
-          <h3>Методология и инструменты анализа <span class="accent">пространственного развития</span></h3>
-          <div class="body">От реактивного управления к проактивному анализу. Данные, модели, инструменты принятия решений.</div>
-          <div class="brand">Проектное бюро</div>
+          <div class="kicker"><div class="dash"></div><span data-i18n="s1_kicker">Лекция 02</span></div>
+          <h3 data-i18n="s1_title">Методология и инструменты анализа <span class="accent">пространственного развития</span></h3>
+          <div class="body" data-i18n="s1_body">От реактивного управления к проактивному анализу. Данные, модели, инструменты принятия решений.</div>
+          <div class="brand" data-i18n="s1_brand">Проектное бюро</div>
         </div>
 
         <!-- Slide 2 -->
         <div class="slide">
-          <div class="kicker"><div class="dash"></div><span>Зачем это нужно</span></div>
-          <h3>Три функции пространственного анализа</h3>
+          <div class="kicker"><div class="dash"></div><span data-i18n="s2_kicker">Зачем это нужно</span></div>
+          <h3 data-i18n="s2_title">Три функции пространственного анализа</h3>
           <div class="row3">
-            <div><div class="n">01</div><div class="t">Диагностика</div><div class="d">Находим не симптом, а первопричину</div></div>
-            <div><div class="n">02</div><div class="t">Мониторинг</div><div class="d">Оцениваем в цифрах эффект инвестиций</div></div>
-            <div><div class="n">03</div><div class="t">Прогноз</div><div class="d">Сценарное предвидение вместо реакции</div></div>
+            <div><div class="n">01</div><div class="t" data-i18n="s2_t1">Диагностика</div><div class="d" data-i18n="s2_d1">Находим не симптом, а первопричину</div></div>
+            <div><div class="n">02</div><div class="t" data-i18n="s2_t2">Мониторинг</div><div class="d" data-i18n="s2_d2">Оцениваем в цифрах эффект инвестиций</div></div>
+            <div><div class="n">03</div><div class="t" data-i18n="s2_t3">Прогноз</div><div class="d" data-i18n="s2_d3">Сценарное предвидение вместо реакции</div></div>
           </div>
           <div class="pageno">02</div>
         </div>
 
         <!-- Slide 3 -->
         <div class="slide">
-          <div class="kicker"><div class="dash"></div><span>Источники данных</span></div>
-          <h3>Где брать информацию</h3>
-          <div class="cols2">
+          <div class="kicker"><div class="dash"></div><span data-i18n="s3_kicker">Источники данных</span></div>
+          <h3 data-i18n="s3_title">Где брать информацию</h3>
+          <div class="cols2" style="position:relative;">
             <div>
-              <div class="ct">Официальные источники</div>
-              <div class="cd">Росстат, Росреестр, Росгидромет<br><span class="accent">+</span> юридическая значимость<br>− лаг, низкая детализация</div>
+              <div class="ct" data-i18n="s3_ct1">Официальные источники</div>
+              <div class="cd" data-i18n="s3_cd1">Росстат, Росреестр, Росгидромет<br><span class="accent">+</span> юридическая значимость<br>− лаг, низкая детализация</div>
             </div>
             <div>
-              <div class="ct">Большие данные</div>
-              <div class="cd">Мобильные операторы, IoT, соцсети<br><span class="accent">+</span> актуальность, детали<br>− приватность, разнородность</div>
+              <div class="ct" data-i18n="s3_ct2">Большие данные</div>
+              <div class="cd" data-i18n="s3_cd2">Мобильные операторы, IoT, соцсети<br><span class="accent">+</span> актуальность, детали<br>− приватность, разнородность</div>
             </div>
+            <div class="merge-badge">+</div>
           </div>
           <div class="pageno">03</div>
         </div>
 
         <!-- Slide 4 -->
         <div class="slide">
-          <div class="kicker"><div class="dash"></div><span>Методологический аппарат</span></div>
-          <h3>Инструменты анализа</h3>
+          <div class="kicker"><div class="dash"></div><span data-i18n="s4_kicker">Методологический аппарат</span></div>
+          <h3 data-i18n="s4_title">Инструменты анализа</h3>
           <div class="grid2x2">
-            <div><div class="gn">01</div><div class="gt">Пространственная статистика</div><div class="gd">Кластеры и горячие точки (Getis-Ord Gi*)</div></div>
-            <div><div class="gn">02</div><div class="gt">Гравитационные модели</div><div class="gd">Интенсивность связей между районами</div></div>
-            <div><div class="gn">03</div><div class="gt">Сетевой анализ</div><div class="gd">Транспортная доступность территорий</div></div>
-            <div><div class="gn">04</div><div class="gt">Машинное обучение</div><div class="gd">Сложные паттерны поведения</div></div>
+            <div>
+              <div class="method-icon"><svg viewBox="0 0 32 32"><circle cx="6" cy="8" r="2" fill="#8A8578"/><circle cx="24" cy="6" r="2" fill="#8A8578"/><circle cx="14" cy="16" r="2.4" fill="#C1502D"/><circle cx="6" cy="24" r="2" fill="#8A8578"/><circle cx="22" cy="22" r="2.4" fill="#C1502D"/><circle cx="17" cy="27" r="2" fill="#8A8578"/></svg></div>
+              <div class="gn">01</div><div class="gt" data-i18n="s4_gt1">Пространственная статистика</div><div class="gd" data-i18n="s4_gd1">Кластеры и горячие точки (Getis-Ord Gi*)</div>
+            </div>
+            <div>
+              <div class="method-icon"><svg viewBox="0 0 32 32"><line x1="11" y1="19" x2="18" y2="14" stroke="#C1502D" stroke-width="1.25"/><circle cx="7" cy="21" r="5" fill="none" stroke="#C1502D" stroke-width="1.5"/><circle cx="22" cy="12" r="8" fill="none" stroke="#C1502D" stroke-width="1.5"/></svg></div>
+              <div class="gn">02</div><div class="gt" data-i18n="s4_gt2">Гравитационные модели</div><div class="gd" data-i18n="s4_gd2">Интенсивность связей между районами</div>
+            </div>
+            <div>
+              <div class="method-icon"><svg viewBox="0 0 32 32"><line x1="16" y1="16" x2="6" y2="6" stroke="#D9D4C7" stroke-width="1"/><line x1="16" y1="16" x2="26" y2="6" stroke="#D9D4C7" stroke-width="1"/><line x1="16" y1="16" x2="26" y2="26" stroke="#D9D4C7" stroke-width="1"/><line x1="16" y1="16" x2="6" y2="26" stroke="#D9D4C7" stroke-width="1"/><circle cx="16" cy="16" r="3" fill="#C1502D"/><circle cx="6" cy="6" r="2" fill="#8A8578"/><circle cx="26" cy="6" r="2" fill="#8A8578"/><circle cx="26" cy="26" r="2" fill="#8A8578"/><circle cx="6" cy="26" r="2" fill="#8A8578"/></svg></div>
+              <div class="gn">03</div><div class="gt" data-i18n="s4_gt3">Сетевой анализ</div><div class="gd" data-i18n="s4_gd3">Транспортная доступность территорий</div>
+            </div>
+            <div>
+              <div class="method-icon"><svg viewBox="0 0 32 32"><line x1="4" y1="6" x2="26" y2="10" stroke="#D9D4C7" stroke-width="0.75"/><line x1="4" y1="6" x2="26" y2="22" stroke="#D9D4C7" stroke-width="0.75"/><line x1="4" y1="16" x2="26" y2="10" stroke="#D9D4C7" stroke-width="0.75"/><line x1="4" y1="16" x2="26" y2="22" stroke="#D9D4C7" stroke-width="0.75"/><line x1="4" y1="26" x2="26" y2="10" stroke="#D9D4C7" stroke-width="0.75"/><line x1="4" y1="26" x2="26" y2="22" stroke="#D9D4C7" stroke-width="0.75"/><circle cx="4" cy="6" r="2" fill="#8A8578"/><circle cx="4" cy="16" r="2" fill="#8A8578"/><circle cx="4" cy="26" r="2" fill="#8A8578"/><circle cx="26" cy="10" r="2.3" fill="#C1502D"/><circle cx="26" cy="22" r="2.3" fill="#C1502D"/></svg></div>
+              <div class="gn">04</div><div class="gt" data-i18n="s4_gt4">Машинное обучение</div><div class="gd" data-i18n="s4_gd4">Сложные паттерны поведения</div>
+            </div>
           </div>
           <div class="pageno">04</div>
         </div>
 
         <!-- Slide 5 -->
         <div class="slide">
-          <div class="kicker"><div class="dash"></div><span>Геоинформационные системы</span></div>
-          <h3>ГИС — пульт управления территорией</h3>
+          <div class="kicker"><div class="dash"></div><span data-i18n="s5_kicker">Геоинформационные системы</span></div>
+          <h3 data-i18n="s5_title">ГИС — пульт управления территорией</h3>
           <div class="grid2x2">
-            <div><div class="gn">1</div><div class="gt">База данных</div><div class="gd">Слои пространственной информации</div></div>
-            <div><div class="gn">2</div><div class="gt">Аналитика</div><div class="gd">Буферизация, 3D-анализ (QGIS)</div></div>
-            <div><div class="gn">3</div><div class="gt">BIM-интеграция</div><div class="gd">Инсоляция, нагрузки, шум</div></div>
-            <div><div class="gn">4</div><div class="gt">Веб-ГИС</div><div class="gd">Облачный доступ команде</div></div>
+            <div><div class="gn">1</div><div class="gt" data-i18n="s5_gt1">База данных</div><div class="gd" data-i18n="s5_gd1">Слои пространственной информации</div></div>
+            <div><div class="gn">2</div><div class="gt" data-i18n="s5_gt2">Аналитика</div><div class="gd" data-i18n="s5_gd2">Буферизация, 3D-анализ (QGIS)</div></div>
+            <div><div class="gn">3</div><div class="gt" data-i18n="s5_gt3">BIM-интеграция</div><div class="gd" data-i18n="s5_gd3">Инсоляция, нагрузки, шум</div></div>
+            <div><div class="gn">4</div><div class="gt" data-i18n="s5_gt4">Веб-ГИС</div><div class="gd" data-i18n="s5_gd4">Облачный доступ команде</div></div>
           </div>
-          <div class="promo-box">Курс <span class="accent strong">ai2arch.ru</span> — практикум по <span class="accent strong">QGIS</span>, 2,5 недели, дистанционно. По итогам — сертификат государственного образца от федерального вуза.</div>
+          <div class="promo-box" data-i18n="s5_promo">Курс <span class="accent strong">ai2arch.ru</span> — практикум по <span class="accent strong">QGIS</span>, 2,5 недели, дистанционно. По итогам — сертификат государственного образца от федерального вуза.</div>
         </div>
 
         <!-- Slide 6 -->
         <div class="slide">
-          <div class="kicker"><div class="dash"></div><span>Ключевые показатели</span></div>
-          <h3>От количества — к качеству</h3>
+          <div class="kicker"><div class="dash"></div><span data-i18n="s6_kicker">Ключевые показатели</span></div>
+          <h3 data-i18n="s6_title">От количества — к качеству</h3>
           <div class="body" style="flex:1; display:flex; flex-direction:column; justify-content:center;">
-            <div class="swaprow"><span class="o">Тонны бетона</span><span class="a">→</span><span class="ne">Качество роста</span></div>
-            <div class="swaprow"><span class="o">Прописка в паспорте</span><span class="a">→</span><span class="ne">Мобильность капитала</span></div>
-            <div class="swaprow"><span class="o">Обеспеченность услугами</span><span class="a">→</span><span class="ne">Мультимодальная доступность</span></div>
-            <div class="swaprow"><span class="o">ВРП на душу</span><span class="a">→</span><span class="ne">Индекс качества жизни</span></div>
+            <div class="swaprow"><span class="o" data-i18n="s6_o1">Тонны бетона</span><span class="a">→</span><span class="ne" data-i18n="s6_ne1">Качество роста</span></div>
+            <div class="swaprow"><span class="o" data-i18n="s6_o2">Прописка в паспорте</span><span class="a">→</span><span class="ne" data-i18n="s6_ne2">Мобильность капитала</span></div>
+            <div class="swaprow"><span class="o" data-i18n="s6_o3">Обеспеченность услугами</span><span class="a">→</span><span class="ne" data-i18n="s6_ne3">Мультимодальная доступность</span></div>
+            <div class="swaprow"><span class="o" data-i18n="s6_o4">ВРП на душу</span><span class="a">→</span><span class="ne" data-i18n="s6_ne4">Индекс качества жизни</span></div>
           </div>
           <div class="pageno">06</div>
         </div>
 
         <!-- Slide 7 -->
         <div class="slide">
-          <div class="kicker"><div class="dash"></div><span>Структура территории</span></div>
-          <h3>Истинные границы города</h3>
-          <div class="cols2">
-            <div><div class="ct">Административное деление</div><div class="cd">Формальные границы, не отражающие реальность</div></div>
-            <div><div class="ct">Функциональные зоны</div><div class="cd">Реальные зоны по данным мобильности</div></div>
+          <div class="kicker"><div class="dash"></div><span data-i18n="s7_kicker">Структура территории</span></div>
+          <h3 data-i18n="s7_title">Истинные границы города</h3>
+          <div class="diagram-row">
+            <div class="diagram-col">
+              <svg viewBox="0 0 60 40"><rect x="0" y="0" width="18" height="18" fill="none" stroke="#8A8578" stroke-width="1.5"/><rect x="21" y="0" width="18" height="18" fill="none" stroke="#8A8578" stroke-width="1.5"/><rect x="42" y="0" width="18" height="18" fill="none" stroke="#8A8578" stroke-width="1.5"/><rect x="0" y="21" width="18" height="18" fill="none" stroke="#8A8578" stroke-width="1.5"/><rect x="21" y="21" width="18" height="18" fill="none" stroke="#8A8578" stroke-width="1.5"/><rect x="42" y="21" width="18" height="18" fill="none" stroke="#8A8578" stroke-width="1.5"/></svg>
+              <div class="diagram-cap"><b data-i18n="s7_ct1">Административное деление</b><br><span data-i18n="s7_cd1">Формальные границы, не отражающие реальность</span></div>
+            </div>
+            <div class="diagram-col">
+              <svg viewBox="0 0 60 40"><circle cx="22" cy="20" r="16" fill="none" stroke="#C1502D" stroke-width="2"/><circle cx="40" cy="20" r="13" fill="rgba(193,80,45,.08)" stroke="#C1502D" stroke-width="2"/></svg>
+              <div class="diagram-cap"><b data-i18n="s7_ct2">Функциональные зоны</b><br><span data-i18n="s7_cd2">Реальные зоны по данным мобильности</span></div>
+            </div>
           </div>
           <div class="pageno">07</div>
         </div>
 
         <!-- Slide 8 -->
         <div class="slide">
-          <div class="kicker"><div class="dash"></div><span>Прогнозирование</span></div>
-          <h3>Пространственное моделирование</h3>
+          <div class="kicker"><div class="dash"></div><span data-i18n="s8_kicker">Прогнозирование</span></div>
+          <h3 data-i18n="s8_title">Пространственное моделирование</h3>
           <div class="row3">
-            <div><div class="n">01</div><div class="t">Клеточные автоматы</div><div class="d">Расползание застройки</div></div>
-            <div><div class="n">02</div><div class="t">Агентные модели</div><div class="d">Поведение семей, машин</div></div>
-            <div><div class="n">03</div><div class="t">Машинное обучение</div><div class="d">Вероятностный форсайт</div></div>
+            <div>
+              <div class="n">01</div>
+              <div class="method-icon"><svg viewBox="0 0 36 36"><rect x="0" y="0" width="10" height="10" fill="#C1502D"/><rect x="12" y="0" width="10" height="10" fill="none" stroke="#D9D4C7"/><rect x="24" y="0" width="10" height="10" fill="#C1502D"/><rect x="0" y="12" width="10" height="10" fill="#C1502D"/><rect x="12" y="12" width="10" height="10" fill="#C1502D"/><rect x="24" y="12" width="10" height="10" fill="none" stroke="#D9D4C7"/><rect x="0" y="24" width="10" height="10" fill="none" stroke="#D9D4C7"/><rect x="12" y="24" width="10" height="10" fill="#C1502D"/><rect x="24" y="24" width="10" height="10" fill="none" stroke="#D9D4C7"/></svg></div>
+              <div class="t" data-i18n="s8_t1">Клеточные автоматы</div><div class="d" data-i18n="s8_d1">Расползание застройки</div>
+            </div>
+            <div>
+              <div class="n">02</div>
+              <div class="method-icon"><svg viewBox="0 0 36 36"><circle cx="4" cy="6" r="2.5" fill="#C1502D"/><line x1="7" y1="6" x2="11" y2="6" stroke="#8A8578" stroke-width="1"/><circle cx="20" cy="2" r="2.5" fill="#C1502D"/><line x1="23" y1="2" x2="27" y2="2" stroke="#8A8578" stroke-width="1"/><circle cx="10" cy="18" r="2.5" fill="#C1502D"/><line x1="13" y1="18" x2="17" y2="18" stroke="#8A8578" stroke-width="1"/><circle cx="26" cy="16" r="2.5" fill="#C1502D"/><line x1="29" y1="16" x2="33" y2="16" stroke="#8A8578" stroke-width="1"/><circle cx="16" cy="30" r="2.5" fill="#C1502D"/><line x1="19" y1="30" x2="23" y2="30" stroke="#8A8578" stroke-width="1"/></svg></div>
+              <div class="t" data-i18n="s8_t2">Агентные модели</div><div class="d" data-i18n="s8_d2">Поведение семей, машин</div>
+            </div>
+            <div>
+              <div class="n">03</div>
+              <div class="method-icon"><svg viewBox="0 0 36 36"><line x1="2" y1="16" x2="30" y2="2" stroke="#D9D4C7" stroke-width="1"/><line x1="2" y1="16" x2="30" y2="16" stroke="#D9D4C7" stroke-width="1"/><line x1="2" y1="16" x2="30" y2="30" stroke="#D9D4C7" stroke-width="1"/><circle cx="2" cy="16" r="2.5" fill="#1A1A17"/><circle cx="30" cy="2" r="2.3" fill="#C1502D"/><circle cx="30" cy="16" r="2.3" fill="#C1502D"/><circle cx="30" cy="30" r="2.3" fill="#C1502D"/></svg></div>
+              <div class="t" data-i18n="s8_t3">Машинное обучение</div><div class="d" data-i18n="s8_d3">Вероятностный форсайт</div>
+            </div>
           </div>
           <div class="pageno">08</div>
         </div>
 
         <!-- Slide 9 -->
         <div class="slide">
-          <div class="kicker"><div class="dash"></div><span>Коммуникация результатов</span></div>
-          <h3>Язык общения с инвестором</h3>
-          <div class="cols2">
-            <div><div class="ct">Статичные карты</div><div class="cd">Разрозненные изображения без связи</div></div>
-            <div><div class="ct">Интерактивные дашборды</div><div class="cd">Выделили объект — графики пересобрались</div></div>
+          <div class="kicker"><div class="dash"></div><span data-i18n="s9_kicker">Коммуникация результатов</span></div>
+          <h3 data-i18n="s9_title">Язык общения с инвестором</h3>
+          <div class="diagram-row">
+            <div class="diagram-col">
+              <svg viewBox="0 0 48 32"><rect x="0" y="0" width="48" height="32" fill="none" stroke="#D9D4C7" stroke-width="1.5"/><rect x="4" y="4" width="18" height="10" fill="none" stroke="#D9D4C7" stroke-width="1"/><rect x="26" y="4" width="18" height="10" fill="none" stroke="#D9D4C7" stroke-width="1"/><rect x="4" y="18" width="18" height="10" fill="none" stroke="#D9D4C7" stroke-width="1"/><rect x="26" y="18" width="18" height="10" fill="none" stroke="#D9D4C7" stroke-width="1"/></svg>
+              <div class="diagram-cap"><b data-i18n="s9_ct1">Статичные карты</b><br><span data-i18n="s9_cd1">Разрозненные изображения без связи</span></div>
+            </div>
+            <div class="diagram-col">
+              <svg viewBox="0 0 48 32"><rect x="0" y="0" width="48" height="32" fill="#1A1A17"/><rect x="4" y="4" width="18" height="10" fill="#C1502D"/><rect x="26" y="4" width="18" height="10" fill="#C1502D"/><rect x="4" y="18" width="18" height="10" fill="#C1502D"/><rect x="26" y="18" width="18" height="10" fill="#C1502D"/></svg>
+              <div class="diagram-cap"><b data-i18n="s9_ct2">Интерактивные дашборды</b><br><span data-i18n="s9_cd2">Выделили объект — графики пересобрались</span></div>
+            </div>
           </div>
           <div class="pageno">09</div>
         </div>
 
         <!-- Slide 10 -->
         <div class="slide">
-          <div class="kicker"><div class="dash"></div><span>Практика</span></div>
-          <h3>Где применяется анализ</h3>
+          <div class="kicker"><div class="dash"></div><span data-i18n="s10_kicker">Практика</span></div>
+          <h3 data-i18n="s10_title">Где применяется анализ</h3>
           <div class="grid2x2">
-            <div><div class="gt">Планирование</div><div class="gd">Зонирование · КРТ · рост города</div></div>
-            <div><div class="gt">Транспорт</div><div class="gd">Доступность · узлы · маршруты</div></div>
-            <div><div class="gt">Экология</div><div class="gd">Каркас · загрязнения · паводки</div></div>
-            <div><div class="gt">Региональная политика</div><div class="gd">Полюсы роста · инвестиции</div></div>
+            <div><div class="gt" data-i18n="s10_gt1">Планирование</div><div class="gd" data-i18n="s10_gd1">Зонирование · КРТ · рост города</div></div>
+            <div><div class="gt" data-i18n="s10_gt2">Транспорт</div><div class="gd" data-i18n="s10_gd2">Доступность · узлы · маршруты</div></div>
+            <div><div class="gt" data-i18n="s10_gt3">Экология</div><div class="gd" data-i18n="s10_gd3">Каркас · загрязнения · паводки</div></div>
+            <div><div class="gt" data-i18n="s10_gt4">Региональная политика</div><div class="gd" data-i18n="s10_gd4">Полюсы роста · инвестиции</div></div>
           </div>
           <div class="pageno">10</div>
         </div>
 
         <!-- Slide 11 -->
         <div class="slide dark-slide">
-          <div class="kicker"><div class="dash"></div><span>Перспективы</span></div>
-          <h3>Цифровые двойники территорий</h3>
-          <div class="body">IoT → BIM → социальные потоки → единая виртуальная копия территории в реальном времени.<br><br><span class="accent strong" style="color:#D9704A;">Кто владеет данными — владеет будущим региона.</span></div>
+          <div class="kicker"><div class="dash"></div><span data-i18n="s11_kicker">Перспективы</span></div>
+          <h3 data-i18n="s11_title">Цифровые двойники территорий</h3>
+          <div class="body" data-i18n="s11_body">IoT → BIM → социальные потоки → единая виртуальная копия территории в реальном времени.<br><br><span class="accent strong" style="color:#D9704A;">Кто владеет данными — владеет будущим региона.</span></div>
           <div class="pageno">11</div>
         </div>
 
       </div>
+
+      <button type="button" class="gallery-arrow prev" id="galleryPrev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button type="button" class="gallery-arrow next" id="galleryNext" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
 
       <div class="gallery-nav" id="galleryNav">
         <!-- dots injected by JS -->
@@ -305,47 +406,258 @@
 
     <!-- ============ PLAIN THESIS TEXT ============ -->
     <div class="text-section">
-      <div class="text-kicker">Текст лекции</div>
+      <div class="text-kicker" data-i18n="textKicker">Текст лекции</div>
 
-      <h2>Зачем нужен пространственный анализ</h2>
-      <p>Управление территорией — это управление сложной живой системой, а чтобы управлять системой, её нужно измерять. Пространственный анализ выполняет три функции: <b>диагностику</b> (находим не симптом, а первопричину проблемы), <b>мониторинг</b> (оцениваем в цифрах, сработали ли вложенные в благоустройство средства) и <b>сценарное прогнозирование</b> (переход от реактивного управления, когда вы просто отвечаете на жалобы жителей, к проактивному анализу).</p>
-      <p>Это политика доказательного подхода: управленческие решения должны основываться на эмпирических данных, а не на интуиции. Основанное на фактах планирование — главный аргумент при защите бюджета.</p>
+      <h2 data-i18n="t1_h">Зачем нужен пространственный анализ</h2>
+      <p data-i18n="t1_p1">Управление территорией — это управление сложной живой системой, а чтобы управлять системой, её нужно измерять. Пространственный анализ выполняет три функции: <b>диагностику</b> (находим не симптом, а первопричину проблемы), <b>мониторинг</b> (оцениваем в цифрах, сработали ли вложенные в благоустройство средства) и <b>сценарное прогнозирование</b> (переход от реактивного управления, когда вы просто отвечаете на жалобы жителей, к проактивному анализу).</p>
+      <p data-i18n="t1_p2">Это политика доказательного подхода: управленческие решения должны основываться на эмпирических данных, а не на интуиции. Основанное на фактах планирование — главный аргумент при защите бюджета.</p>
 
-      <h2>Источники данных</h2>
-      <p>Официальные источники — Росстат, Росреестр, Росгидромет, профильные министерства — дают юридическую значимость и методологическую преемственность, но страдают от временного лага и недостаточной детализации для локального анализа.</p>
-      <p>Альтернатива — большие данные: анонимизированные мобильные данные операторов (реальная маятниковая миграция), датчики интернета вещей (транспорт, экология в реальном времени). Здесь есть вопросы репрезентативности и приватности, но интеграция официальной статистики с big data даёт объёмную картину того, как город живёт на самом деле.</p>
+      <h2 data-i18n="t2_h">Источники данных</h2>
+      <p data-i18n="t2_p1">Официальные источники — Росстат, Росреестр, Росгидромет, профильные министерства — дают юридическую значимость и методологическую преемственность, но страдают от временного лага и недостаточной детализации для локального анализа.</p>
+      <p data-i18n="t2_p2">Альтернатива — большие данные: анонимизированные мобильные данные операторов (реальная маятниковая миграция), датчики интернета вещей (транспорт, экология в реальном времени). Здесь есть вопросы репрезентативности и приватности, но интеграция официальной статистики с big data даёт объёмную картину того, как город живёт на самом деле.</p>
 
-      <h2>Методологический аппарат</h2>
-      <p><b>Пространственная статистика</b> находит горячие точки — статистически значимые кластеры (индекс Getis-Ord Gi*). <b>Гравитационные модели</b> прогнозируют интенсивность взаимодействий между районами на основе их «массы» и транспортной доступности. <b>Сетевой анализ</b> описывает связность территории. <b>Машинное обучение</b> (нейросети, случайный лес) выявляет сложнейшие паттерны поведения людей.</p>
+      <h2 data-i18n="t3_h">Методологический аппарат</h2>
+      <p data-i18n="t3_p1"><b>Пространственная статистика</b> находит горячие точки — статистически значимые кластеры (индекс Getis-Ord Gi*). <b>Гравитационные модели</b> прогнозируют интенсивность взаимодействий между районами на основе их «массы» и транспортной доступности. <b>Сетевой анализ</b> описывает связность территории. <b>Машинное обучение</b> (нейросети, случайный лес) выявляет сложнейшие паттерны поведения людей.</p>
 
-      <h2>Геоинформационные системы</h2>
-      <p>ГИС — это не электронная карта, а многоуровневая архитектура: базы пространственных данных, аналитические модули, веб-интерфейсы. В градостроительстве применяются буферизация, наложение слоёв, трёхмерный анализ. В связке с BIM ГИС позволяет ещё до стройки рассчитать инсоляцию, ветровые нагрузки, шум и визуальное воздействие на панораму города. Облачные веб-ГИС дают доступ к данным для всей команды прямо в браузере.</p>
-      <p>Курс <b>ai2arch.ru</b> включает практикум по <b>QGIS</b> — основному инструменту такого анализа в бюро. Формат — 2,5 недели, дистанционно; по итогам выдаётся сертификат государственного образца от федерального вуза.</p>
+      <h2 data-i18n="t4_h">Геоинформационные системы</h2>
+      <p data-i18n="t4_p1">ГИС — это не электронная карта, а многоуровневая архитектура: базы пространственных данных, аналитические модули, веб-интерфейсы. В градостроительстве применяются буферизация, наложение слоёв, трёхмерный анализ. В связке с BIM ГИС позволяет ещё до стройки рассчитать инсоляцию, ветровые нагрузки, шум и визуальное воздействие на панораму города. Облачные веб-ГИС дают доступ к данным для всей команды прямо в браузере.</p>
+      <p data-i18n="t4_p2">Курс <b>ai2arch.ru</b> включает практикум по <b>QGIS</b> — основному инструменту такого анализа в бюро. Формат — 2,5 недели, дистанционно; по итогам выдаётся сертификат государственного образца от федерального вуза.</p>
 
-      <h2>Ключевые показатели</h2>
-      <p>Успех больше нельзя измерять тоннами бетона и введёнными квадратными метрами. Демография смотрит на мобильность человеческого капитала, экономика — на индекс пространственной концентрации, инфраструктура — на индекс мультимодальной транспортной доступности. Всё это сводится в комплексные индексы качества жизни.</p>
+      <h2 data-i18n="t5_h">Ключевые показатели</h2>
+      <p data-i18n="t5_p1">Успех больше нельзя измерять тоннами бетона и введёнными квадратными метрами. Демография смотрит на мобильность человеческого капитала, экономика — на индекс пространственной концентрации, инфраструктура — на индекс мультимодальной транспортной доступности. Всё это сводится в комплексные индексы качества жизни.</p>
 
-      <h2>Структура территории</h2>
-      <p>Административное деление часто не совпадает с реальностью. Алгоритмы кластеризации и анализ паттернов ежедневной мобильности выявляют настоящие функциональные границы: два разных муниципалитета на бумаге могут быть единым живым организмом с общим рынком труда.</p>
+      <h2 data-i18n="t6_h">Структура территории</h2>
+      <p data-i18n="t6_p1">Административное деление часто не совпадает с реальностью. Алгоритмы кластеризации и анализ паттернов ежедневной мобильности выявляют настоящие функциональные границы: два разных муниципалитета на бумаге могут быть единым живым организмом с общим рынком труда.</p>
 
-      <h2>Моделирование и прогноз</h2>
-      <p>Модели клеточных автоматов прогнозируют, как будет расползаться застройка. Агент-ориентированное моделирование показывает поведение отдельных семей, машин, бизнесов — например, как изменятся пешеходные потоки при перекрытии улицы. Интеграция с машинным обучением даёт не единственное «светлое будущее», а вероятностный форсайт множества сценариев.</p>
+      <h2 data-i18n="t7_h">Моделирование и прогноз</h2>
+      <p data-i18n="t7_p1">Модели клеточных автоматов прогнозируют, как будет расползаться застройка. Агент-ориентированное моделирование показывает поведение отдельных семей, машин, бизнесов — например, как изменятся пешеходные потоки при перекрытии улицы. Интеграция с машинным обучением даёт не единственное «светлое будущее», а вероятностный форсайт множества сценариев.</p>
 
-      <h2>Визуализация результатов</h2>
-      <p>От статических карт — к интерактивным дашбордам, где карты, графики и диаграммы объединены в единый интерфейс. Выделили проблемный перекрёсток — система мгновенно перестроила графики аварийности и плотности коммерции вокруг него. Это язык, на котором нужно разговаривать с инвестором и комиссией.</p>
+      <h2 data-i18n="t8_h">Визуализация результатов</h2>
+      <p data-i18n="t8_p1">От статических карт — к интерактивным дашбордам, где карты, графики и диаграммы объединены в единый интерфейс. Выделили проблемный перекрёсток — система мгновенно перестроила графики аварийности и плотности коммерции вокруг него. Это язык, на котором нужно разговаривать с инвестором и комиссией.</p>
 
-      <h2>Применение на практике</h2>
-      <p>В градостроительстве — зонирование, оценка ёмкости территорий под КРТ. В транспорте — доступность социальных объектов, пересадочные узлы. В экологии — экологический каркас, прогноз паводков. В региональной политике — выявление полюсов роста и контроль за распределением эффектов между муниципалитетами.</p>
+      <h2 data-i18n="t9_h">Применение на практике</h2>
+      <p data-i18n="t9_p1">В градостроительстве — зонирование, оценка ёмкости территорий под КРТ. В транспорте — доступность социальных объектов, пересадочные узлы. В экологии — экологический каркас, прогноз паводков. В региональной политике — выявление полюсов роста и контроль за распределением эффектов между муниципалитетами.</p>
 
-      <h2>Перспективы</h2>
-      <p>Мы на пороге повсеместного внедрения пространственных цифровых двойников — систем, объединяющих IoT, BIM и социальные потоки в единую динамическую виртуальную копию территории. Остаются вызовы: разрозненность ведомственных данных, сложность интеграции систем, вопросы конфиденциальности. Но управление пространственным развитием в XXI веке невозможно без опоры на данные — тот, кто владеет данными и умеет их интерпретировать, владеет будущим своего региона.</p>
+      <h2 data-i18n="t10_h">Перспективы</h2>
+      <p data-i18n="t10_p1">Мы на пороге повсеместного внедрения пространственных цифровых двойников — систем, объединяющих IoT, BIM и социальные потоки в единую динамическую виртуальную копию территории. Остаются вызовы: разрозненность ведомственных данных, сложность интеграции систем, вопросы конфиденциальности. Но управление пространственным развитием в XXI веке невозможно без опоры на данные — тот, кто владеет данными и умеет их интерпретировать, владеет будущим своего региона.</p>
     </div>
 
     <footer>
       <svg class="compass" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1"><path d="M10 1 L11.4 8.6 L19 10 L11.4 11.4 L10 19 L8.6 11.4 L1 10 L8.6 8.6 Z"/></svg>
-      <span class="copyright">© 2026 Александр Кулешов</span>
+      <span class="copyright" data-i18n="copyright">© 2026 Александр Кулешов</span>
     </footer>
   </div>
+
+  <script>
+    (function(){
+      var translations = {
+        ru: {
+          title: "Лекция 2. Методология и инструменты анализа — Александр Кулешов",
+          backLabel: "Лекционная программа",
+          progMeta: "Лекция 02",
+          pageTitle: "Методология и инструменты анализа пространственного развития",
+          s1_kicker: "Лекция 02",
+          s1_title: 'Методология и инструменты анализа <span class="accent">пространственного развития</span>',
+          s1_body: "От реактивного управления к проактивному анализу. Данные, модели, инструменты принятия решений.",
+          s1_brand: "Проектное бюро",
+          s2_kicker: "Зачем это нужно",
+          s2_title: "Три функции пространственного анализа",
+          s2_t1: "Диагностика", s2_d1: "Находим не симптом, а первопричину",
+          s2_t2: "Мониторинг", s2_d2: "Оцениваем в цифрах эффект инвестиций",
+          s2_t3: "Прогноз", s2_d3: "Сценарное предвидение вместо реакции",
+          s3_kicker: "Источники данных",
+          s3_title: "Где брать информацию",
+          s3_ct1: "Официальные источники",
+          s3_cd1: 'Росстат, Росреестр, Росгидромет<br><span class="accent">+</span> юридическая значимость<br>− лаг, низкая детализация',
+          s3_ct2: "Большие данные",
+          s3_cd2: 'Мобильные операторы, IoT, соцсети<br><span class="accent">+</span> актуальность, детали<br>− приватность, разнородность',
+          s4_kicker: "Методологический аппарат",
+          s4_title: "Инструменты анализа",
+          s4_gt1: "Пространственная статистика", s4_gd1: "Кластеры и горячие точки (Getis-Ord Gi*)",
+          s4_gt2: "Гравитационные модели", s4_gd2: "Интенсивность связей между районами",
+          s4_gt3: "Сетевой анализ", s4_gd3: "Транспортная доступность территорий",
+          s4_gt4: "Машинное обучение", s4_gd4: "Сложные паттерны поведения",
+          s5_kicker: "Геоинформационные системы",
+          s5_title: "ГИС — пульт управления территорией",
+          s5_gt1: "База данных", s5_gd1: "Слои пространственной информации",
+          s5_gt2: "Аналитика", s5_gd2: "Буферизация, 3D-анализ (QGIS)",
+          s5_gt3: "BIM-интеграция", s5_gd3: "Инсоляция, нагрузки, шум",
+          s5_gt4: "Веб-ГИС", s5_gd4: "Облачный доступ команде",
+          s5_promo: 'Курс <span class="accent strong">ai2arch.ru</span> — практикум по <span class="accent strong">QGIS</span>, 2,5 недели, дистанционно. По итогам — сертификат государственного образца от федерального вуза.',
+          s6_kicker: "Ключевые показатели",
+          s6_title: "От количества — к качеству",
+          s6_o1: "Тонны бетона", s6_ne1: "Качество роста",
+          s6_o2: "Прописка в паспорте", s6_ne2: "Мобильность капитала",
+          s6_o3: "Обеспеченность услугами", s6_ne3: "Мультимодальная доступность",
+          s6_o4: "ВРП на душу", s6_ne4: "Индекс качества жизни",
+          s7_kicker: "Структура территории",
+          s7_title: "Истинные границы города",
+          s7_ct1: "Административное деление", s7_cd1: "Формальные границы, не отражающие реальность",
+          s7_ct2: "Функциональные зоны", s7_cd2: "Реальные зоны по данным мобильности",
+          s8_kicker: "Прогнозирование",
+          s8_title: "Пространственное моделирование",
+          s8_t1: "Клеточные автоматы", s8_d1: "Расползание застройки",
+          s8_t2: "Агентные модели", s8_d2: "Поведение семей, машин",
+          s8_t3: "Машинное обучение", s8_d3: "Вероятностный форсайт",
+          s9_kicker: "Коммуникация результатов",
+          s9_title: "Язык общения с инвестором",
+          s9_ct1: "Статичные карты", s9_cd1: "Разрозненные изображения без связи",
+          s9_ct2: "Интерактивные дашборды", s9_cd2: "Выделили объект — графики пересобрались",
+          s10_kicker: "Практика",
+          s10_title: "Где применяется анализ",
+          s10_gt1: "Планирование", s10_gd1: "Зонирование · КРТ · рост города",
+          s10_gt2: "Транспорт", s10_gd2: "Доступность · узлы · маршруты",
+          s10_gt3: "Экология", s10_gd3: "Каркас · загрязнения · паводки",
+          s10_gt4: "Региональная политика", s10_gd4: "Полюсы роста · инвестиции",
+          s11_kicker: "Перспективы",
+          s11_title: "Цифровые двойники территорий",
+          s11_body: 'IoT → BIM → социальные потоки → единая виртуальная копия территории в реальном времени.<br><br><span class="accent strong" style="color:#D9704A;">Кто владеет данными — владеет будущим региона.</span>',
+          textKicker: "Текст лекции",
+          t1_h: "Зачем нужен пространственный анализ",
+          t1_p1: "Управление территорией — это управление сложной живой системой, а чтобы управлять системой, её нужно измерять. Пространственный анализ выполняет три функции: <b>диагностику</b> (находим не симптом, а первопричину проблемы), <b>мониторинг</b> (оцениваем в цифрах, сработали ли вложенные в благоустройство средства) и <b>сценарное прогнозирование</b> (переход от реактивного управления, когда вы просто отвечаете на жалобы жителей, к проактивному анализу).",
+          t1_p2: "Это политика доказательного подхода: управленческие решения должны основываться на эмпирических данных, а не на интуиции. Основанное на фактах планирование — главный аргумент при защите бюджета.",
+          t2_h: "Источники данных",
+          t2_p1: "Официальные источники — Росстат, Росреестр, Росгидромет, профильные министерства — дают юридическую значимость и методологическую преемственность, но страдают от временного лага и недостаточной детализации для локального анализа.",
+          t2_p2: "Альтернатива — большие данные: анонимизированные мобильные данные операторов (реальная маятниковая миграция), датчики интернета вещей (транспорт, экология в реальном времени). Здесь есть вопросы репрезентативности и приватности, но интеграция официальной статистики с big data даёт объёмную картину того, как город живёт на самом деле.",
+          t3_h: "Методологический аппарат",
+          t3_p1: "<b>Пространственная статистика</b> находит горячие точки — статистически значимые кластеры (индекс Getis-Ord Gi*). <b>Гравитационные модели</b> прогнозируют интенсивность взаимодействий между районами на основе их «массы» и транспортной доступности. <b>Сетевой анализ</b> описывает связность территории. <b>Машинное обучение</b> (нейросети, случайный лес) выявляет сложнейшие паттерны поведения людей.",
+          t4_h: "Геоинформационные системы",
+          t4_p1: "ГИС — это не электронная карта, а многоуровневая архитектура: базы пространственных данных, аналитические модули, веб-интерфейсы. В градостроительстве применяются буферизация, наложение слоёв, трёхмерный анализ. В связке с BIM ГИС позволяет ещё до стройки рассчитать инсоляцию, ветровые нагрузки, шум и визуальное воздействие на панораму города. Облачные веб-ГИС дают доступ к данным для всей команды прямо в браузере.",
+          t4_p2: "Курс <b>ai2arch.ru</b> включает практикум по <b>QGIS</b> — основному инструменту такого анализа в бюро. Формат — 2,5 недели, дистанционно; по итогам выдаётся сертификат государственного образца от федерального вуза.",
+          t5_h: "Ключевые показатели",
+          t5_p1: "Успех больше нельзя измерять тоннами бетона и введёнными квадратными метрами. Демография смотрит на мобильность человеческого капитала, экономика — на индекс пространственной концентрации, инфраструктура — на индекс мультимодальной транспортной доступности. Всё это сводится в комплексные индексы качества жизни.",
+          t6_h: "Структура территории",
+          t6_p1: "Административное деление часто не совпадает с реальностью. Алгоритмы кластеризации и анализ паттернов ежедневной мобильности выявляют настоящие функциональные границы: два разных муниципалитета на бумаге могут быть единым живым организмом с общим рынком труда.",
+          t7_h: "Моделирование и прогноз",
+          t7_p1: "Модели клеточных автоматов прогнозируют, как будет расползаться застройка. Агент-ориентированное моделирование показывает поведение отдельных семей, машин, бизнесов — например, как изменятся пешеходные потоки при перекрытии улицы. Интеграция с машинным обучением даёт не единственное «светлое будущее», а вероятностный форсайт множества сценариев.",
+          t8_h: "Визуализация результатов",
+          t8_p1: "От статических карт — к интерактивным дашбордам, где карты, графики и диаграммы объединены в единый интерфейс. Выделили проблемный перекрёсток — система мгновенно перестроила графики аварийности и плотности коммерции вокруг него. Это язык, на котором нужно разговаривать с инвестором и комиссией.",
+          t9_h: "Применение на практике",
+          t9_p1: "В градостроительстве — зонирование, оценка ёмкости территорий под КРТ. В транспорте — доступность социальных объектов, пересадочные узлы. В экологии — экологический каркас, прогноз паводков. В региональной политике — выявление полюсов роста и контроль за распределением эффектов между муниципалитетами.",
+          t10_h: "Перспективы",
+          t10_p1: "Мы на пороге повсеместного внедрения пространственных цифровых двойников — систем, объединяющих IoT, BIM и социальные потоки в единую динамическую виртуальную копию территории. Остаются вызовы: разрозненность ведомственных данных, сложность интеграции систем, вопросы конфиденциальности. Но управление пространственным развитием в XXI веке невозможно без опоры на данные — тот, кто владеет данными и умеет их интерпретировать, владеет будущим своего региона.",
+          copyright: "© 2026 Александр Кулешов"
+        },
+        en: {
+          title: "Lecture 2. Methodology and Analysis Tools — Alexander Kuleshov",
+          backLabel: "Lecture Program",
+          progMeta: "Lecture 02",
+          pageTitle: "Methodology and Tools for Spatial Development Analysis",
+          s1_kicker: "Lecture 02",
+          s1_title: 'Methodology and Tools for the Analysis of <span class="accent">Spatial Development</span>',
+          s1_body: "From reactive management to proactive analysis. Data, models, and decision-making tools.",
+          s1_brand: "Design Studio",
+          s2_kicker: "Why This Matters",
+          s2_title: "Three Functions of Spatial Analysis",
+          s2_t1: "Diagnostics", s2_d1: "Finding the root cause, not just the symptom",
+          s2_t2: "Monitoring", s2_d2: "Measuring the effect of investments in numbers",
+          s2_t3: "Forecasting", s2_d3: "Scenario foresight instead of reaction",
+          s3_kicker: "Data Sources",
+          s3_title: "Where to Get Information",
+          s3_ct1: "Official Sources",
+          s3_cd1: 'Rosstat, Rosreestr, Roshydromet<br><span class="accent">+</span> legal validity<br>− lag, low detail',
+          s3_ct2: "Big Data",
+          s3_cd2: 'Mobile carriers, IoT, social media<br><span class="accent">+</span> timeliness, detail<br>− privacy, heterogeneity',
+          s4_kicker: "Methodological Toolkit",
+          s4_title: "Analysis Tools",
+          s4_gt1: "Spatial Statistics", s4_gd1: "Clusters and hot spots (Getis-Ord Gi*)",
+          s4_gt2: "Gravity Models", s4_gd2: "Intensity of ties between districts",
+          s4_gt3: "Network Analysis", s4_gd3: "Transport accessibility of territories",
+          s4_gt4: "Machine Learning", s4_gd4: "Complex behavioral patterns",
+          s5_kicker: "Geographic Information Systems",
+          s5_title: "GIS — a Control Panel for a Territory",
+          s5_gt1: "Database", s5_gd1: "Layers of spatial information",
+          s5_gt2: "Analytics", s5_gd2: "Buffering, 3D analysis (QGIS)",
+          s5_gt3: "BIM Integration", s5_gd3: "Insolation, loads, noise",
+          s5_gt4: "Web GIS", s5_gd4: "Cloud access for the whole team",
+          s5_promo: 'The <span class="accent strong">ai2arch.ru</span> course — a hands-on <span class="accent strong">QGIS</span> workshop, 2.5 weeks, online. On completion — a state-recognized certificate from a federal university.',
+          s6_kicker: "Key Metrics",
+          s6_title: "From Quantity to Quality",
+          s6_o1: "Tons of concrete", s6_ne1: "Quality of growth",
+          s6_o2: "Residence registration", s6_ne2: "Actual capital mobility",
+          s6_o3: "Service provision", s6_ne3: "Multimodal accessibility",
+          s6_o4: "GRP per capita", s6_ne4: "Quality-of-life index",
+          s7_kicker: "Territory Structure",
+          s7_title: "The True Boundaries of a City",
+          s7_ct1: "Administrative Division", s7_cd1: "Formal borders that don't reflect reality",
+          s7_ct2: "Functional Zones", s7_cd2: "Real zones based on mobility data",
+          s8_kicker: "Forecasting",
+          s8_title: "Spatial Modeling",
+          s8_t1: "Cellular Automata", s8_d1: "Spread of development",
+          s8_t2: "Agent-Based Models", s8_d2: "Behavior of families, vehicles",
+          s8_t3: "Machine Learning", s8_d3: "Probabilistic foresight",
+          s9_kicker: "Communicating Results",
+          s9_title: "The Language of Talking to Investors",
+          s9_ct1: "Static Maps", s9_cd1: "Disconnected images with no links",
+          s9_ct2: "Interactive Dashboards", s9_cd2: "Select an object — the charts rebuild",
+          s10_kicker: "Practice",
+          s10_title: "Where Analysis Is Applied",
+          s10_gt1: "Planning", s10_gd1: "Zoning · redevelopment · urban growth",
+          s10_gt2: "Transport", s10_gd2: "Accessibility · hubs · routes",
+          s10_gt3: "Ecology", s10_gd3: "Green framework · pollution · floods",
+          s10_gt4: "Regional Policy", s10_gd4: "Growth poles · investment",
+          s11_kicker: "Outlook",
+          s11_title: "Digital Twins of Territories",
+          s11_body: 'IoT → BIM → social flows → a single real-time virtual copy of a territory.<br><br><span class="accent strong" style="color:#D9704A;">Whoever controls the data controls the region\u2019s future.</span>',
+          textKicker: "Lecture Text",
+          t1_h: "Why Spatial Analysis Is Needed",
+          t1_p1: "Managing a territory means managing a complex living system, and to manage a system you need to measure it. Spatial analysis performs three functions: <b>diagnostics</b> (finding the root cause of a problem, not just its symptom), <b>monitoring</b> (measuring in numbers whether funds invested in public-realm improvements paid off), and <b>scenario forecasting</b> (the shift from reactive management, where you simply respond to residents' complaints, to proactive analysis).",
+          t1_p2: "This is an evidence-based policy: management decisions must rest on empirical data, not intuition. Fact-based planning is the main argument when defending a budget.",
+          t2_h: "Data Sources",
+          t2_p1: "Official sources — Rosstat, Rosreestr, Roshydromet, line ministries — provide legal validity and methodological continuity, but suffer from time lags and insufficient detail for local analysis.",
+          t2_p2: "The alternative is big data: anonymized mobile-carrier data (real commuter migration), Internet-of-Things sensors (transport, environment in real time). There are questions of representativeness and privacy here, but integrating official statistics with big data gives a fuller picture of how a city actually lives.",
+          t3_h: "Methodological Toolkit",
+          t3_p1: "<b>Spatial statistics</b> finds hot spots — statistically significant clusters (the Getis-Ord Gi* index). <b>Gravity models</b> forecast the intensity of interactions between districts based on their \u201cmass\u201d and transport accessibility. <b>Network analysis</b> describes a territory's connectivity. <b>Machine learning</b> (neural networks, random forest) reveals the most complex patterns of human behavior.",
+          t4_h: "Geographic Information Systems",
+          t4_p1: "GIS is not an electronic map but a multi-layered architecture: spatial databases, analytical modules, web interfaces. In urban planning, it is used for buffering, layer overlay, and three-dimensional analysis. Paired with BIM, GIS lets you calculate insolation, wind loads, noise, and the visual impact on a city's skyline before construction even begins. Cloud-based web GIS gives the whole team access to data right in the browser.",
+          t4_p2: "The <b>ai2arch.ru</b> course includes a hands-on <b>QGIS</b> workshop — the primary tool for this kind of analysis in a design studio. Format: 2.5 weeks, online; graduates receive a state-recognized certificate from a federal university.",
+          t5_h: "Key Metrics",
+          t5_p1: "Success can no longer be measured in tons of concrete and square meters delivered. Demographics look at the mobility of human capital, economics at the spatial-concentration index, infrastructure at the multimodal-transport-accessibility index. All of this rolls up into composite quality-of-life indices.",
+          t6_h: "Territory Structure",
+          t6_p1: "Administrative divisions often don't match reality. Clustering algorithms and analysis of daily mobility patterns reveal the real functional boundaries: two different municipalities on paper can be a single living organism with a shared labor market.",
+          t7_h: "Modeling and Forecasting",
+          t7_p1: "Cellular-automata models forecast how development will sprawl. Agent-based modeling shows the behavior of individual families, vehicles, and businesses — for example, how pedestrian flows will change if a street is closed. Integration with machine learning yields not a single \u201cbright future\u201d but a probabilistic foresight of multiple scenarios.",
+          t8_h: "Visualizing Results",
+          t8_p1: "From static maps to interactive dashboards, where maps, charts, and graphs are combined into a single interface. Select a problem intersection and the system instantly rebuilds the accident-rate and commercial-density charts around it. This is the language you need to speak with investors and review commissions.",
+          t9_h: "Practical Applications",
+          t9_p1: "In urban planning — zoning, assessing a territory's capacity for redevelopment. In transport — accessibility of social facilities, transfer hubs. In ecology — the green framework, flood forecasting. In regional policy — identifying growth poles and monitoring how effects are distributed among municipalities.",
+          t10_h: "Outlook",
+          t10_p1: "We are on the threshold of widespread adoption of spatial digital twins — systems combining IoT, BIM, and social flows into a single dynamic virtual copy of a territory. Challenges remain: fragmented departmental data, the complexity of integrating systems, and privacy concerns. But managing spatial development in the 21st century is impossible without relying on data — whoever controls the data and knows how to interpret it controls the future of their region.",
+          copyright: "© 2026 Alexander Kuleshov"
+        }
+      };
+      function applyLang(lang){
+        if (!translations[lang]) lang = 'ru';
+        var dict = translations[lang];
+        var nodes = document.querySelectorAll('[data-i18n]');
+        for (var i=0;i<nodes.length;i++){
+          var key = nodes[i].getAttribute('data-i18n');
+          if (dict[key] !== undefined) nodes[i].innerHTML = dict[key];
+        }
+        if (dict.title) document.title = dict.title;
+        document.documentElement.lang = lang;
+        var btns = document.querySelectorAll('.langswitch button');
+        for (var j=0;j<btns.length;j++){
+          btns[j].className = (btns[j].getAttribute('data-lang')===lang) ? 'active' : '';
+        }
+        try { localStorage.setItem('ai2arch_lang', lang); } catch(e){}
+      }
+      function detectLang(){
+        var saved;
+        try { saved = localStorage.getItem('ai2arch_lang'); } catch(e){}
+        if (saved === 'ru' || saved === 'en') return saved;
+        var nav = (navigator.language || navigator.userLanguage || 'ru').toLowerCase();
+        return nav.indexOf('ru') === 0 ? 'ru' : 'en';
+      }
+      var switchBtns = document.querySelectorAll('.langswitch button');
+      for (var k=0;k<switchBtns.length;k++){
+        switchBtns[k].addEventListener('click', (function(btn){
+          return function(){ applyLang(btn.getAttribute('data-lang')); };
+        })(switchBtns[k]));
+      }
+      applyLang(detectLang());
+    })();
+  </script>
 
   <script>
     (function(){
@@ -353,16 +665,23 @@
       var slides = gallery.querySelectorAll('.slide');
       var nav = document.getElementById('galleryNav');
       var count = document.getElementById('galleryCount');
+      var prevBtn = document.getElementById('galleryPrev');
+      var nextBtn = document.getElementById('galleryNext');
       var dots = [];
+      var currentIndex = 0;
       slides.forEach(function(_, i){
         var d = document.createElement('span');
         d.className = 'dot' + (i === 0 ? ' active' : '');
         d.addEventListener('click', function(){
-          slides[i].scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+          goTo(i);
         });
         nav.insertBefore(d, count);
         dots.push(d);
       });
+      function goTo(i){
+        i = Math.max(0, Math.min(slides.length - 1, i));
+        slides[i].scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+      }
       function updateActive(){
         var galleryRect = gallery.getBoundingClientRect();
         var center = galleryRect.left + galleryRect.width / 2;
@@ -372,8 +691,11 @@
           var dist = Math.abs((r.left + r.width/2) - center);
           if (dist < closestDist){ closestDist = dist; closest = i; }
         });
+        currentIndex = closest;
         dots.forEach(function(d, i){ d.className = 'dot' + (i === closest ? ' active' : ''); });
         count.textContent = (closest + 1) + ' / ' + slides.length;
+        if (prevBtn) prevBtn.disabled = (closest === 0);
+        if (nextBtn) nextBtn.disabled = (closest === slides.length - 1);
       }
       var ticking = false;
       gallery.addEventListener('scroll', function(){
@@ -381,6 +703,13 @@
           window.requestAnimationFrame(function(){ updateActive(); ticking = false; });
           ticking = true;
         }
+      });
+      if (prevBtn) prevBtn.addEventListener('click', function(){ goTo(currentIndex - 1); });
+      if (nextBtn) nextBtn.addEventListener('click', function(){ goTo(currentIndex + 1); });
+      gallery.setAttribute('tabindex', '0');
+      gallery.addEventListener('keydown', function(e){
+        if (e.key === 'ArrowRight'){ goTo(currentIndex + 1); }
+        else if (e.key === 'ArrowLeft'){ goTo(currentIndex - 1); }
       });
       updateActive();
     })();
