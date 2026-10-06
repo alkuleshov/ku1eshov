@@ -7,6 +7,11 @@
 <title>Александр Кулешов — Архитектор, основатель AI2ARCH</title>
 <meta name="theme-color" content="#F6F4F0">
 <meta name="color-scheme" content="light">
+<meta name="description" content="Александр Кулешов — урбанист, архитектор, девелопер. Основатель лаборатории AI2ARCH: курсы и инструменты по пространственному ИИ для архитекторов и девелоперов.">
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Александр Кулешов — урбанист, архитектор, основатель AI2ARCH">
+<meta property="og:description" content="Лаборатория ИИ в архитектуре: курсы и инструменты для архитекторов и девелоперов.">
+<meta name="twitter:card" content="summary">
 <style>
   :root{
     color-scheme: light;
@@ -15,6 +20,8 @@
     --white: #ffffff;
     --azure: #1A82FF;
     --gold: #C29B38;
+    --teal: #0E7C7B;
+    --violet: #7C3AED;
     --ink: #0A0F1A;
   }
 
@@ -40,7 +47,7 @@
   @media (prefers-color-scheme: dark){
     html, body{ background-color:#F6F4F0 !important; color:#0A0F1A !important; }
     .name, .role, .bio{ color:#0A0F1A !important; }
-    .role .brand{ color:#1A82FF !important; }
+    .role .brand, .bio .brand{ color:#1A82FF !important; }
     .cta{ background-color:#ffffff !important; }
     .cta__label{ color:#0A0F1A !important; }
     .cta__sub{ color:rgba(10,15,26,.5) !important; }
@@ -109,14 +116,29 @@
     font-weight: 700;
     color: var(--navy);
   }
-  .role .brand{ color: var(--azure); font-weight:700; text-decoration:none; }
+  .role .brand, .bio .brand{ color: var(--azure); font-weight:700; text-decoration:none; }
 
   .bio{
     margin: 12px auto 0;
     font-size: 12.5px;
     line-height: 1.5;
     color: rgba(10,15,26,.75);
-    max-width: 36ch;
+    max-width: 40ch;
+  }
+
+  .bio__lead{ display:block; text-wrap: balance; }
+  .bio__proof{
+    display:flex; flex-wrap:wrap; justify-content:center;
+    margin-top:10px;
+    font-size:11px; line-height:1.35;
+    color: rgba(10,15,26,.62);
+  }
+  .bio__proof span{ white-space:nowrap; margin:2px 7px; }
+  .bio__proof span::before{
+    content:""; display:inline-block;
+    width:4px; height:4px; border-radius:50%;
+    background: var(--gold);
+    margin-right:6px; vertical-align:middle;
   }
 
   .ctas{
@@ -132,22 +154,37 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap: 10px;
+    gap: 11px;
     padding: 11px 13px;
     text-decoration:none;
     background: var(--white);
     border: 1px solid rgba(10,15,26,.14);
-    border-radius: 2px;
-    transition: background .12s ease, border-color .12s ease, transform .1s ease;
+    border-left-width: 3px;
+    border-left-color: var(--c, rgba(10,15,26,.14));
+    border-radius: 3px;
+    transition: background .12s ease, border-color .12s ease, transform .16s ease, box-shadow .16s ease;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
-  .cta__text{ min-width:0; }
+  .cta__icon{
+    flex:none;
+    width:36px; height:36px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: var(--cbg, rgba(10,15,26,.08));
+    color: var(--c, var(--navy));
+    transition: transform .16s ease, background .16s ease, color .16s ease;
+  }
+  .cta__icon svg{ width:17px; height:17px; }
+  .cta__text{ min-width:0; flex:1; }
   .cta__label{
     display:block;
     font-size: 12px;
     font-weight:700;
     color: var(--navy);
+    line-height:1.3;
   }
   .cta__sub{
     display:block;
@@ -156,14 +193,15 @@
     line-height:1.35;
     color: rgba(10,15,26,.5);
     display:-webkit-box;
-    -webkit-line-clamp:2;
+    -webkit-line-clamp:3;
     -webkit-box-orient:vertical;
     overflow:hidden;
   }
   .cta__arrow{
     flex:none;
     width:15px; height:15px;
-    color: var(--azure);
+    color: var(--c, var(--azure));
+    transition: transform .16s ease;
   }
   .cta:active{
     background: var(--navy);
@@ -173,20 +211,39 @@
   .cta:active .cta__label{ color:#fff; }
   .cta:active .cta__sub{ color: rgba(246,244,240,.7); }
   .cta:active .cta__arrow{ color: var(--gold); }
+  .cta:active .cta__icon{ background: rgba(255,255,255,.16); color:#fff; }
 
   @media (hover:hover){
-    .cta:hover{ border-color: var(--azure); }
+    .cta:hover{
+      border-color: var(--c, var(--azure));
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px var(--cshadow, rgba(10,15,26,.12));
+    }
+    .cta:hover .cta__icon{ transform: scale(1.08); }
+    .cta:hover .cta__arrow{ transform: translateX(2px); }
   }
+
+  .cta--telegram{ --c: var(--azure); --cbg: rgba(26,130,255,.12); --cshadow: rgba(26,130,255,.20); }
+  .cta--lectures{ --c: var(--teal); --cbg: rgba(14,124,123,.12); --cshadow: rgba(14,124,123,.20); }
+  .cta--ailab{ --c: var(--violet); --cbg: rgba(124,58,237,.12); --cshadow: rgba(124,58,237,.20); }
 
   .cta--timeline{
-    border-left: 2px solid var(--gold);
+    --c: var(--gold);
+    --cbg: rgba(194,155,56,.14);
+    --cshadow: rgba(194,155,56,.20);
     background: linear-gradient(180deg, #fbf6ea 0%, #ffffff 60%);
   }
-  .cta--timeline .cta__arrow{ color: var(--gold); }
   .cta--timeline:active{ border-color: var(--navy); }
-  @media (hover:hover){
-    .cta--timeline:hover{ border-color: var(--gold); box-shadow: 0 2px 10px rgba(194,155,56,.18); }
+
+  /* flagship offer: AI2ARCH lab courses */
+  .cta--featured{
+    border-left-width:4px;
+    padding-top:14px;
+    padding-bottom:14px;
+    background: linear-gradient(135deg, rgba(124,58,237,.08) 0%, #ffffff 60%);
+    box-shadow: 0 4px 14px rgba(124,58,237,.14);
   }
+  .cta--featured .cta__label{ font-size:13px; }
 
   /* ===================== SOCIAL — small circles ===================== */
   .social{
@@ -246,7 +303,7 @@
     .page{ max-width:440px; }
     .avatar{ width:120px; height:120px; }
     .name{ font-size:30px; }
-    .bio{ font-size:14px; max-width:38ch; }
+    .bio{ font-size:14px; max-width:42ch; }
     .cta{ padding:15px 18px; }
   }
 </style>
@@ -265,12 +322,26 @@
     </div>
 
     <h1 class="name" data-i18n="name">Александр<br>Кулешов</h1>
-    <div class="role" data-i18n="role">Архитектор • Основатель <a class="brand" href="https://ai2arch.ru" target="_blank" rel="noopener">AI2ARCH</a></div>
+    <div class="role" data-i18n="role">Урбанист • Архитектор • Девелопер</div>
 
-    <p class="bio" data-i18n="bio">15 лет практики в развитии среды: запуск креативных кластеров, редевелопмент зданий и благоустройство территорий. Создаю прикладные ИИ-инструменты, воркфлоу и обучающие программы для архитекторов.</p>
+    <p class="bio" data-i18n="bio"><span class="bio__lead">Основатель лаборатории <a class="brand" href="https://ai2arch.ru" target="_blank" rel="noopener">AI2ARCH</a>. Учу архитекторов и девелоперов работать с пространственным ИИ.</span><span class="bio__proof"><span>15 лет практики</span><span>10 000+ м² концепций и запуска редевелопмента</span><span>Цифровые платформы для отрасли</span></span></p>
 
     <div class="ctas">
-      <a class="cta" href="https://t.me/ai2arch" target="_blank" rel="noopener">
+      <a class="cta cta--ailab cta--featured" href="https://ai2arch.ru" target="_blank" rel="noopener">
+        <span class="cta__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v6M7.3 17.5L10.5 13M16.7 17.5L13.5 13"/></svg>
+        </span>
+        <span class="cta__text">
+          <span class="cta__label" data-i18n="btn3label">Курсы от лаборатории ИИ в архитектуре</span>
+          <span class="cta__sub" data-i18n="btn3sub">ИИ для архитекторов и девелоперов: инструменты и воркфлоу</span>
+        </span>
+        <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+
+      <a class="cta cta--telegram" href="https://t.me/ai2arch" target="_blank" rel="noopener">
+        <span class="cta__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        </span>
         <span class="cta__text">
           <span class="cta__label" data-i18n="btn1label">Telegram-канал «Тёмно-синий»</span>
           <span class="cta__sub" data-i18n="btn1sub">Мысли об архитектуре, урбанистике, ИИ и lifestyle</span>
@@ -278,23 +349,21 @@
         <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
 
-      <a class="cta" href="https://ku1eshov.ru/lec">
-        <span class="cta__text">
-          <span class="cta__label" data-i18n="btn2label">Лекционные курсы</span>
-          <span class="cta__sub" data-i18n="btn2sub">Курсы и образовательные материалы</span>
+      <a class="cta cta--lectures" href="https://ku1eshov.ru/lec">
+        <span class="cta__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5c2-1 5-1 7 0v14c-2-1-5-1-7 0V5z"/><path d="M22 5c-2-1-5-1-7 0v14c2-1 5-1 7 0V5z"/></svg>
         </span>
-        <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
-
-      <a class="cta" href="https://ai2arch.ru" target="_blank" rel="noopener">
         <span class="cta__text">
-          <span class="cta__label" data-i18n="btn3label">Курс для архитекторов</span>
-          <span class="cta__sub" data-i18n="btn3sub">Официальная программа повышения квалификации, ЮФУ</span>
+          <span class="cta__label" data-i18n="btn2label">Лекционные курсы и тренинги</span>
+          <span class="cta__sub" data-i18n="btn2sub">Урбанистика, технологическое предпринимательство, ИИ</span>
         </span>
         <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
 
       <a class="cta cta--timeline" href="timeline.html">
+        <span class="cta__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V9l5-4 5 4v12"/><path d="M14 21v-7h4v7"/></svg>
+        </span>
         <span class="cta__text">
           <span class="cta__label" data-i18n="btn4label">Опыт и проекты (15 лет)</span>
           <span class="cta__sub" data-i18n="btn4sub">Кластер «С52», бюро «Среда», трекинг и благоустройство</span>
@@ -332,14 +401,14 @@
       ru: {
         title: "Александр Кулешов — Архитектор, основатель AI2ARCH",
         name: "Александр<br>Кулешов",
-        role: 'Архитектор • Основатель <a class="brand" href="https://ai2arch.ru" target="_blank" rel="noopener">AI2ARCH</a>',
-        bio: "15 лет практики в развитии среды: запуск креативных кластеров, редевелопмент зданий и благоустройство территорий. Создаю прикладные ИИ-инструменты, воркфлоу и обучающие программы для архитекторов.",
+        role: 'Урбанист • Архитектор • Девелопер',
+        bio: '<span class="bio__lead">Основатель лаборатории <a class="brand" href="https://ai2arch.ru" target="_blank" rel="noopener">AI2ARCH</a>. Учу архитекторов и девелоперов работать с пространственным ИИ.</span><span class="bio__proof"><span>15 лет практики</span><span>10 000+ м² концепций и запуска редевелопмента</span><span>Цифровые платформы для отрасли</span></span>',
         btn1label: "Telegram-канал «Тёмно-синий»",
         btn1sub: "Мысли об архитектуре, урбанистике, ИИ и лайфстайле",
-        btn2label: "Лекционные курсы",
-        btn2sub: "Курсы и образовательные материалы",
-        btn3label: "Курс для архитекторов",
-        btn3sub: "Официальная программа повышения квалификации, ЮФУ",
+        btn2label: "Лекционные курсы и тренинги",
+        btn2sub: "Урбанистика, технологическое предпринимательство, ИИ",
+        btn3label: "Курсы от лаборатории ИИ в архитектуре",
+        btn3sub: "ИИ для архитекторов и девелоперов: инструменты и воркфлоу",
         btn4label: "Опыт и проекты (15 лет)",
         btn4sub: "Кластер «С52», бюро «Среда», трекинг и благоустройство",
         copyright: "© 2026 Александр Кулешов"
@@ -347,14 +416,14 @@
       en: {
         title: "Alexander Kuleshov — Architect, Founder of AI2ARCH",
         name: "Alexander<br>Kuleshov",
-        role: 'Architect • Founder of <a class="brand" href="https://ai2arch.ru" target="_blank" rel="noopener">AI2ARCH</a>',
-        bio: "15 years in spatial development: launching creative hubs, adaptive reuse, and public space design. Building generative AI workflows, tools, and educational programs for architects.",
+        role: 'Urbanist • Architect • Developer',
+        bio: '<span class="bio__lead">Founder of the <a class="brand" href="https://ai2arch.ru" target="_blank" rel="noopener">AI2ARCH</a> lab. Teaching architects and developers to work with spatial AI.</span><span class="bio__proof"><span>15 years of practice</span><span>10,000+ m² of redevelopment concepts and launches</span><span>Digital platforms for the industry</span></span>',
         btn1label: 'Telegram Channel "Navy Blue"',
         btn1sub: "Thoughts on architecture, urbanism, AI, and lifestyle",
-        btn2label: "Lecture Courses",
-        btn2sub: "Educational materials and courses",
-        btn3label: "AI Course for Architects",
-        btn3sub: "Executive education program at SFedU",
+        btn2label: "Lecture Courses &amp; Trainings",
+        btn2sub: "Urbanism, technology entrepreneurship, AI",
+        btn3label: "AI in Architecture Lab Courses",
+        btn3sub: "AI for architects and developers: tools and workflows",
         btn4label: "Experience & Projects (15 Years)",
         btn4sub: "C52 cluster, Sreda bureau, tech mentoring & public realms",
         copyright: "© 2026 Alexander Kuleshov"
@@ -399,6 +468,5 @@
 
     applyLang(detectLang());
   </script>
-
 </body>
 </html>
