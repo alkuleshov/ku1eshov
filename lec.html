@@ -67,6 +67,25 @@
   .prog__foot{ margin-top: 14px; display:flex; align-items:center; justify-content:space-between; font-size:11px; color: rgba(10,15,26,.45); }
   .prog__arrow{ width:16px; height:16px; color: var(--azure); }
 
+  .prog-soon{
+    margin-top:12px;
+    display:flex; align-items:center; gap:14px;
+    padding:16px 20px;
+    border:1.5px dashed rgba(10,15,26,.24);
+    border-radius:2px;
+    background: rgba(255,255,255,.55);
+  }
+  .prog-soon__icon{
+    flex:none; width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(194,155,56,.14); color: var(--gold);
+  }
+  .prog-soon__icon svg{ width:16px; height:16px; }
+  .prog-soon__title{ font-size:13px; font-weight:800; color: var(--navy); }
+  .prog-soon__body{ margin-top:3px; font-size:11.5px; line-height:1.45; color: rgba(10,15,26,.62); }
+  .prog-soon__link{ display:inline-block; margin-top:7px; font-size:11px; font-weight:700; color: var(--azure); text-decoration:none; }
+  @media (hover:hover){ .prog-soon__link:hover{ text-decoration:underline; } }
+
   footer{ margin-top: 40px; display:flex; align-items:center; justify-content:center; gap:6px; }
   footer .compass{ width:11px; height:11px; color: var(--gold); flex:none; }
   footer .copyright{ font-size: 9px; letter-spacing:.02em; color: rgba(10,15,26,.4); }
@@ -110,7 +129,7 @@
 
   <div class="page">
     <h1 class="page-title" data-i18n="pageTitle">Лекционные программы</h1>
-    <p class="page-sub" data-i18n="pageSub">Авторские курсы и лекции по пространственному развитию, градостроительству и прикладному ИИ для архитекторов</p>
+    <p class="page-sub" data-i18n="pageSub">Авторские курсы, лекции и тренинги: пространственное развитие, технологическое предпринимательство, ИИ для архитекторов</p>
 
     <a class="prog" href="spdev.html">
       <div class="prog__meta" data-i18n="progMeta">РАНХиГС</div>
@@ -121,6 +140,17 @@
         <svg class="prog__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </div>
     </a>
+
+    <div class="prog-soon">
+      <span class="prog-soon__icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </span>
+      <div>
+        <div class="prog-soon__title" data-i18n="soonTitle">Скоро: новые программы</div>
+        <div class="prog-soon__body" data-i18n="soonBody">Каталог лекций, курсов и тренингов пополняется — новые программы появятся здесь.</div>
+        <a class="prog-soon__link" href="https://t.me/ai2arch" target="_blank" rel="noopener" data-i18n="soonLink">Анонсы — в Telegram-канале →</a>
+      </div>
+    </div>
 
     <footer>
       <svg class="compass" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1"><path d="M10 1 L11.4 8.6 L19 10 L11.4 11.4 L10 19 L8.6 11.4 L1 10 L8.6 8.6 Z"/></svg>
@@ -135,22 +165,28 @@
           title: "Александр Кулешов — Лекционные программы",
           backLabel: "Александр Кулешов",
           pageTitle: "Лекционные программы",
-          pageSub: "Авторские курсы и лекции по пространственному развитию, градостроительству и прикладному ИИ для архитекторов",
+          pageSub: "Авторские курсы, лекции и тренинги: пространственное развитие, технологическое предпринимательство, ИИ для архитекторов",
           progMeta: "РАНХиГС",
           progTitle: "Пространственное развитие территорий",
           progBody: "Курс для управленческих кадров: от теоретических основ до практических инструментов анализа и принятия решений.",
           progFoot: "2 из 5 лекций доступно",
+          soonTitle: "Скоро: новые программы",
+          soonBody: "Каталог лекций, курсов и тренингов пополняется — новые программы появятся здесь.",
+          soonLink: "Анонсы — в Telegram-канале →",
           copyright: "© 2026 Александр Кулешов"
         },
         en: {
           title: "Alexander Kuleshov — Lecture Programs",
           backLabel: "Alexander Kuleshov",
           pageTitle: "Lecture Programs",
-          pageSub: "Original courses and lectures on spatial development, urban planning, and applied AI for architects",
+          pageSub: "Original courses, lectures, and trainings: spatial development, technology entrepreneurship, and AI for architects",
           progMeta: "RANEPA",
           progTitle: "Spatial Development of Territories",
           progBody: "A course for public-sector managers: from theoretical foundations to practical analysis and decision-making tools.",
           progFoot: "2 of 5 lectures available",
+          soonTitle: "More programs coming soon",
+          soonBody: "The catalog of lectures, courses, and trainings is growing — new programs will appear here.",
+          soonLink: "Announcements in the Telegram channel →",
           copyright: "© 2026 Alexander Kuleshov"
         }
       };
