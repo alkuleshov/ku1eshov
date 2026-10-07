@@ -118,6 +118,31 @@
   }
   .role .brand, .bio .brand{ color: var(--azure); font-weight:700; text-decoration:none; }
 
+  .avail-pill{
+    display:inline-flex; align-items:center; gap:6px;
+    margin-top:14px; padding:6px 13px 6px 10px;
+    border-radius:999px;
+    background: rgba(14,124,123,.08);
+    border: 1px solid rgba(14,124,123,.22);
+    font-size:11.5px; font-weight:700;
+    color: var(--teal);
+    text-decoration:none;
+    transition: background .15s ease;
+  }
+  .avail-pill:hover{ background: rgba(14,124,123,.14); }
+  .avail-dot{
+    width:6px; height:6px; border-radius:50%;
+    background: var(--teal); flex:none;
+    box-shadow: 0 0 0 0 rgba(14,124,123,.5);
+    animation: avail-pulse 2.2s ease-out infinite;
+  }
+  @keyframes avail-pulse{
+    0%{ box-shadow: 0 0 0 0 rgba(14,124,123,.45); }
+    70%{ box-shadow: 0 0 0 6px rgba(14,124,123,0); }
+    100%{ box-shadow: 0 0 0 0 rgba(14,124,123,0); }
+  }
+  .avail-pill svg{ width:10px; height:10px; flex:none; }
+
   .bio{
     margin: 12px auto 0;
     font-size: 12.5px;
@@ -324,7 +349,13 @@
     <h1 class="name" data-i18n="name">Александр<br>Кулешов</h1>
     <div class="role" data-i18n="role">Урбанист • Архитектор • Девелопер</div>
 
-    <p class="bio" data-i18n="bio"><span class="bio__lead">Основатель лаборатории <a class="brand" href="https://ai2arch.ru" target="_blank" rel="noopener">AI2ARCH</a>. Учу архитекторов и девелоперов работать с пространственным ИИ.</span><span class="bio__proof"><span>15 лет практики</span><span>10 000+ м² концепций и запуска редевелопмента</span><span>Цифровые платформы для отрасли</span></span></p>
+    <a class="avail-pill" href="https://t.me/alkuleshov" target="_blank" rel="noopener">
+      <span class="avail-dot"></span>
+      <span data-i18n="availText">Открыт к сотрудничеству</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+    </a>
+
+    <p class="bio" data-i18n="bio"><span class="bio__lead">Создаю ИИ-системы для архитектуры и девелопмента — и учу ими пользоваться через лабораторию <a class="brand" href="https://ai2arch.ru" target="_blank" rel="noopener">AI2ARCH</a>.</span><span class="bio__proof"><span>15 лет практики</span><span>10 000+ м² концепций и запуска редевелопмента</span><span>Цифровые платформы для отрасли</span></span></p>
 
     <div class="ctas">
       <a class="cta cta--ailab cta--featured" href="https://ai2arch.ru" target="_blank" rel="noopener">
@@ -333,7 +364,7 @@
         </span>
         <span class="cta__text">
           <span class="cta__label" data-i18n="btn3label">Курсы от лаборатории ИИ в архитектуре</span>
-          <span class="cta__sub" data-i18n="btn3sub">ИИ для архитекторов и девелоперов: инструменты и воркфлоу</span>
+          <span class="cta__sub" data-i18n="btn3sub">Синтез практики архитектуры и девелопмента с ИИ</span>
         </span>
         <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
@@ -402,13 +433,14 @@
         title: "Александр Кулешов — Архитектор, основатель AI2ARCH",
         name: "Александр<br>Кулешов",
         role: 'Урбанист • Архитектор • Девелопер',
-        bio: '<span class="bio__lead">Основатель лаборатории <a class="brand" href="https://ai2arch.ru" target="_blank" rel="noopener">AI2ARCH</a>. Учу архитекторов и девелоперов работать с пространственным ИИ.</span><span class="bio__proof"><span>15 лет практики</span><span>10 000+ м² концепций и запуска редевелопмента</span><span>Цифровые платформы для отрасли</span></span>',
+        availText: "Открыт к сотрудничеству",
+        bio: '<span class="bio__lead">Создаю ИИ-системы для архитектуры и девелопмента — и учу ими пользоваться через лабораторию <a class="brand" href="https://ai2arch.ru" target="_blank" rel="noopener">AI2ARCH</a>.</span><span class="bio__proof"><span>15 лет практики</span><span>10 000+ м² концепций и запуска редевелопмента</span><span>Цифровые платформы для отрасли</span></span>',
         btn1label: "Telegram-канал «Тёмно-синий»",
         btn1sub: "Мысли об архитектуре, урбанистике, ИИ и лайфстайле",
         btn2label: "Лекционные курсы и тренинги",
         btn2sub: "Урбанистика, технологическое предпринимательство, ИИ",
         btn3label: "Курсы от лаборатории ИИ в архитектуре",
-        btn3sub: "ИИ для архитекторов и девелоперов: инструменты и воркфлоу",
+        btn3sub: "Синтез практики архитектуры и девелопмента с ИИ",
         btn4label: "Опыт и проекты (15 лет)",
         btn4sub: "Кластер «С52», бюро «Среда», трекинг и благоустройство",
         copyright: "© 2026 Александр Кулешов"
@@ -417,13 +449,14 @@
         title: "Alexander Kuleshov — Architect, Founder of AI2ARCH",
         name: "Alexander<br>Kuleshov",
         role: 'Urbanist • Architect • Developer',
-        bio: '<span class="bio__lead">Founder of the <a class="brand" href="https://ai2arch.ru" target="_blank" rel="noopener">AI2ARCH</a> lab. Teaching architects and developers to work with spatial AI.</span><span class="bio__proof"><span>15 years of practice</span><span>10,000+ m² of redevelopment concepts and launches</span><span>Digital platforms for the industry</span></span>',
+        availText: "Open to collaboration",
+        bio: '<span class="bio__lead">I build AI systems for architecture and development — and teach how to use them through the <a class="brand" href="https://ai2arch.ru" target="_blank" rel="noopener">AI2ARCH</a> lab.</span><span class="bio__proof"><span>15 years of practice</span><span>10,000+ m² of redevelopment concepts and launches</span><span>Digital platforms for the industry</span></span>',
         btn1label: 'Telegram Channel "Navy Blue"',
         btn1sub: "Thoughts on architecture, urbanism, AI, and lifestyle",
         btn2label: "Lecture Courses &amp; Trainings",
         btn2sub: "Urbanism, technology entrepreneurship, AI",
         btn3label: "AI in Architecture Lab Courses",
-        btn3sub: "AI for architects and developers: tools and workflows",
+        btn3sub: "Where architecture and development practice meet AI",
         btn4label: "Experience & Projects (15 Years)",
         btn4sub: "C52 cluster, Sreda bureau, tech mentoring & public realms",
         copyright: "© 2026 Alexander Kuleshov"
