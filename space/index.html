@@ -140,6 +140,19 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
 .status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
 .status-dot.yes{background:var(--ok)} .status-dot.no{background:var(--bad)} .status-dot.na{background:var(--idle)}
 
+.wheel{display:block;width:100%;height:auto;margin:2px 0 10px;overflow:visible}
+.wheel .grid{fill:none;stroke:var(--line)}
+.wheel .axis{stroke:var(--line)}
+.wheel .shape{fill:rgba(228,87,46,.12);stroke:var(--accent);stroke-width:1.6;stroke-linejoin:round}
+.wheel .dot{fill:var(--accent)}
+.wheel .dot.na{fill:var(--ink-3)}
+.wheel text{font:500 9px "JetBrains Mono",monospace;fill:var(--ink-2)}
+.wheel-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wheel-cols h3{font:500 10.5px/1 var(--f-data);text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin:0 0 7px}
+.wheel-cols ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.wheel-cols li{font-size:12px;color:var(--ink-2);display:flex;justify-content:space-between;gap:6px}
+.wheel-cols li b{color:var(--ink);font-weight:600}
+
 /* Мобильная версия — mind map не показываем (смысла на узком экране нет),
    вместо холста+плавающей карточки — обычная страница-приложение: шапка
    сверху, список карточек под ней, крупные тач-таргеты, без наложений. */
@@ -262,6 +275,16 @@ const DATA = {
   diplomas: [
     {name:"ДПО / переподготовка, 252 ч", org:"ЮФУ", year:2026, apostil:false, note:"выдан 09.10.2026"},
     {name:"Диплом архитектора (основной)", org:null, year:null, apostil:null, note:"уточнить вуз и год"}
+  ],
+  balance: [
+    {name:"Бизнес и проекты", score:null, note:null},
+    {name:"Финансы", score:null, note:null},
+    {name:"Здоровье и спорт", score:null, note:null},
+    {name:"Семья", score:null, note:null},
+    {name:"Обучение и развитие", score:null, note:null},
+    {name:"Отдых и путешествия", score:null, note:null},
+    {name:"Международный рынок", score:null, note:null},
+    {name:"Личная инфраструктура (Life OS)", score:null, note:null}
   ]
 };
 
@@ -315,12 +338,49 @@ function renderFx() {
 
 /* ---------- редактируемое значение: клик — поле ввода — сохранить в localStorage ---------- */
 function editableAmt(path, sum, unit) {
-  if (sum != null) return unit === "RUB" || unit === undefined ? rub(sum) : `${sum} ${unit}`;
+  if (sum != null) return unit === "number" ? String(sum) : unit === "RUB" || unit === undefined ? rub(sum) : `${sum} ${unit}`;
   return `<span class="editval js-edit" data-path="${path}" data-unit="${unit || "RUB"}" title="Нажми, чтобы вписать значение">— ввести</span>`;
 }
 function editableText(path, val, placeholder) {
   if (val) return val;
   return `<span class="editval js-edit" data-path="${path}" data-unit="text" title="Нажми, чтобы вписать значение">${placeholder || "— ввести"}</span>`;
+}
+
+/* ---------- «Колесо баланса» — лёгкий SVG-радар, без доп. библиотек ---------- */
+function wheelSvg(items, size) {
+  const n = items.length, R = size / 2 - 52, cx = size / 2, cy = size / 2;
+  const pt = (i, r) => {
+    const a = -Math.PI / 2 + (2 * Math.PI * i) / n;
+    return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  };
+  const rings = [2, 4, 6, 8, 10].map(v => {
+    const r = (v / 10) * R;
+    const poly = items.map((_, i) => pt(i, r).join(",")).join(" ");
+    return `<polygon class="grid" points="${poly}"/>`;
+  }).join("");
+  const axes = items.map((_, i) => { const [x, y] = pt(i, R); return `<line class="axis" x1="${cx}" y1="${cy}" x2="${x}" y2="${y}"/>`; }).join("");
+  const shapePts = items.map((it, i) => pt(i, ((it.score ?? 0) / 10) * R).join(",")).join(" ");
+  const dots = items.map((it, i) => { const [x, y] = pt(i, ((it.score ?? 0) / 10) * R); return `<circle class="dot${it.score == null ? " na" : ""}" cx="${x}" cy="${y}" r="3.2"/>`; }).join("");
+  const wrapLabel = (name, maxChars) => {
+    const words = name.split(" ");
+    const lines = [];
+    let cur = "";
+    for (const w of words) {
+      const next = cur ? `${cur} ${w}` : w;
+      if (next.length > maxChars && cur) { lines.push(cur); cur = w; } else { cur = next; }
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  };
+  const labels = items.map((it, i) => {
+    const [x, y] = pt(i, R + 14);
+    const anchor = Math.abs(x - cx) < 4 ? "middle" : x > cx ? "start" : "end";
+    const lines = wrapLabel(it.name, 10);
+    const y0 = y - ((lines.length - 1) * 10) / 2;
+    return lines.map((ln, li) => `<text x="${x}" y="${y0 + li * 10}" text-anchor="${anchor}">${ln}</text>`).join("");
+  }).join("");
+  return `<svg class="wheel" viewBox="0 0 ${size} ${size}">${rings}${axes}
+    <polygon class="shape" points="${shapePts}"/>${dots}${labels}</svg>`;
 }
 
 let pm, burn, inc, soon, gaps, byCat, maxBar;
@@ -351,6 +411,20 @@ const SECTIONS = [
       <div class="kpi alert"><span class="v">${soon.length}</span><span class="s">сроков за 30 дней</span></div>
       <div class="kpi"><span class="v">${gaps}</span><span class="s">позиций без суммы</span></div>
     </div>` },
+  { id: "balance", title: "Колесо баланса", badge: "1–10", body: () => {
+    const items = DATA.balance.map((b, i) => ({...b, _i: i}));
+    const rated = items.filter(b => b.score != null);
+    const avg = rated.length ? rated.reduce((a, b) => a + b.score, 0) / rated.length : null;
+    const sorted = [...items].sort((a, b) => (a.score ?? -1) - (b.score ?? -1));
+    const weak = sorted.filter(b => b.score == null || b.score < 6);
+    const strong = sorted.filter(b => b.score != null && b.score >= 6).reverse();
+    const line = b => `<li>${editableText(`balance.${b._i}.name`, b.name)}<b>${editableAmt(`balance.${b._i}.score`, b.score, "number")}${b.score != null ? "/10" : ""}</b></li>`;
+    return `${wheelSvg(items, 290)}
+      ${avg != null ? `<p style="text-align:center;margin:-4px 0 12px;font:500 11.5px var(--f-data);color:var(--ink-3)">среднее: ${avg.toFixed(1)}/10</p>` : ""}
+      <div class="wheel-cols">
+        <div><h3>Подтянуть</h3><ul>${weak.length ? weak.map(line).join("") : '<li style="color:var(--ink-3)">—</li>'}</ul></div>
+        <div><h3>В порядке</h3><ul>${strong.length ? strong.map(line).join("") : '<li style="color:var(--ink-3)">—</li>'}</ul></div>
+      </div>`; } },
   { id: "upcoming", title: "Ближайшие сроки", badge: "дней", body: () => {
     const up = pm.filter(p => p.d != null && p.d > -30).sort((a, b) => a.d - b.d).slice(0, 7);
     return `<ul class="list">${up.map(p => {
