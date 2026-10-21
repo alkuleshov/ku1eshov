@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Пространство Кулешова</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Белый холст на весь экран — mind map в центре, сгруппированная по категориям.
+   Панель сводки плавает справа отдельной карточкой: блоки сворачиваются
+   и переставляются по приоритету, порядок и состояние запоминаются локально. */
+:root{
+  --paper:#FFFFFF; --ink:#15202B; --ink-2:#5B6872; --ink-3:#95A0A8;
+  --line:#E4E7EA; --panel:#FFFFFF; --panel-line:#E9ECEE; --chip-bg:#F3F5F6;
+  --accent:#E4572E;
+  --ok:#2F7D5B; --ok-soft:#E1F1E8; --warn:#B4610A; --warn-soft:#FCEFDC; --bad:#B42318; --bad-soft:#FAE2DF; --idle:#DCE8EF; --idle-ink:#3B6E8F;
+  --f-display:"Unbounded","Golos Text",system-ui,sans-serif;
+  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-data:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  color-scheme:light;
+  --cat-infra:#2E6F8E;   --cat-domains:#B4610A; --cat-ai:#6E4FA0; --cat-subs:#C23B6D;
+  --cat-credit:#8A6D1F;  --cat-tax-ip:#B42318;  --cat-tax-pers:#A13D7C; --cat-life:#3E7D4E;
+  --cat-income:#1F8F63;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);overflow:hidden}
+.canvas{position:fixed;inset:0;z-index:1}
+#map{position:absolute;inset:0;width:100%;height:100%}
+
+.brand{position:fixed;top:max(20px,env(safe-area-inset-top,0px));left:max(20px,env(safe-area-inset-left,0px));z-index:5;pointer-events:none;max-width:60vw}
+.brand .label{font:500 10.5px/1 var(--f-data);text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3)}
+.brand h1{font:600 clamp(18px,3.4vw,22px)/1.15 var(--f-display);margin:2px 0 0;letter-spacing:-.01em}
+.brand .meta{margin-top:6px;font:400 11.5px/1.5 var(--f-data);color:var(--ink-3)}
+.brand .meta b{color:var(--ink-2);font-weight:500}
+
+.legend{position:fixed;left:max(20px,env(safe-area-inset-left,0px));bottom:max(20px,env(safe-area-inset-bottom,0px));z-index:5;
+  display:flex;flex-wrap:wrap;gap:8px 14px;max-width:320px}
+.legend span{display:flex;align-items:center;gap:6px;font:400 11.5px var(--f-data);color:var(--ink-2)}
+.legend i{width:8px;height:8px;border-radius:50%;flex:none}
+
+/* плавающая панель — отдельная карточка над холстом, никогда не ложится на узлы карты */
+.panel{
+  position:fixed;top:max(20px,env(safe-area-inset-top,0px));right:max(20px,env(safe-area-inset-right,0px));
+  z-index:10;width:368px;max-width:calc(100vw - 32px);
+  max-height:calc(100vh - 40px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+  background:var(--panel);border:1px solid var(--panel-line);border-radius:18px;
+  box-shadow:0 2px 6px rgba(21,32,43,.04),0 16px 40px rgba(21,32,43,.10);
+  overflow-y:auto; -webkit-overflow-scrolling:touch;
+}
+.panel-in{padding:8px}
+
+.block{border-bottom:1px solid var(--line)}
+.block:last-child{border-bottom:0}
+.block-head{display:flex;align-items:center;gap:6px;padding:12px 10px}
+.block-head h2{flex:1;min-width:0;font:500 13.5px/1.2 var(--f-display);margin:0;letter-spacing:.01em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge{font:500 10.5px/1 var(--f-data);color:var(--ink-3);white-space:nowrap}
+.iconbtn{appearance:none;border:0;background:none;padding:5px;margin:0;display:flex;align-items:center;justify-content:center;
+  border-radius:6px;color:var(--ink-3);cursor:pointer;flex:none}
+.iconbtn:hover{background:var(--chip-bg);color:var(--ink-2)}
+.iconbtn:disabled{opacity:.3;cursor:default}
+.iconbtn:disabled:hover{background:none}
+.iconbtn svg{width:14px;height:14px;display:block}
+.chev{transition:transform .15s ease}
+.block.collapsed .chev{transform:rotate(-90deg)}
+.block-body{padding:0 14px 16px}
+.block.collapsed .block-body{display:none}
+.block.dragging{opacity:.4}
+.block.drop-before{box-shadow:inset 0 2px 0 var(--accent)}
+.block.drop-after{box-shadow:inset 0 -2px 0 var(--accent)}
+.handle{cursor:grab;touch-action:none}
+.handle:active{cursor:grabbing}
+
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:12px 13px;min-width:0}
+.kpi .v{font:500 22px/1.05 var(--f-data);font-variant-numeric:tabular-nums;letter-spacing:-.02em;display:block}
+.kpi .s{font-size:11.5px;color:var(--ink-2);display:block;margin-top:4px}
+.kpi.alert .v{color:var(--accent)}
+
+.list{list-style:none;margin:0;padding:0}
+.row{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.days{font:500 15px/1 var(--f-data);font-variant-numeric:tabular-nums;text-align:right}
+.days small{display:block;font-size:9.5px;color:var(--ink-3);letter-spacing:.04em;margin-top:3px}
+.what{min-width:0}
+.what b{font-weight:600;font-size:13px;display:block;overflow-wrap:anywhere}
+.what span{font-size:11.5px;color:var(--ink-2)}
+.amt{font:400 12px var(--f-data);color:var(--ink-2);text-align:right;white-space:nowrap}
+.chip{display:inline-block;font:500 9.5px/1 var(--f-data);letter-spacing:.05em;text-transform:uppercase;padding:3px 6px;border-radius:3px;margin-top:4px}
+.c-bad{background:var(--bad-soft);color:var(--bad)} .c-warn{background:var(--warn-soft);color:var(--warn)}
+.c-ok{background:var(--ok-soft);color:var(--ok)} .c-idle{background:var(--idle);color:var(--idle-ink)}
+.row.urgent .days{color:var(--accent)}
+
+.todo{display:grid;gap:9px;margin:0;padding:0;list-style:none}
+.todo li{display:grid;grid-template-columns:9px minmax(0,1fr);gap:9px;align-items:start;font-size:13px;line-height:1.45}
+.todo li::before{content:"";width:7px;height:7px;margin-top:5px;border:1.5px solid var(--accent);transform:rotate(45deg);flex:none}
+
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:96px minmax(0,1fr) 70px;gap:8px;align-items:center;font-size:12px}
+.bar b{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+.track{height:6px;background:var(--line);border-radius:2px;overflow:hidden}
+.fill{height:100%;border-radius:2px}
+.bar .n{font:400 12px var(--f-data);text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+
+.channels{display:grid;gap:10px}
+.ch{border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+.ch b{font-weight:600;font-size:13px;display:block}
+.ch p{margin:3px 0 0;font-size:11.5px;color:var(--ink-2);line-height:1.4}
+
+.note{font-size:11px;color:var(--ink-3);margin:10px 10px 4px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+@media (max-width:760px){
+  body{overflow:auto}
+  .canvas{position:fixed;top:0;left:0;right:0;height:46vh;z-index:1}
+  .panel{position:static;margin:46vh 12px 20px;width:auto;max-width:none;max-height:none;border-radius:16px 16px 14px 14px}
+  .brand{top:max(16px,env(safe-area-inset-top,0px));left:16px;max-width:70vw}
+  .legend{display:none}
+  .kpis{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="canvas"><div id="map" role="img" aria-label="Карта расходов и доходов, сгруппированная по категориям"></div></div>
+
+<div class="brand">
+  <div class="label">Панель управления</div>
+  <h1>Пространство Кулешова</h1>
+  <div class="meta">срез на <b id="today"></b><br>курс $ <b id="fx"></b> ₽</div>
+</div>
+
+<div class="legend" id="legend"></div>
+
+<aside class="panel" aria-label="Сводка">
+  <div class="panel-in" id="panel-in"></div>
+</aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+<script>
+/* В проде этот блок заменяется на fetch('/api/data') — сервер читает Google-таблицу. */
+const DATA = {
+  fx: { RUB: 1, USD: 82.14, EUR: 92.14 },
+  payments: [
+    {name:"HostVDS: Париж, Канзас, Амстердам",cat:"Инфраструктура",sum:6,cur:"USD",per:"месяц",date:"2026-12-14",where:"hostvds.com"},
+    {name:"Timeweb Cloud: DocSreda",cat:"Инфраструктура",sum:800,cur:"RUB",per:"месяц",date:"2026-11-22",where:"timeweb.cloud"},
+    {name:"Claude API",cat:"AI-сервисы",sum:null,cur:"USD",per:"месяц",date:null,where:"platform.claude.com"},
+    {name:"ksign.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2026-10-29",where:"reg.ru"},
+    {name:"nanakulidzhanova.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2026-11-19",where:"reg.ru"},
+    {name:"pbsreda.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2027-01-24",where:"reg.ru"},
+    {name:"ai2arch.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2027-06-18",where:"reg.ru"},
+    {name:"aleksandrkuleshov.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2027-08-09",where:"reg.ru"},
+    {name:"ku1eshov.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2027-08-10",where:"reg.ru"},
+    {name:"docsreda.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2027-09-17",where:"reg.ru"},
+    {name:"ai2edu.tech",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2027-09-17",where:"reg.ru"},
+    {name:"ai2start.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2027-10-16",where:"reg.ru"},
+    {name:"c52.space",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2028-01-17",where:"reg.ru"},
+    {name:"ai2life.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:null,where:"reg.ru"},
+    {name:"Аванс УСН за 9 месяцев",cat:"Налоги ИП",sum:null,cur:"RUB",per:"разово",date:"2026-10-28",where:"ЕНС"},
+    {name:"Фиксированные взносы ИП",cat:"Налоги ИП",sum:57390,cur:"RUB",per:"год",date:"2026-12-28",where:"ЕНС"},
+    {name:"Патент 2026: доплата 2/3",cat:"Налоги ИП",sum:null,cur:"RUB",per:"разово",date:null,where:"ЕНС"},
+    {name:"УСН за 2026: доплата",cat:"Налоги ИП",sum:null,cur:"RUB",per:"разово",date:"2027-04-28",where:"ЕНС"},
+    {name:"1% взносов свыше 300 тыс. ₽",cat:"Налоги ИП",sum:null,cur:"RUB",per:"разово",date:"2027-07-01",where:"ЕНС"},
+    {name:"Имущественные налоги за 2025",cat:"Налоги личные",sum:null,cur:"RUB",per:"разово",date:"2026-12-01",where:"Госуслуги"}
+  ],
+  incomes: [
+    {name:"Курсы ai2arch (ЮФУ ААИ)",cat:"Обучение",sum:null},
+    {name:"Лекции РАНХиГС",cat:"Лекции",sum:null},
+    {name:"МГМУ_311",cat:"Преподавание",sum:null},
+    {name:"ЮРИУ, ДПО",cat:"Преподавание",sum:null},
+    {name:"Тренинги Иннополис",cat:"Тренинги",sum:null},
+    {name:"ai2edu.tech",cat:"Продукт",sum:null},
+    {name:"Бот-планировщик",cat:"Продукт",sum:null}
+  ],
+  categories: [
+    {name:"Инфраструктура", color:"--cat-infra"},
+    {name:"Домены", color:"--cat-domains"},
+    {name:"AI-сервисы", color:"--cat-ai"},
+    {name:"Подписки", color:"--cat-subs"},
+    {name:"Кредиты", color:"--cat-credit"},
+    {name:"Налоги ИП", color:"--cat-tax-ip"},
+    {name:"Налоги личные", color:"--cat-tax-pers"},
+    {name:"Связь и быт", color:"--cat-life"}
+  ]
+};
+
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const rub = v => Math.round(v).toLocaleString("ru-RU") + " ₽";
+const perMonth = p => {
+  if (p.sum == null) return null;
+  const k = DATA.fx[p.cur] ?? 1, s = p.sum * k;
+  return p.per === "месяц" ? s : p.per === "квартал" ? s / 3 : p.per === "год" ? s / 12 : 0;
+};
+const today = new Date(); today.setHours(0,0,0,0);
+const daysTo = d => d ? Math.round((new Date(d + "T00:00:00") - today) / 864e5) : null;
+const fmtDate = d => new Date(d + "T00:00:00").toLocaleDateString("ru-RU", {day:"2-digit", month:"2-digit"});
+
+document.getElementById("today").textContent = today.toLocaleDateString("ru-RU", {day:"numeric", month:"long", year:"numeric"});
+document.getElementById("fx").textContent = DATA.fx.USD.toFixed(2).replace(".", ",");
+
+const pm = DATA.payments.map(p => ({...p, m: perMonth(p), d: daysTo(p.date)}));
+const burn = pm.reduce((a, p) => a + (p.m || 0), 0);
+const inc = DATA.incomes.reduce((a, i) => a + (i.sum || 0), 0);
+const soon = pm.filter(p => p.d != null && p.d >= 0 && p.d <= 30);
+const gaps = pm.filter(p => p.sum == null).length;
+const status = d => d < 0 ? ["просрочено","c-bad"] : d <= 14 ? ["скоро","c-warn"] : d <= 45 ? ["в плане","c-idle"] : ["ок","c-ok"];
+const byCat = DATA.categories.map(c => ({...c, v: pm.filter(p => p.cat === c.name).reduce((a, p) => a + (p.m || 0), 0), n: pm.filter(p => p.cat === c.name).length}));
+const maxBar = Math.max(...byCat.map(x => x.v), 1);
+
+/* ---------- сворачиваемые и переставляемые блоки панели ---------- */
+const ICON_CHEV = '<svg class="chev" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ICON_UP = '<svg viewBox="0 0 16 16" fill="none"><path d="M4 10l4-4 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ICON_DOWN = '<svg viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ICON_GRIP = '<svg viewBox="0 0 16 16" fill="currentColor"><circle cx="5" cy="4" r="1.3"/><circle cx="11" cy="4" r="1.3"/><circle cx="5" cy="8" r="1.3"/><circle cx="11" cy="8" r="1.3"/><circle cx="5" cy="12" r="1.3"/><circle cx="11" cy="12" r="1.3"/></svg>';
+
+const SECTIONS = [
+  { id: "summary", title: "Сводка", badge: "", body: () => `
+    <div class="kpis">
+      <div class="kpi"><span class="v">${rub(burn)}</span><span class="s">₽ в месяц, расходы</span></div>
+      <div class="kpi"><span class="v">${inc ? rub(inc) : "—"}</span><span class="s">${inc ? "₽ в месяц, доходы" : "7 источников, суммы не внесены"}</span></div>
+      <div class="kpi alert"><span class="v">${soon.length}</span><span class="s">сроков за 30 дней</span></div>
+      <div class="kpi"><span class="v">${gaps}</span><span class="s">позиций без суммы</span></div>
+    </div>` },
+  { id: "upcoming", title: "Ближайшие сроки", badge: "дней", body: () => {
+    const up = pm.filter(p => p.d != null && p.d > -30).sort((a, b) => a.d - b.d).slice(0, 7);
+    return `<ul class="list">${up.map(p => {
+      const [t, c] = status(p.d);
+      const amount = p.sum != null ? (p.cur === "RUB" ? rub(p.sum) : `${p.sum} ${p.cur === "USD" ? "$" : "€"}`) : "сумма?";
+      return `<li class="row${p.d <= 14 ? " urgent" : ""}">
+        <div class="days">${p.d}<small>${fmtDate(p.date)}</small></div>
+        <div class="what"><b>${p.name}</b><span>${p.cat}</span><br><span class="chip ${c}">${t}</span></div>
+        <div class="amt">${amount}</div></li>`;
+    }).join("")}</ul>`; } },
+  { id: "todo", title: "Требует решения", badge: "", body: () => `
+    <ul class="todo">
+      <li><span><b>ksign.ru</b> продлить или отпустить — окно закрывается ~29.10.</span></li>
+      <li><span><b>nanakulidzhanova.ru</b> продлить или отпустить, до 19.11.</span></li>
+      <li><span><b>Аванс УСН</b> за 9 мес: уведомление до 26.10, оплата до 28.10.</span></li>
+      <li><span><b>Claude Console</b> — обновить карту, автопополнение отключено.</span></li>
+      <li><span><b>reg.ru</b> — баланс 0 ₽, проверить карту для автопродления.</span></li>
+      <li><span><b>Патент 2026</b> — внести дату и статус оплаты 1/3.</span></li>
+    </ul>` },
+  { id: "categories", title: "Категории расходов", badge: "₽/мес", body: () => `
+    <div class="bars">${byCat.map(x => {
+      const hex = css(x.color);
+      return `<div class="bar"><span><b style="background:${hex}"></b>${x.name}</span>
+      <div class="track"><div class="fill" style="width:${(x.v / maxBar * 100).toFixed(1)}%;background:${hex}"></div></div>
+      <span class="n">${x.v ? rub(x.v) : x.n ? x.n + " поз." : "—"}</span></div>`;
+    }).join("")}</div>` },
+  { id: "channels", title: "Каналы", badge: "", body: () => `
+    <div class="channels">
+      <div class="ch"><b>Telegram · @kulplans_bot</b><p>Голос или текст → строка в таблице и событие в «Оплаты».</p></div>
+      <div class="ch"><b>Claude · Google Sheets</b><p>Любой чат читает и правит ту же таблицу.</p></div>
+      <div class="ch"><b>iCloud «Оплаты»</b><p>Даты из таблицы, напоминания за 3 дня и за день.</p></div>
+      <div class="ch"><b>ku1eshov.ru/space</b><p>Только чтение, пароль и 2FA. Данные тянет сервер.</p></div>
+    </div>` }
+];
+
+const STORE_KEY = "prostranstvo-kuleshova-panel-v1";
+function loadLayout() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed.order) || typeof parsed.collapsed !== "object") return null;
+    return parsed;
+  } catch (e) { return null; }
+}
+function saveLayout(order, collapsed) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify({ order, collapsed })); } catch (e) {}
+}
+
+const saved = loadLayout();
+const byId = Object.fromEntries(SECTIONS.map(s => [s.id, s]));
+let order = saved && saved.order.every(id => byId[id]) && saved.order.length === SECTIONS.length
+  ? saved.order.slice() : SECTIONS.map(s => s.id);
+let collapsed = saved ? { ...saved.collapsed } : {};
+
+const panelIn = document.getElementById("panel-in");
+
+function render() {
+  panelIn.innerHTML = order.map((id, i) => {
+    const s = byId[id];
+    const isCollapsed = !!collapsed[id];
+    return `<section class="block${isCollapsed ? " collapsed" : ""}" data-id="${id}">
+      <div class="block-head">
+        <span class="iconbtn handle" draggable="true" aria-label="Переставить блок">${ICON_GRIP}</span>
+        <h2>${s.title}</h2>
+        ${s.badge ? `<span class="badge">${s.badge}</span>` : ""}
+        <button class="iconbtn js-up" ${i === 0 ? "disabled" : ""} aria-label="Поднять блок">${ICON_UP}</button>
+        <button class="iconbtn js-down" ${i === order.length - 1 ? "disabled" : ""} aria-label="Опустить блок">${ICON_DOWN}</button>
+        <button class="iconbtn js-toggle" aria-label="Свернуть или развернуть">${ICON_CHEV}</button>
+      </div>
+      <div class="block-body">${s.body()}</div>
+    </section>`;
+  }).join("");
+}
+render();
+
+panelIn.addEventListener("click", e => {
+  const block = e.target.closest(".block");
+  if (!block) return;
+  const id = block.dataset.id;
+  if (e.target.closest(".js-toggle")) {
+    collapsed[id] = !collapsed[id];
+    saveLayout(order, collapsed);
+    render();
+  } else if (e.target.closest(".js-up") || e.target.closest(".js-down")) {
+    const i = order.indexOf(id);
+    const j = e.target.closest(".js-up") ? i - 1 : i + 1;
+    if (j < 0 || j >= order.length) return;
+    [order[i], order[j]] = [order[j], order[i]];
+    saveLayout(order, collapsed);
+    render();
+  }
+});
+
+/* drag handle — переупорядочивание мышью на десктопе; кнопки ▲▼ остаются основным
+   способом на тач-устройствах, где HTML5 drag-and-drop ненадёжен. */
+let dragId = null;
+panelIn.addEventListener("dragstart", e => {
+  const block = e.target.closest(".block");
+  if (!e.target.closest(".handle") || !block) { e.preventDefault(); return; }
+  dragId = block.dataset.id;
+  block.classList.add("dragging");
+  e.dataTransfer.effectAllowed = "move";
+});
+panelIn.addEventListener("dragend", e => {
+  const block = e.target.closest(".block");
+  if (block) block.classList.remove("dragging");
+  panelIn.querySelectorAll(".drop-before,.drop-after").forEach(b => b.classList.remove("drop-before", "drop-after"));
+  dragId = null;
+});
+panelIn.addEventListener("dragover", e => {
+  if (!dragId) return;
+  const block = e.target.closest(".block");
+  if (!block || block.dataset.id === dragId) return;
+  e.preventDefault();
+  const rect = block.getBoundingClientRect();
+  const before = e.clientY < rect.top + rect.height / 2;
+  panelIn.querySelectorAll(".drop-before,.drop-after").forEach(b => b.classList.remove("drop-before", "drop-after"));
+  block.classList.add(before ? "drop-before" : "drop-after");
+});
+panelIn.addEventListener("drop", e => {
+  if (!dragId) return;
+  const block = e.target.closest(".block");
+  if (!block || block.dataset.id === dragId) return;
+  e.preventDefault();
+  const rect = block.getBoundingClientRect();
+  const before = e.clientY < rect.top + rect.height / 2;
+  order = order.filter(id => id !== dragId);
+  const targetIndex = order.indexOf(block.dataset.id);
+  order.splice(before ? targetIndex : targetIndex + 1, 0, dragId);
+  saveLayout(order, collapsed);
+  render();
+});
+
+/* ---------- легенда и mind map ---------- */
+document.getElementById("legend").innerHTML =
+  DATA.categories.map(c => `<span><i style="background:${css(c.color)}"></i>${c.name}</span>`).join("") +
+  `<span><i style="background:${css('--cat-income')}"></i>Доходы</span>`;
+
+let chart;
+function drawMap() {
+  const ink = css("--ink"), line = css("--line"), sheet = css("--paper");
+  const leaf = (name, v, col) => ({
+    name: v ? `${name}\n${rub(v)}` : name,
+    itemStyle: {color: v ? col : sheet, borderColor: col, borderWidth: v ? 0 : 1.5},
+    label: {color: ink}
+  });
+  const exp = DATA.categories.map(c => {
+    const items = pm.filter(p => p.cat === c.name);
+    const v = items.reduce((a, p) => a + (p.m || 0), 0);
+    const col = css(c.color);
+    return {
+      name: `${c.name}\n${v ? rub(v) : items.length + " поз."}`,
+      itemStyle: {color: col, borderColor: col},
+      label: {color: ink, fontWeight: 600},
+      children: items.map(p => leaf(p.name, p.m, col))
+    };
+  }).filter(x => x.children.length);
+  const incCol = css("--cat-income");
+  const incCats = [...new Set(DATA.incomes.map(i => i.cat))].map(c => ({
+    name: c, itemStyle: {color: sheet, borderColor: incCol, borderWidth: 1.5}, label: {color: ink, fontWeight: 600},
+    children: DATA.incomes.filter(i => i.cat === c).map(i => leaf(i.name, i.sum, incCol))
+  }));
+  const root = {
+    name: "Я", itemStyle: {color: ink, borderColor: ink}, label: {color: "#FFFFFF", fontWeight: 600},
+    children: [
+      {name: `Расходы\n${rub(burn)}/мес`, itemStyle: {color: ink, borderColor: ink}, label: {color: ink, fontWeight: 600}, children: exp},
+      {name: "Доходы\nсуммы не внесены", itemStyle: {color: ink, borderColor: ink}, label: {color: ink, fontWeight: 600}, children: incCats}
+    ]
+  };
+  const narrow = innerWidth < 760;
+  chart = chart || echarts.init(document.getElementById("map"), null, {renderer: "svg"});
+  chart.setOption({
+    animationDuration: 500,
+    tooltip: {trigger: "item", backgroundColor: sheet, borderColor: line, textStyle: {color: ink, fontFamily: "Golos Text"}},
+    series: [{
+      type: "tree", data: [root], layout: "radial", roam: true, expandAndCollapse: true,
+      initialTreeDepth: narrow ? 2 : 3, symbol: "circle", symbolSize: 10,
+      top: narrow ? "4%" : "6%", bottom: narrow ? "4%" : "6%",
+      left: narrow ? "4%" : "4%", right: narrow ? (innerWidth < 500 ? "4%" : "30%") : "30%",
+      lineStyle: {color: line, width: 1.3, curveness: .5},
+      label: {fontFamily: "Golos Text", fontSize: narrow ? 10 : 12, lineHeight: 15},
+      emphasis: {focus: "descendant"}
+    }]
+  }, true);
+}
+if (window.echarts) {
+  drawMap();
+  addEventListener("resize", () => chart && chart.resize());
+} else {
+  document.getElementById("map").outerHTML = '<p class="note" style="padding:100px 40px 40px">Карта не загрузилась: нет доступа к cdnjs.cloudflare.com.</p>';
+}
+</script>
+</body>
+</html>
