@@ -151,7 +151,8 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
 .wheel-cols h3{font:500 10.5px/1 var(--f-data);text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin:0 0 7px}
 .wheel-cols ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 .wheel-cols li{font-size:12px;color:var(--ink-2);display:flex;justify-content:space-between;gap:6px}
-.wheel-cols li b{color:var(--ink);font-weight:600}
+.wheel-cols li b{color:var(--ink);font-weight:600;flex:none}
+.auto-tag{font-size:9.5px;color:var(--ink-3);margin-left:5px;font-style:italic}
 
 /* Мобильная версия — mind map не показываем (смысла на узком экране нет),
    вместо холста+плавающей карточки — обычная страница-приложение: шапка
@@ -345,6 +346,12 @@ function editableText(path, val, placeholder) {
   if (val) return val;
   return `<span class="editval js-edit" data-path="${path}" data-unit="text" title="Нажми, чтобы вписать значение">${placeholder || "— ввести"}</span>`;
 }
+/* В отличие от editableAmt — кликабельно всегда, даже когда значение уже есть
+   (для «Колеса баланса»: автосчёт можно переопределить вручную в любой момент). */
+function clickableNumber(path, val, suffix) {
+  const label = val != null ? `${val}${suffix || ""}` : "— ввести";
+  return `<span class="editval js-edit" data-path="${path}" data-unit="number" title="Нажми, чтобы изменить значение">${label}</span>`;
+}
 
 /* ---------- «Колесо баланса» — лёгкий SVG-радар, без доп. библиотек ---------- */
 function wheelSvg(items, size) {
@@ -383,6 +390,38 @@ function wheelSvg(items, size) {
     <polygon class="shape" points="${shapePts}"/>${dots}${labels}</svg>`;
 }
 
+/* ---------- автозаполнение «Колеса баланса» из реальных данных дашборда ----------
+   Сферы без объективного источника (здоровье, семья, обучение, отдых, межд. рынок)
+   остаются ручной оценкой. Там, где источник есть — считаем автоматически при
+   каждом recompute(); ручная правка через клик по значению «пришпиливает» число
+   (overrides) и отключает автосчёт для этой сферы, пока правку не стёрли. */
+const clamp10 = v => Math.max(0, Math.min(10, Math.round(v * 10) / 10));
+const AUTO_BALANCE = {
+  "Финансы": () => {
+    const overdue = pm.filter(p => p.d != null && p.d < 0).length;
+    const urgent = pm.filter(p => p.d != null && p.d >= 0 && p.d <= 14).length;
+    const gapsRatio = pm.length ? gaps / pm.length : 0;
+    return clamp10(10 - overdue * 3 - urgent * 1 - gapsRatio * 5);
+  },
+  "Бизнес и проекты": () => {
+    const dom = pm.filter(p => p.cat === "Домены");
+    const overdue = dom.filter(p => p.d != null && p.d < 0).length;
+    const urgent = dom.filter(p => p.d != null && p.d >= 0 && p.d <= 14).length;
+    return clamp10(10 - overdue * 3 - urgent * 1.2);
+  },
+  "Личная инфраструктура (Life OS)": () => {
+    const fields = [
+      ...DATA.payments.map(p => p.sum),
+      ...DATA.incomes.map(i => i.sum),
+      ...DATA.housing.flatMap(h => [h.addr, h.utilities, h.payDay, h.where]),
+      ...DATA.legal.map(l => l.expiry),
+      ...DATA.diplomas.flatMap(d => [d.org, d.year, d.apostil]),
+    ];
+    const filled = fields.filter(v => v != null && v !== "").length;
+    return clamp10((filled / fields.length) * 10);
+  },
+};
+
 let pm, burn, inc, soon, gaps, byCat, maxBar;
 function recompute() {
   pm = DATA.payments.map((p, i) => ({...p, _i: i, m: perMonth(p), d: daysTo(p.date)}));
@@ -392,6 +431,14 @@ function recompute() {
   gaps = pm.filter(p => p.sum == null).length;
   byCat = DATA.categories.map(c => ({...c, v: pm.filter(p => p.cat === c.name).reduce((a, p) => a + (p.m || 0), 0), n: pm.filter(p => p.cat === c.name).length}));
   maxBar = Math.max(...byCat.map(x => x.v), 1);
+
+  DATA.balance.forEach((b, i) => {
+    const calc = AUTO_BALANCE[b.name];
+    if (!calc) return;
+    if (`balance.${i}.score` in overrides) { b.auto = false; return; } // вручную переопределено — не трогаем
+    b.score = calc();
+    b.auto = true;
+  });
 }
 recompute();
 
@@ -418,7 +465,8 @@ const SECTIONS = [
     const sorted = [...items].sort((a, b) => (a.score ?? -1) - (b.score ?? -1));
     const weak = sorted.filter(b => b.score == null || b.score < 6);
     const strong = sorted.filter(b => b.score != null && b.score >= 6).reverse();
-    const line = b => `<li>${editableText(`balance.${b._i}.name`, b.name)}<b>${editableAmt(`balance.${b._i}.score`, b.score, "number")}${b.score != null ? "/10" : ""}</b></li>`;
+    const line = b => `<li><span>${b.name}${b.auto ? '<span class="auto-tag" title="Посчитано автоматически по данным дашборда — клик переопределяет вручную">· авто</span>' : ""}</span>
+      <b>${clickableNumber(`balance.${b._i}.score`, b.score, "/10")}</b></li>`;
     return `${wheelSvg(items, 290)}
       ${avg != null ? `<p style="text-align:center;margin:-4px 0 12px;font:500 11.5px var(--f-data);color:var(--ink-3)">среднее: ${avg.toFixed(1)}/10</p>` : ""}
       <div class="wheel-cols">
