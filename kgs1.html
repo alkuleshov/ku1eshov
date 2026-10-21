@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F6F4F0">
+<title>Лекция 1. Федеральные и региональные проекты комфортной городской среды — Александр Кулешов</title>
+<meta name="description" content="Лекция 1 курса «Комфортная городская среда» для программы переподготовки по государственному и муниципальному управлению: нацпроект «Инфраструктура для жизни», федеральный проект ФКГС, Всероссийский конкурс, голосование, Индекс качества городской среды, роль муниципалитета.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F4F0; --paper:#FFFFFF; --ink:#16181D; --muted:#6B6A64; --line:#E3DED4;
+  --navy:#1E3560; --navy-2:#2C4A80; --accent:#C2552B; --soft:#EEEAE2; --ok:#2F6B4F;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+/* top bar */
+.top{display:flex;justify-content:space-between;align-items:center;padding:22px 0;font-size:14px}
+.top a{text-decoration:none;color:var(--muted);transition:color .2s}
+.top a:hover{color:var(--ink)}
+.brand{font-weight:700;letter-spacing:.01em}
+
+/* hero */
+.hero{padding:28px 0 36px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.hero h1{font-size:clamp(30px,4.6vw,56px);line-height:1.08;font-weight:800;letter-spacing:-.02em;margin:14px 0 18px;max-width:22ch}
+.hero p.lead{font-size:clamp(17px,1.6vw,20px);color:#3B3C40;max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:22px}
+.chip{font-size:13px;font-weight:600;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--paper)}
+
+/* deck */
+.deck{margin:8px 0 18px}
+.stage{position:relative;width:100%;aspect-ratio:16/9;background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;container-type:inline-size;box-shadow:0 1px 0 rgba(0,0,0,.02),0 20px 50px -30px rgba(30,53,96,.35)}
+.slide{position:absolute;inset:0;padding:5.2cqw 6cqw 6.4cqw;display:flex;flex-direction:column;opacity:0;visibility:hidden;transition:opacity .35s ease;font-size:1.55cqw}
+.slide.active{opacity:1;visibility:visible}
+.slide .tag{font-size:.82em;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.slide h2{font-size:2.5em;line-height:1.1;font-weight:800;letter-spacing:-.02em;margin:.4em 0 .7em;max-width:32ch}
+.slide .num{position:absolute;right:6cqw;bottom:3.2cqw;font-size:.9em;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.slide .foot{position:absolute;left:6cqw;bottom:3.2cqw;font-size:.85em;color:var(--muted)}
+.slide p{max-width:60ch}
+.small{font-size:.85em;color:var(--muted)}
+.fill{flex:1;display:flex;flex-direction:column;justify-content:center}
+
+/* title slide */
+.s-title{background:var(--navy);color:#F6F4F0}
+.s-title .tag{color:#F2B69C}
+.s-title h2{font-size:3.3em;max-width:20ch;margin-top:.4em}
+.s-title p{font-size:1.2em;color:#CBD3E3;max-width:48ch}
+.s-title .num,.s-title .foot{color:#93A2C2}
+.s-title .grid-lines{position:absolute;right:-4cqw;top:-4cqw;width:40cqw;height:40cqw;border:1px solid rgba(255,255,255,.12);border-radius:50%}
+.s-title .grid-lines::after{content:"";position:absolute;inset:6cqw;border:1px solid rgba(255,255,255,.12);border-radius:50%}
+
+/* compare */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:2cqw}
+.card{background:var(--soft);border-radius:1.2cqw;padding:2cqw 2.2cqw}
+.card b.k{display:block;font-size:.8em;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.6em}
+.card.dark{background:var(--navy);color:#F6F4F0}
+.card.dark b.k{color:#F2B69C}
+.card .big{font-size:1.45em;font-weight:700;line-height:1.25}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:1.6cqw;margin-top:2cqw}
+.stat{border-top:2px solid var(--ink);padding-top:1em}
+.stat .v{font-size:2.6em;font-weight:800;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.stat .v.acc{color:var(--accent)}
+.stat .l{font-size:.92em;color:#3B3C40;margin-top:.55em;line-height:1.35}
+
+/* chain */
+.chain{display:flex;flex-direction:column;gap:.38em}
+.chain .lvl{display:grid;grid-template-columns:2.4em 1fr auto;align-items:center;gap:1em;padding:.42em 1em;border:1px solid var(--line);border-radius:.6em;background:#FBFAF7}
+.chain .lvl i{font-style:normal;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+.chain .lvl b{font-weight:700}
+.chain .lvl span{font-size:.85em;color:var(--muted);text-align:right}
+.chain .lvl.hi{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chain .lvl.hi span{color:#BFCBE2}
+.chain .lvl.hi i{color:#F2B69C}
+
+/* cards grid */
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6cqw}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.6cqw}
+.box{border:1px solid var(--line);border-radius:1cqw;padding:1.6cqw 1.8cqw;background:#FBFAF7}
+.box .n{font-size:.85em;font-weight:800;color:var(--accent)}
+.box h4{font-size:1.18em;font-weight:800;margin:.35em 0 .4em;line-height:1.2}
+.box p,.box li{font-size:.92em;color:#3B3C40}
+.box ul{list-style:none}
+.box li{padding-left:1em;position:relative;margin:.25em 0}
+.box li::before{content:"";position:absolute;left:0;top:.62em;width:.42em;height:.42em;border-radius:50%;background:var(--accent)}
+.box.neg li::before{background:#9A9890}
+.strip{margin-top:1.6cqw;padding:1em 1.3em;background:var(--soft);border-radius:.8cqw;font-size:.95em}
+.strip b{color:var(--navy)}
+
+/* flow */
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4cqw 2.4cqw;counter-reset:f}
+.flow .st{position:relative;background:#FBFAF7;border:1px solid var(--line);border-radius:.8cqw;padding:1.2cqw 1.3cqw;font-size:.95em;line-height:1.3}
+.flow .st::before{counter-increment:f;content:counter(f,decimal-leading-zero);display:block;font-weight:800;color:var(--accent);font-size:.85em;margin-bottom:.3em}
+.flow .st:not(:nth-child(4n)):not(:last-child)::after{content:"→";position:absolute;right:-1.9cqw;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700}
+.flow .st.warn{background:#FCEDE6;border-color:#EBC2AF}
+.flow .st small{display:block;color:var(--muted);font-size:.85em;margin-top:.3em}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-size:.9em}
+.tbl td{padding:.55em .8em;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl td:first-child{font-weight:700;white-space:nowrap;color:var(--navy);width:30%}
+.tbl tr:last-child td{border-bottom:0}
+
+/* timeline */
+.tl{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2cqw}
+.tl .q{border-top:3px solid var(--navy);padding-top:.8em}
+.tl .q .m{font-weight:800;font-size:1.05em}
+.tl .q ul{list-style:none;margin-top:.5em}
+.tl .q li{font-size:.88em;color:#3B3C40;margin:.35em 0;line-height:1.35}
+.tl .q li b{color:var(--accent);font-weight:700}
+
+/* discussion */
+.s-disc{background:var(--accent);color:#fff}
+.s-disc .tag{color:#FFE2D4}
+.s-disc h2{font-size:2.6em;max-width:24ch}
+.s-disc p{font-size:1.15em;color:#FFEDE5;max-width:56ch}
+.s-disc .num,.s-disc .foot{color:#FFD5C3}
+.s-disc .task{margin-top:1.4em;padding:1em 1.2em;border:1px solid rgba(255,255,255,.45);border-radius:.8cqw;font-size:1em;max-width:62ch}
+.s-disc .task b{display:block;font-size:.8em;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.35em;color:#FFE2D4}
+
+/* region */
+.reg{display:grid;grid-template-columns:1.05fr 1fr;gap:2.4cqw;align-items:start}
+.quote{font-size:1.5em;font-weight:700;line-height:1.25;color:var(--navy);border-left:3px solid var(--accent);padding-left:.8em;margin:.2em 0 .7em}
+
+/* index */
+.idx{display:grid;grid-template-columns:1fr 1fr;gap:2.4cqw}
+.mx{display:grid;grid-template-columns:repeat(6,1fr);gap:.3em;margin-top:.6em;max-width:15em}
+.mx div{aspect-ratio:1;border-radius:.35em;background:var(--soft)}
+.mx div.on{background:var(--navy)}
+.mx div.mid{background:#8DA0C4}
+.legend{font-size:.8em;color:var(--muted);margin-top:.6em;line-height:1.4;max-width:86%}
+
+/* checklist */
+.check{display:grid;grid-template-columns:1fr 1fr;gap:1.4cqw}
+.check .it{display:flex;gap:1em;align-items:flex-start;padding:1.2cqw 1.4cqw;background:#FBFAF7;border:1px solid var(--line);border-radius:.9cqw}
+.check .it i{font-style:normal;font-weight:800;font-size:1.6em;color:var(--accent);line-height:1}
+.check .it b{display:block;font-size:1.08em;margin-bottom:.2em}
+.check .it span{font-size:.9em;color:#3B3C40}
+
+/* controls */
+.ctrl{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+.ctrl .btns{display:flex;gap:8px}
+.ctrl button{font:inherit;font-size:14px;font-weight:600;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:9px 14px;border-radius:10px;cursor:pointer;transition:background .2s,border-color .2s}
+.ctrl button:hover{border-color:#BDB7AA}
+.ctrl button:disabled{opacity:.4;cursor:default}
+.count{font-weight:700;font-variant-numeric:tabular-nums;font-size:14px;color:var(--muted)}
+.bar{height:3px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:12px}
+.bar i{display:block;height:100%;width:0;background:var(--navy);transition:width .3s}
+.hint{font-size:12px;color:var(--muted)}
+
+/* fullscreen */
+.stage:fullscreen{border-radius:0;border:0;width:min(100vw,177.78vh);height:auto;margin:auto;background:var(--paper)}
+.stage:fullscreen::backdrop{background:#0E1424}
+
+/* article */
+.article{max-width:760px;margin:64px auto 0;padding-bottom:40px}
+.article .eyebrow{display:block;margin-bottom:6px}
+.article h2{font-size:clamp(24px,2.6vw,32px);line-height:1.2;font-weight:800;letter-spacing:-.01em;margin:44px 0 14px}
+.article h2:first-of-type{margin-top:14px}
+.article p{font-size:18px;color:#2A2B30;margin:0 0 14px}
+.article ul{margin:0 0 16px 1.1em}
+.article li{font-size:18px;color:#2A2B30;margin:6px 0}
+.article .note{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:16px 18px;font-size:16px;color:#3B3C40;margin:18px 0}
+.sources{margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
+.sources h3{font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.sources li{font-size:15px;color:var(--muted)}
+.sources a{color:var(--navy)}
+.next{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}
+.next a{display:block;text-decoration:none;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 20px;transition:border-color .2s}
+.next a:hover{border-color:#BDB7AA}
+.next small{display:block;color:var(--accent);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:12px}
+.next span{display:block;font-weight:700;margin-top:6px;line-height:1.3}
+footer{border-top:1px solid var(--line);padding:26px 0 40px;font-size:14px;color:var(--muted)}
+
+/* mobile: slides grow to content */
+@media (max-width:760px){
+  .wrap{padding:0 16px}
+  .stage{aspect-ratio:auto;height:auto;min-height:0}
+  .slide{position:relative;inset:auto;display:none;font-size:3.6cqw;padding:7cqw 6cqw 13cqw}
+  .slide.active{display:flex}
+  .slide h2{font-size:1.9em}
+  .s-title h2{font-size:2.3em}
+  .compare,.g3,.g2,.idx,.reg,.check{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .flow,.tl{grid-template-columns:1fr 1fr}
+  .flow .st::after{display:none}
+  .tbl td:first-child{white-space:normal;width:40%}
+  .slide .num,.slide .foot{bottom:4cqw}
+  .next{grid-template-columns:1fr}
+  .hint{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <a href="kgs.html">← Все лекции курса</a>
+  <a class="brand" href="index.html">Александр Кулешов</a>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Лекция 01 · 23.10.2026 · 16:00–17:30</div>
+  <h1>Федеральные и региональные проекты по формированию комфортной городской среды</h1>
+  <p class="lead">Как устроена система, по которой деньги из федерального бюджета превращаются в парк, набережную или двор, — и где в ней зона ответственности муниципалитета.</p>
+  <div class="meta">
+    <span class="chip">Переподготовка · ГМУ</span>
+    <span class="chip">Муниципальная служба</span>
+    <span class="chip">90 минут · 20 слайдов</span>
+  </div>
+</section>
+
+<section class="deck" aria-label="Презентация лекции">
+  <div class="stage" id="stage" tabindex="0">
+
+    <!-- 1 -->
+    <div class="slide s-title active">
+      <div class="grid-lines"></div>
+      <div class="tag">Лекция 01 · Комфортная городская среда</div>
+      <div class="fill">
+        <h2>Федеральные и региональные проекты по формированию комфортной городской среды</h2>
+        <p>Маршрут от национальной цели до конкретного сквера — и решения, которые на этом маршруте принимает глава.</p>
+      </div>
+      <div class="foot">Александр Кулешов · архитектор-урбанист, 80+ проектов городской среды</div>
+      <div class="num">01</div>
+    </div>
+
+    <!-- 2 -->
+    <div class="slide">
+      <div class="tag">Постановка задачи</div>
+      <h2>Почему благоустройство — задача руководителя, а не озеленителя</h2>
+      <div class="compare">
+        <div class="card"><b class="k">Заблуждение</b><div class="big">«Благоустройство — это плитка, лавочки и клумбы»</div></div>
+        <div class="card dark"><b class="k">На деле</b><div class="big">Самый видимый результат работы власти: бюджет, доверие жителей и экономика территории в одном объекте</div></div>
+      </div>
+      <div class="stats" style="--n:3">
+        <div class="stat"><div class="v">80 578</div><div class="l">территорий благоустроено по проекту с 2019 года</div></div>
+        <div class="stat"><div class="v acc">15,9 млн</div><div class="l">голосов жителей во всероссийском голосовании 2026</div></div>
+        <div class="stat"><div class="v">30 800</div><div class="l">рабочих мест создали проекты-победители конкурса</div></div>
+      </div>
+      <div class="num">02</div>
+    </div>
+
+    <!-- 3 -->
+    <div class="slide">
+      <div class="tag">Вертикаль целей</div>
+      <h2>Замысел сверху — исполнение на земле</h2>
+      <div class="chain">
+        <div class="lvl"><i>01</i><b>Указ Президента № 309 от 07.05.2024</b><span>нац. цель «Комфортная и безопасная среда для жизни»</span></div>
+        <div class="lvl"><i>02</i><b>Нацпроект «Инфраструктура для жизни»</b><span>с 2025 года</span></div>
+        <div class="lvl"><i>03</i><b>Федеральный проект «Формирование комфортной городской среды»</b><span>Минстрой России</span></div>
+        <div class="lvl"><i>04</i><b>Госпрограмма субъекта РФ</b><span>региональное софинансирование</span></div>
+        <div class="lvl hi"><i>05</i><b>Муниципальная программа</b><span>зона ответственности МО</span></div>
+        <div class="lvl hi"><i>06</i><b>Адресный перечень → объект</b><span>конкретный сквер, парк, двор</span></div>
+      </div>
+      <div class="strip"><b>Правило:</b> объект, которого нет в муниципальной программе и адресном перечне, не получит ни рубля — какой бы правильной ни была идея.</div>
+      <div class="num">03</div>
+    </div>
+
+    <!-- 4 -->
+    <div class="slide">
+      <div class="tag">Цели до 2030</div>
+      <h2>Что страна обязалась сделать к 2030 году</h2>
+      <div class="stats" style="--n:4">
+        <div class="stat"><div class="v">≥30 000</div><div class="l">общественных территорий благоустроить</div></div>
+        <div class="stat"><div class="v">≥1 600</div><div class="l">проектов-победителей конкурса малых городов реализовать</div></div>
+        <div class="stat"><div class="v acc">360 млрд ₽</div><div class="l">на благоустройство населённых пунктов до 2030</div></div>
+        <div class="stat"><div class="v">+30%</div><div class="l">качество среды в опорных населённых пунктах (к 2036 — +60%)</div></div>
+      </div>
+      <p class="small" style="margin-top:2.4cqw">Источники: паспорт ФП ФКГС; оценка вице-премьера М. Хуснуллина (январь 2025); Указ № 309.</p>
+      <div class="num">04</div>
+    </div>
+
+    <!-- 5 -->
+    <div class="slide">
+      <div class="tag">Устройство проекта</div>
+      <h2>Три контура федерального проекта и один измеритель</h2>
+      <div class="g3">
+        <div class="box"><div class="n">01</div><h4>Субсидии регионам</h4><ul><li>Программы ФКГС субъектов и МО</li><li>Общественные и дворовые территории</li><li>Адресные перечни — по итогам голосования</li></ul></div>
+        <div class="box"><div class="n">02</div><h4>Всероссийский конкурс</h4><ul><li>Гранты малым городам и историческим поселениям</li><li>Отдельные треки: ДФО, воссоединённые и приграничные регионы</li></ul></div>
+        <div class="box"><div class="n">03</div><h4>Вовлечение граждан</h4><ul><li>Всероссийское онлайн-голосование</li><li>«Госуслуги. Решаем вместе»</li><li>Общественные обсуждения, волонтёры</li></ul></div>
+      </div>
+      <div class="strip"><b>Измеритель результата:</b> Индекс качества городской среды — ежегодная оценка каждого города по 36 индикаторам.</div>
+      <div class="num">05</div>
+    </div>
+
+    <!-- 6 -->
+    <div class="slide">
+      <div class="tag">Логистика денег</div>
+      <h2>Маршрут рубля: от федерального бюджета до объекта</h2>
+      <div class="flow">
+        <div class="st">Федеральный бюджет<small>лимиты ФП ФКГС</small></div>
+        <div class="st">Соглашение Минстрой — субъект<small>показатели и сроки</small></div>
+        <div class="st">Бюджет субъекта<small>+ региональное софинансирование</small></div>
+        <div class="st">Субсидия муниципалитету<small>+ местный бюджет</small></div>
+        <div class="st">ПСД и закупка по 44-ФЗ<small>сроки торгов — главный риск</small></div>
+        <div class="st">Контракт и строительство<small>стройконтроль, авторский надзор</small></div>
+        <div class="st">Приёмка и отчёт<small>достижение показателей</small></div>
+        <div class="st warn">Содержание объекта<small>годами — за счёт местного бюджета</small></div>
+      </div>
+      <div class="strip"><b>Вывод:</b> субсидия покрывает создание объекта, но не его жизнь. Эксплуатацию планируют до начала стройки.</div>
+      <div class="num">06</div>
+    </div>
+
+    <!-- 7 -->
+    <div class="slide">
+      <div class="tag">Нормативная база</div>
+      <h2>Минимум документов, который нужно знать</h2>
+      <table class="tbl">
+        <tr><td>131-ФЗ, ст. 14, 16</td><td>Благоустройство и правила благоустройства — вопрос местного значения</td></tr>
+        <tr><td>Указ № 309 от 07.05.2024</td><td>Национальные цели развития до 2030 и на перспективу до 2036 года</td></tr>
+        <tr><td>ПП РФ № 1710 от 30.12.2017</td><td>Госпрограмма «Обеспечение доступным и комфортным жильём…» — правила субсидий на программы ФКГС</td></tr>
+        <tr><td>ПП РФ № 237 от 07.03.2018</td><td>Всероссийский конкурс лучших проектов в малых городах и исторических поселениях</td></tr>
+        <tr><td>ПП РФ № 487 от 29.04.2026</td><td>Отдельный конкурс для воссоединённых и приграничных регионов (2026–2027)</td></tr>
+        <tr><td>Распоряжение № 510-р</td><td>Методика Индекса качества городской среды</td></tr>
+        <tr><td>Приказ Минстроя № 1042/пр</td><td>Методические рекомендации по правилам благоустройства МО</td></tr>
+      </table>
+      <div class="num">07</div>
+    </div>
+
+    <!-- 8 -->
+    <div class="slide">
+      <div class="tag">Оперативный цикл</div>
+      <h2>Год муниципалитета: работа идёт сразу в трёх годах</h2>
+      <div class="tl">
+        <div class="q"><div class="m">Сентябрь — декабрь</div><ul><li>Сбор предложений жителей</li><li>Отбор территорий, концепции</li><li>Приёмка и отчёт за сезон</li></ul></div>
+        <div class="q"><div class="m">Январь — март</div><ul><li>Общественные обсуждения</li><li>ПСД, экспертиза смет</li><li>Торги на текущий сезон</li></ul></div>
+        <div class="q"><div class="m">Апрель — июнь</div><ul><li>Голосование <b>21.04–12.06.2026</b></li><li>Заявки на конкурс <b>до 20.06.2026</b></li><li>Старт строительного сезона</li></ul></div>
+        <div class="q"><div class="m">Июль — октябрь</div><ul><li>Адресные перечни на следующий год</li><li>Итоги конкурса <b>13.08.2026</b></li><li>Строительство и приёмка</li></ul></div>
+      </div>
+      <div class="strip"><b>Три горизонта одновременно:</b> строим текущий год, готовим документы на следующий, проектируем то, что выиграет конкурс через два года.</div>
+      <div class="num">08</div>
+    </div>
+
+    <!-- 9 -->
+    <div class="slide s-disc">
+      <div class="tag">Дискуссия №1 · 10 минут</div>
+      <div class="fill">
+        <h2>Если завтра объявят сбор заявок — какая территория вашего города готова?</h2>
+        <div class="task"><b>Задание</b>Назовите одну территорию и оцените её по четырём пунктам: есть ли концепция, есть ли ПСД, поддерживают ли жители, есть ли «хозяин» на эксплуатацию.</div>
+      </div>
+      <div class="num">09</div>
+    </div>
+
+    <!-- 10 -->
+    <div class="slide">
+      <div class="tag">Вовлечение граждан</div>
+      <h2>Голосование 2026: тест на доверие и управляемость</h2>
+      <div class="stats" style="--n:4">
+        <div class="stat"><div class="v">15,88 млн</div><div class="l">участников VI всероссийского голосования</div></div>
+        <div class="stat"><div class="v">≈7 000</div><div class="l">объектов в 1 979 муниципальных образованиях</div></div>
+        <div class="stat"><div class="v acc">≈60%</div><div class="l">голосов собрали волонтёры (более 184 тыс. обучены)</div></div>
+        <div class="stat"><div class="v">42,9%</div><div class="l">голосов — за парки и скверы</div></div>
+      </div>
+      <div class="strip"><b>Закономерность:</b> чем меньше поселение, тем выше активность — лидер среди малых городов Медынь (Калужская обл.), 39,9% явки. Победившие объекты входят в адресные перечни на 2027 год. Подробно — в лекции 2.</div>
+      <div class="num">10</div>
+    </div>
+
+    <!-- 11 -->
+    <div class="slide">
+      <div class="tag">Конкурсный контур</div>
+      <h2>XI Всероссийский конкурс малых городов и исторических поселений</h2>
+      <div class="stats" style="--n:4">
+        <div class="stat"><div class="v">582</div><div class="l">заявки из 82 регионов</div></div>
+        <div class="stat"><div class="v acc">294</div><div class="l">победителя по трём трекам</div></div>
+        <div class="stat"><div class="v">25 млрд ₽</div><div class="l">общий объём грантов</div></div>
+        <div class="stat"><div class="v">≈85 млн ₽</div><div class="l">в среднем на один проект (расчёт)</div></div>
+      </div>
+      <div class="g2" style="margin-top:2cqw">
+        <div class="box"><h4>Кто может участвовать</h4><p>Города до 300 тыс. жителей (в ДФО — до 250 тыс.), исторические поселения, опорные населённые пункты.</p></div>
+        <div class="box"><h4>Что выиграло в 2026</h4><p>99 парков · 99 улиц и пешеходных зон · 53 набережные · 43 сквера. Реализация — 2027–2028.</p></div>
+      </div>
+      <div class="num">11</div>
+    </div>
+
+    <!-- 12 -->
+    <div class="slide">
+      <div class="tag">Эффект конкурса с 2018 года</div>
+      <h2>Конкурс — это инструмент экономики малых городов</h2>
+      <div class="stats" style="--n:4">
+        <div class="stat"><div class="v">1 903</div><div class="l">проекта-победителя</div></div>
+        <div class="stat"><div class="v">1 168</div><div class="l">уже реализованы</div></div>
+        <div class="stat"><div class="v acc">30 800+</div><div class="l">новых рабочих мест</div></div>
+        <div class="stat"><div class="v">≈7 000</div><div class="l">точек предпринимательской активности</div></div>
+      </div>
+      <div class="strip"><b>Логика экспертизы:</b> выигрывает не самая красивая картинка, а проект, который удерживает людей в городе — даёт работу, события, туристический поток и повод гордиться местом.</div>
+      <div class="num">12</div>
+    </div>
+
+    <!-- 13 -->
+    <div class="slide">
+      <div class="tag">Новый трек 2026</div>
+      <h2>Конкурс для воссоединённых и приграничных регионов</h2>
+      <div class="reg">
+        <div>
+          <table class="tbl">
+            <tr><td>Основание</td><td>ПП РФ № 487 от 29.04.2026, отбор на 2026–2027</td></tr>
+            <tr><td>Регионы</td><td>ДНР, ЛНР, Запорожская, Херсонская, Белгородская, Брянская, Курская обл.</td></tr>
+            <tr><td>Охват</td><td>236 населённых пунктов, до 35 победителей в год</td></tr>
+            <tr><td>Первый отбор</td><td>37 заявок → 25 победителей</td></tr>
+            <tr><td>Софинансирование</td><td>внебюджетное, 3–15% по категории поселения</td></tr>
+          </table>
+        </div>
+        <div class="box"><h4>Пример</h4><p>Новоазовск (ДНР): 3-й этап набережной — грант 70 млн ₽, все три этапа — 141 млн ₽.</p><p style="margin-top:.8em"><b>Смысл трека:</b> восстановление — это не только дома и сети. Общественное пространство возвращает людям ощущение мирной жизни.</p></div>
+      </div>
+      <div class="num">13</div>
+    </div>
+
+    <!-- 14 -->
+    <div class="slide">
+      <div class="tag">Критерии</div>
+      <h2>Что выигрывает и что проигрывает</h2>
+      <div class="g2">
+        <div class="box"><h4>Выигрывает</h4><ul><li>Жители вовлечены с первого дня, а не «для протокола»</li><li>Экономика: новые точки бизнеса, события, туризм</li><li>История места; ОКН рядом — доп. баллы с 2026</li><li>Местные материалы, ремёсла, креативные индустрии — доп. баллы с 2026</li><li>Понятная модель эксплуатации</li></ul></div>
+        <div class="box neg"><h4>Проигрывает</h4><ul><li>Типовой каталог «плитка — лавочка — урна»</li><li>Концепция, нарисованная без людей</li><li>Объект без хозяина и бюджета на содержание</li><li>Копия чужого проекта без привязки к месту</li><li>Нереалистичные сроки и смета</li></ul></div>
+      </div>
+      <div class="num">14</div>
+    </div>
+
+    <!-- 15 -->
+    <div class="slide">
+      <div class="tag">Региональный уровень</div>
+      <h2>Ростовская область: как это работает на Дону</h2>
+      <div class="reg">
+        <div>
+          <div class="quote">«Минимум плитки, максимум зелёных насаждений»</div>
+          <p class="small">Губернатор Ю. Слюсарь о принципе отбора проектов, 2026</p>
+          <div class="strip" style="margin-top:1.4cqw"><b>Объекты 2026:</b> Молодёжный парк (Белая Калитва), городской пляж (Азов), Комсомольская площадь (Ростов-на-Дону), Молодёжный бульвар (Зверево).</div>
+        </div>
+        <div class="stats" style="--n:2;margin-top:0">
+          <div class="stat"><div class="v">46</div><div class="l">общественных территорий в 39 МО в 2026</div></div>
+          <div class="stat"><div class="v">≈1,1 млрд ₽</div><div class="l">стоимость работ сезона</div></div>
+          <div class="stat"><div class="v acc">≈475 тыс.</div><div class="l">жителей проголосовали, выбрано 57 объектов</div></div>
+          <div class="stat"><div class="v">56</div><div class="l">инициативных проектов «Сделаем вместе!»</div></div>
+        </div>
+      </div>
+      <div class="num">15</div>
+    </div>
+
+    <!-- 16 -->
+    <div class="slide">
+      <div class="tag">KPI</div>
+      <h2>Индекс качества среды — табло результата</h2>
+      <div class="idx">
+        <div>
+          <div class="stats" style="--n:2;margin-top:0">
+            <div class="stat"><div class="v">360</div><div class="l">максимум баллов, 36 индикаторов</div></div>
+            <div class="stat"><div class="v acc">&gt;180</div><div class="l">порог «благоприятной» среды</div></div>
+            <div class="stat"><div class="v">82,4%</div><div class="l">городов благоприятны (920 из 1 116, итоги 2024)</div></div>
+            <div class="stat"><div class="v">220</div><div class="l">средний балл в 2024 (в 2018 — 163)</div></div>
+          </div>
+        </div>
+        <div>
+          <b>6 типов пространств × 6 критериев</b>
+          <div class="mx" aria-hidden="true">
+            <div class="on"></div><div class="on"></div><div class="mid"></div><div class="on"></div><div></div><div class="on"></div>
+            <div class="on"></div><div class="mid"></div><div class="on"></div><div></div><div class="on"></div><div class="mid"></div>
+            <div class="on"></div><div class="on"></div><div class="on"></div><div class="mid"></div><div class="on"></div><div></div>
+            <div class="mid"></div><div class="on"></div><div></div><div class="on"></div><div class="on"></div><div class="on"></div>
+            <div class="on"></div><div></div><div class="on"></div><div class="mid"></div><div class="on"></div><div class="on"></div>
+            <div class="on"></div><div class="on"></div><div class="mid"></div><div class="on"></div><div></div><div class="on"></div>
+          </div>
+          <p class="legend">Пространства: жильё, улично-дорожная сеть, озеленённые, общественно-деловые, социально-досуговые, общегородские. Критерии: безопасность, комфорт, экологичность, идентичность, современность, эффективность управления.</p>
+        </div>
+      </div>
+      <div class="num">16</div>
+    </div>
+
+    <!-- 17 -->
+    <div class="slide">
+      <div class="tag">Зона ответственности</div>
+      <h2>Что делает муниципалитет — и что за него не сделает никто</h2>
+      <div class="g3">
+        <div class="box"><div class="n">Правила</div><h4>Нормативка</h4><ul><li>Правила благоустройства</li><li>Муниципальная программа ФКГС</li><li>Адресные перечни</li></ul></div>
+        <div class="box"><div class="n">Люди</div><h4>Вовлечение</h4><ul><li>Сбор предложений</li><li>Обсуждения и голосование на месте</li><li>Работа с ТОС и активистами</li></ul></div>
+        <div class="box"><div class="n">Исполнение</div><h4>Объект</h4><ul><li>ПСД и закупка по 44-ФЗ</li><li>Стройконтроль, приёмка</li><li>Содержание годами</li></ul></div>
+      </div>
+      <div class="strip"><b>Командир объекта:</b> у каждой территории должен быть один ответственный — от концепции до третьего года эксплуатации.</div>
+      <div class="num">17</div>
+    </div>
+
+    <!-- 18 -->
+    <div class="slide">
+      <div class="tag">Риски</div>
+      <h2>Где система ломается</h2>
+      <div class="g2">
+        <div class="box neg"><h4>Типовые сбои</h4><ul><li>Сорваны торги и сроки — риск возврата субсидии и претензий контролёров</li><li>Демпинг подрядчика — качество, гарантийные споры</li><li>Проект без жителей — жалобы и вандализм</li><li>Нет бюджета на содержание — через 2–3 года объект деградирует</li></ul></div>
+        <div class="box"><h4>Как страхуются сильные команды</h4><ul><li>Банк готовой ПСД: деньги приходят к тем, кто готов первым</li><li>Торги — зимой, строительство — с первых тёплых дней</li><li>Жители — соавторы, а не зрители</li><li>Содержание закладывается до начала стройки (ориентир практики — 5–10% стоимости работ в год)</li></ul></div>
+      </div>
+      <div class="num">18</div>
+    </div>
+
+    <!-- 19 -->
+    <div class="slide s-disc">
+      <div class="tag">Кейс · 15 минут</div>
+      <div class="fill">
+        <h2>У вас 85 млн ₽ гранта и 18 месяцев</h2>
+        <p>Город 25 тыс. жителей. Есть заброшенный берег реки у центра и центральная улица с пустующими первыми этажами. Деньги — на один объект.</p>
+        <div class="task"><b>Каждый отвечает за 3 минуты</b>Что выбираете и почему? Кто в вашей команде? Как докажете поддержку жителей? Кто и на какие деньги будет содержать объект?</div>
+      </div>
+      <div class="num">19</div>
+    </div>
+
+    <!-- 20 -->
+    <div class="slide">
+      <div class="tag">Итоги</div>
+      <h2>Чек-лист руководителя муниципалитета</h2>
+      <div class="check">
+        <div class="it"><i>01</i><div><b>Знать свой индекс</b><span>Балл города и три самых слабых критерия — это и есть повестка.</span></div></div>
+        <div class="it"><i>02</i><div><b>Банк проектов на 3 года</b><span>Концепции → ПСД. Готовность важнее идеальности.</span></div></div>
+        <div class="it"><i>03</i><div><b>Собрать команду</b><span>Архитектор, коммуникации, волонтёры, ТОС, предприниматели.</span></div></div>
+        <div class="it"><i>04</i><div><b>Модель эксплуатации</b><span>Хозяин и деньги на содержание — до первого ковша экскаватора.</span></div></div>
+      </div>
+      <div class="strip"><b>Далее:</b> 03.11 — инструменты вовлечения граждан · 11.11 — общественные пространства и дворовые территории.</div>
+      <div class="num">20</div>
+    </div>
+
+  </div>
+
+  <div class="bar"><i id="bar"></i></div>
+  <div class="ctrl">
+    <div class="btns">
+      <button id="prev" aria-label="Предыдущий слайд">←</button>
+      <button id="next" aria-label="Следующий слайд">→</button>
+      <button id="fs">Во весь экран</button>
+    </div>
+    <span class="hint">← → или пробел — листать, F — полный экран</span>
+    <span class="count" id="count">1 / 20</span>
+  </div>
+</section>
+
+<article class="article">
+  <span class="eyebrow">Текст лекции</span>
+
+  <h2>Почему это задача руководителя</h2>
+  <p>Благоустройство часто воспринимают как второстепенную хозяйственную работу: положить плитку, поставить скамейки, высадить цветы. Это опасное упрощение. Сквер, набережная или двор — самый видимый результат работы власти. Их видит каждый житель каждый день, по ним судят, работает ли администрация, и именно здесь бюджетные деньги либо создают доверие и экономику территории, либо превращаются в повод для жалоб.</p>
+  <p>Масштаб системы серьёзный: с 2019 года по федеральному проекту благоустроено 80 578 территорий — 37 437 общественных пространств и 43 141 двор. В голосовании 2026 года участвовали почти 16 миллионов человек, а проекты-победители Всероссийского конкурса создали более 30 800 рабочих мест.</p>
+
+  <h2>Вертикаль целей</h2>
+  <p>Система выстроена как вертикаль: замысел формулируется наверху, исполнение происходит на земле. На вершине — Указ Президента № 309 от 7 мая 2024 года о национальных целях развития. Одна из них — «Комфортная и безопасная среда для жизни»: качество среды в опорных населённых пунктах должно вырасти на 30% к 2030 году и на 60% к 2036 году.</p>
+  <p>С 2025 года работа идёт в рамках национального проекта «Инфраструктура для жизни», внутри которого действует федеральный проект «Формирование комфортной городской среды» (ФКГС), куратор — Минстрой России. Ниже — государственная программа субъекта с региональным софинансированием, ещё ниже — муниципальная программа и адресный перечень территорий. Практическое правило простое: объект, которого нет в муниципальной программе и адресном перечне, не получит федеральных денег, какой бы правильной ни была идея.</p>
+
+  <h2>Цели до 2030 года</h2>
+  <p>Федеральный проект фиксирует два главных количественных ориентира: благоустроить не менее 30 000 общественных территорий и реализовать не менее 1 600 проектов-победителей конкурса для малых городов и исторических поселений. По оценке вице-премьера Марата Хуснуллина, на благоустройство населённых пунктов до 2030 года предусмотрено около 360 млрд рублей.</p>
+
+  <h2>Три контура и измеритель</h2>
+  <p>Внутри федерального проекта работают три механизма. Первый — <strong>субсидии регионам</strong> на программы формирования современной городской среды: из них благоустраиваются общественные и дворовые территории, а адресные перечни формируются в том числе по итогам голосования жителей. Второй — <strong>Всероссийский конкурс лучших проектов</strong>: гранты малым городам и историческим поселениям, плюс отдельные треки для Дальнего Востока и, с 2026 года, для воссоединённых и приграничных регионов. Третий — <strong>вовлечение граждан</strong>: всероссийское онлайн-голосование, платформа «Госуслуги. Решаем вместе», общественные обсуждения и волонтёры.</p>
+  <p>Результат всей системы измеряется Индексом качества городской среды — ежегодной оценкой каждого города России.</p>
+
+  <h2>Маршрут рубля</h2>
+  <p>Деньги проходят длинный путь: федеральный бюджет → соглашение Минстроя с субъектом, где закреплены показатели и сроки → бюджет субъекта с региональным софинансированием → субсидия муниципалитету и местный бюджет → проектно-сметная документация и закупка по 44-ФЗ → контракт, строительство, строительный контроль → приёмка и отчёт о достижении показателей.</p>
+  <p>Последний этап, о котором часто забывают, — содержание объекта. Субсидия покрывает создание, но не жизнь пространства. Освещение, уборка, ремонт, полив, охрана ложатся на местный бюджет на годы вперёд. Поэтому модель эксплуатации нужно продумать до начала стройки, а не после открытия.</p>
+
+  <h2>Нормативная база</h2>
+  <p>Минимальный набор документов для муниципального служащего:</p>
+  <ul>
+    <li><strong>131-ФЗ</strong> — благоустройство и утверждение правил благоустройства относятся к вопросам местного значения;</li>
+    <li><strong>Указ № 309</strong> — национальные цели развития до 2030 года и на перспективу до 2036 года;</li>
+    <li><strong>Постановление Правительства № 1710</strong> — госпрограмма «Обеспечение доступным и комфортным жильём и коммунальными услугами граждан РФ», в составе которой утверждены правила субсидий на программы ФКГС;</li>
+    <li><strong>Постановление Правительства № 237</strong> — правила Всероссийского конкурса лучших проектов в малых городах и исторических поселениях;</li>
+    <li><strong>Постановление Правительства № 487 от 29.04.2026</strong> — отдельный конкурс для воссоединённых и приграничных регионов;</li>
+    <li><strong>Распоряжение № 510-р</strong> — методика Индекса качества городской среды;</li>
+    <li><strong>Приказ Минстроя № 1042/пр</strong> — методические рекомендации по разработке правил благоустройства.</li>
+  </ul>
+  <div class="note">Нормативная база регулярно обновляется. Перед подготовкой заявки или программы сверяйте актуальные редакции в КонсультантПлюс или Гаранте и на сайте Минстроя.</div>
+
+  <h2>Оперативный цикл года</h2>
+  <p>Муниципалитет живёт одновременно в трёх годах: строит объекты текущего сезона, готовит документы на следующий год и проектирует то, что выиграет конкурс через два года. Осенью собираются предложения жителей и отбираются территории. Зимой проходят общественные обсуждения, готовится ПСД и проводятся торги, чтобы с первыми тёплыми днями выйти на объект. С апреля по июнь идёт всероссийское голосование (в 2026 году — с 21 апреля по 12 июня), подаются заявки на конкурс (в 2026 году — до 20 июня). Летом формируются адресные перечни на следующий год, в августе объявляются победители конкурса (в 2026 году — 13 августа). Осень — приёмка и отчётность.</p>
+
+  <h2>Голосование как тест на доверие</h2>
+  <p>В VI всероссийском голосовании 2026 года приняли участие 15,88 млн человек. На выбор было вынесено около 7 000 объектов в 1 979 муниципальных образованиях. Около 60% голосов собрали волонтёры — их обучено более 184 тысяч. Больше всего голосов (42,9%) отдано за парки и скверы. Устойчивая закономерность: чем меньше поселение, тем выше активность жителей — среди малых городов лидирует Медынь Калужской области с явкой почти 40%.</p>
+  <p>Для главы голосование — не формальность: его итоги определяют адресные перечни на 2027 год. Инструментам вовлечения посвящена вторая лекция.</p>
+
+  <h2>Всероссийский конкурс малых городов</h2>
+  <p>Конкурс проводится с 2018 года. В XI конкурсе 2026 года поступило 582 заявки из 82 регионов, победителями стали 294 проекта, общий объём грантов — 25 млрд рублей, то есть в среднем около 85 млн на проект. Победители — 99 парков, 99 улиц и пешеходных зон, 53 набережные и 43 сквера; реализация — в 2027–2028 годах. Участвовать могут города с населением до 300 тысяч человек (в ДФО — до 250 тысяч), исторические поселения и опорные населённые пункты.</p>
+  <p>За всё время конкурса отобрано 1 903 проекта, реализовано 1 168. Они создали более 30 800 рабочих мест и около 7 000 точек предпринимательской активности. Это ключевая мысль: конкурс — инструмент экономики малых городов, а не косметика. Экспертиза поддерживает проекты, которые удерживают людей в городе.</p>
+
+  <h2>Новый трек: воссоединённые и приграничные регионы</h2>
+  <p>Постановлением Правительства № 487 от 29 апреля 2026 года учреждён отдельный конкурс для ДНР, ЛНР, Запорожской, Херсонской, Белгородской, Брянской и Курской областей на 2026–2027 годы. Участвовать могут 236 населённых пунктов, ежегодно отбирается до 35 победителей. В первом отборе поступило 37 заявок, победили 25. Внебюджетное софинансирование — от 3 до 15% в зависимости от категории поселения. Пример: Новоазовск получил 70 млн рублей на третий этап набережной; все три этапа — 141 млн рублей.</p>
+  <p>Восстановление территорий — это не только жильё и сети. Общественное пространство возвращает людям ощущение мирной, нормальной жизни, и для управленца это такой же стратегический ресурс, как дороги.</p>
+
+  <h2>Что выигрывает и что проигрывает</h2>
+  <p>Сильный проект строится на вовлечении жителей с первого дня, на понятной экономике (новые точки бизнеса, события, туризм), на истории места и на модели эксплуатации. С 2026 года дополнительные баллы дают за объекты культурного наследия рядом с территорией, использование местных материалов, народных промыслов и креативных индустрий. Проигрывают типовые решения «плитка — лавочка — урна», концепции, нарисованные без людей, объекты без хозяина, копии чужих проектов и нереалистичные сроки.</p>
+
+  <h2>Ростовская область</h2>
+  <p>В 2026 году в регионе благоустраиваются 46 общественных территорий в 39 муниципальных образованиях, стоимость работ — около 1,1 млрд рублей. В голосовании приняли участие около 475 тысяч жителей, выбрано 57 объектов — среди них Молодёжный парк в Белой Калитве, городской пляж в Азове, Комсомольская площадь в Ростове-на-Дону. Губернатор сформулировал принцип отбора: минимум плитки, максимум зелёных насаждений. Параллельно работает губернаторская программа инициативного бюджетирования «Сделаем вместе!» — 56 проектов в 2026 году. Пример победителя Всероссийского конкурса в регионе — реконструкция Платовского проспекта в Новочеркасске.</p>
+
+  <h2>Индекс качества городской среды</h2>
+  <p>Индекс оценивает каждый город по 36 индикаторам: шесть типов пространств (жильё, улично-дорожная сеть, озеленённые, общественно-деловые, социально-досуговые и общегородские пространства) по шести критериям (безопасность, комфорт, экологичность, идентичность, современность, эффективность управления). Максимум — 360 баллов, среда считается благоприятной при результате выше 180. По итогам 2024 года благоприятными признаны 920 из 1 116 городов (82,4%), средний балл вырос со 163 в 2018 году до 220.</p>
+  <p>Для руководителя индекс — табло результата. Балл своего города и три самых слабых критерия — готовая управленческая повестка. Данные открыты на сайте индекс-городов.рф.</p>
+
+  <h2>Зона ответственности муниципалитета</h2>
+  <p>Муниципалитет утверждает правила благоустройства, ведёт муниципальную программу и адресные перечни, организует сбор предложений, обсуждения и голосование, работает с ТОС и активистами, готовит ПСД, проводит закупки, обеспечивает строительный контроль, приёмку и — главное — содержание объектов. У каждой территории должен быть один ответственный «командир объекта»: от концепции до третьего года эксплуатации.</p>
+
+  <h2>Где система ломается</h2>
+  <p>Типовые сбои: сорванные торги и сроки (риск возврата субсидии и претензий контролирующих органов), демпинг подрядчика (качество и гарантийные споры), проект без жителей (жалобы и вандализм), отсутствие бюджета на содержание (через два-три года объект деградирует). Сильные команды страхуются банком готовой ПСД, зимними торгами, работой с жителями как с соавторами и заранее заложенным бюджетом эксплуатации — ориентир практики составляет 5–10% стоимости работ в год.</p>
+
+  <h2>Итоги и задание</h2>
+  <p>Четыре действия для руководителя: знать индекс своего города и его слабые места; держать банк проектов на три года вперёд; собрать команду — архитектор, коммуникации, волонтёры, ТОС, предприниматели; определить хозяина и деньги на содержание до начала стройки.</p>
+  <div class="note"><strong>Задание к лекции 2.</strong> Составьте паспорт среды своего города: балл Индекса и три слабых критерия, три территории-кандидата на благоустройство, участие города в голосовании и конкурсе за последние три года.</div>
+
+  <div class="next">
+    <a href="kgs.html"><small>Лекция 02 · 03.11.2026</small><span>Инструменты вовлечения граждан в развитие городской среды</span></a>
+    <a href="kgs.html"><small>Лекция 03 · 11.11.2026</small><span>Благоустройство общественных пространств и дворовых территорий</span></a>
+  </div>
+
+  <div class="sources">
+    <h3>Источники</h3>
+    <ul>
+      <li><a href="https://xn--80aapampemcchfmo7a3c9ehj.xn--p1ai/new-projects/infrastruktura-dlya-zhizni/formirovanie-komfortnoy-gorodskoy-sredy/">Национальные проекты России: ФП «Формирование комфортной городской среды»</a></li>
+      <li><a href="https://aif.ru/natsionalniye_proekti_rossii/infrastructure-life/golosovanie-za-blagoustroystvo-rossiyane-vybrali-obekty-na-2027-god">АиФ: итоги голосования 2026</a></li>
+      <li><a href="https://aif.ru/natsionalniye_proekti_rossii/infrastructure-life/komfort-v-malyh-gorodah-obyavleny-itogi-konkursa-luchshih-proektov">АиФ: итоги XI конкурса, 25 млрд ₽</a></li>
+      <li><a href="https://regruss.ru/nacproekt-infrastruktura-dlya-zhizni-realizaciya-federalnogo-proekta-formirovanie-komfortnoj-gorodskoj-sredy/">Регионы России: конкурсы ДФО и воссоединённых регионов</a></li>
+      <li><a href="https://rostov.aif.ru/society/v-rostovskoy-oblasti-blagoustroyat-eshche-57-izbrannyh-obshchestvennyh-prostranstv">АиФ Ростов: 57 объектов по итогам голосования</a></li>
+      <li><a href="https://www.vedomosti.ru/press_releases/2026/10/20/goroda-v-kotorih-hochetsya-zhit-kak-menyaetsya-gorodskaya-sreda-rossii">Ведомости: Индекс качества городской среды</a></li>
+    </ul>
+  </div>
+</article>
+
+</div>
+<footer><div class="wrap">© 2026 Александр Кулешов</div></footer>
+
+<script>
+(function(){
+  var stage=document.getElementById('stage');
+  var slides=[].slice.call(stage.querySelectorAll('.slide'));
+  var i=0,n=slides.length;
+  var count=document.getElementById('count'),bar=document.getElementById('bar');
+  var prev=document.getElementById('prev'),next=document.getElementById('next'),fs=document.getElementById('fs');
+  function go(k){
+    i=Math.max(0,Math.min(n-1,k));
+    slides.forEach(function(s,j){s.classList.toggle('active',j===i)});
+    count.textContent=(i+1)+' / '+n;
+    bar.style.width=((i+1)/n*100)+'%';
+    prev.disabled=i===0; next.disabled=i===n-1;
+    try{history.replaceState(null,'','#s'+(i+1))}catch(e){}
+  }
+  prev.onclick=function(){go(i-1)};
+  next.onclick=function(){go(i+1)};
+  fs.onclick=function(){
+    if(document.fullscreenElement){document.exitFullscreen()}
+    else if(stage.requestFullscreen){stage.requestFullscreen()}
+  };
+  document.addEventListener('keydown',function(e){
+    var t=e.target.tagName; if(t==='INPUT'||t==='TEXTAREA')return;
+    var inDeck=document.fullscreenElement||stage.getBoundingClientRect().top<window.innerHeight&&stage.getBoundingClientRect().bottom>0;
+    if(!inDeck)return;
+    if(e.key==='ArrowRight'||e.key==='PageDown'||(e.key===' '&&document.fullscreenElement)){e.preventDefault();go(i+1)}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(i-1)}
+    else if(e.key==='f'||e.key==='F'||e.key==='а'||e.key==='А'){fs.onclick()}
+  });
+  var x0=null;
+  stage.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+  stage.addEventListener('touchend',function(e){
+    if(x0===null)return; var dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>50){go(dx<0?i+1:i-1)} x0=null;
+  });
+  var m=location.hash.match(/^#s(\d+)$/);
+  go(m?parseInt(m[1],10)-1:0);
+})();
+</script>
+</body>
+</html>
