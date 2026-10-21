@@ -140,13 +140,41 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
 .status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
 .status-dot.yes{background:var(--ok)} .status-dot.no{background:var(--bad)} .status-dot.na{background:var(--idle)}
 
+/* Мобильная версия — mind map не показываем (смысла на узком экране нет),
+   вместо холста+плавающей карточки — обычная страница-приложение: шапка
+   сверху, список карточек под ней, крупные тач-таргеты, без наложений. */
 @media (max-width:760px){
-  body{overflow:auto}
-  .canvas{position:fixed;top:0;left:0;right:0;height:46vh;z-index:1}
-  .panel{position:static;margin:46vh 12px 20px;width:auto;max-width:none;max-height:none;border-radius:16px 16px 14px 14px}
-  .brand{top:max(16px,env(safe-area-inset-top,0px));left:16px;max-width:70vw}
-  .legend{display:none}
-  .kpis{grid-template-columns:1fr 1fr}
+  html,body{height:auto}
+  body{overflow:visible auto;display:flex;flex-direction:column;
+    padding:max(14px,env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px))
+            max(18px,env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));
+    gap:14px}
+  .canvas,.legend{display:none}
+
+  .brand{position:static;order:1;pointer-events:auto;max-width:none;padding:2px 2px 4px}
+  .brand .label{font-size:11px}
+  .brand h1{font-size:21px}
+  .brand .meta{margin-top:8px;font-size:12.5px;display:flex;gap:14px;flex-wrap:wrap}
+
+  .panel{position:static;order:2;width:auto;max-width:none;max-height:none;
+    border-radius:20px;box-shadow:0 1px 2px rgba(21,32,43,.05),0 10px 28px rgba(21,32,43,.08)}
+  .panel-in{padding:6px}
+
+  .note{position:static;order:3;text-align:left;max-width:none;margin:0 2px}
+
+  /* крупнее тач-таргеты и шрифты — как в нативном iOS-приложении */
+  .block-head{padding:16px 12px;gap:8px}
+  .block-head h2{font-size:15px;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.25}
+  .badge{display:none}
+  .iconbtn{padding:9px;border-radius:9px}
+  .iconbtn svg{width:16px;height:16px}
+  .block-body{padding:0 16px 18px}
+  .kpis{grid-template-columns:1fr 1fr;gap:10px}
+  .kpi{padding:14px 15px;border-radius:14px}
+  .kpi .v{font-size:24px}
+  .row{grid-template-columns:44px minmax(0,1fr) auto;padding:12px 0}
+  .sub .item{border-radius:14px;padding:13px 14px}
+  .ch{border-radius:14px;padding:13px 14px}
 }
 </style>
 </head>
@@ -167,7 +195,12 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
   <div class="panel-in" id="panel-in"></div>
 </aside>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+<script>
+/* На мобильном mind map скрыт (см. @media ниже) — echarts (~1MB) не грузим вовсе, экономим трафик. */
+if (innerWidth > 760) {
+  document.write('<scr' + 'ipt src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></scr' + 'ipt>');
+}
+</script>
 <script>
 /* В проде этот блок заменяется на fetch('/api/data') — сервер читает Google-таблицу.
    Значения, помеченные editable:true и равные null, можно вписать прямо на странице —
@@ -554,9 +587,12 @@ function drawMap() {
     }]
   }, true);
 }
-if (window.echarts) {
+const isMobile = () => innerWidth <= 760;
+if (isMobile()) {
+  document.querySelector(".canvas").remove(); // на мобильном mind map не нужен — экономим загрузку echarts
+} else if (window.echarts) {
   drawMap();
-  addEventListener("resize", () => chart && chart.resize());
+  addEventListener("resize", () => { if (isMobile()) return; chart && chart.resize(); });
 } else {
   document.getElementById("map").outerHTML = '<p class="note" style="padding:100px 40px 40px">Карта не загрузилась: нет доступа к cdnjs.cloudflare.com.</p>';
 }
