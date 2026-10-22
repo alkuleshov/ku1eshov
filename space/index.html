@@ -508,7 +508,10 @@ const SECTIONS = [
   { id: "projects", title: "Проекты", badge: "", body: () => {
     if (PROJECTS === null) return `<p class="note">Не удалось подтянуть статусы проектов (нет доступа к опубликованной Google-таблице). Остальной дашборд работает как обычно.</p>`;
     if (!PROJECTS.length) return `<p class="note">Загружаю статусы проектов…</p>`;
-    const tag = s => s === "готово" ? "c-ok" : s === "в работе" ? "c-idle" : s === "нужен маркетинг" ? "c-warn" : s === "пауза" ? "c-bad" : "c-idle";
+    const tag = s => ({
+      "идея": "c-idle", "валидация": "c-idle", "MVP": "c-warn", "используется": "c-ok",
+      "рост": "c-warn", "стабильно": "c-ok", "пауза": "c-bad", "закрыт": "c-bad",
+    })[s] || "c-idle";
     return PROJECTS.map(p => `
       <div class="proj-card">
         <div class="proj-head"><b>${p.name}</b>${p.status ? `<span class="chip ${tag(p.status)}">${p.status}</span>` : ""}</div>
