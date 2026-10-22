@@ -148,6 +148,17 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
 .sub details summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between}
 .sub details summary::-webkit-details-marker{display:none}
 .sub details[open] summary{margin-bottom:8px}
+.sub .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
+.cat-items{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px}
+.cat-items li{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--ink-2);border-radius:6px;padding:2px 4px}
+.flash{animation:flashBg 1.6s ease}
+@keyframes flashBg{0%{background:var(--warn-soft)}100%{background:transparent}}
+.proj-card{border:1px solid var(--line);border-radius:10px;padding:10px 11px;display:flex;flex-direction:column;gap:5px}
+.proj-card + .proj-card{margin-top:8px}
+.proj-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.proj-head b{font-size:13px}
+.proj-next{font-size:11.5px;color:var(--ink-2)}
+.proj-meta{font-size:10.5px;color:var(--ink-3)}
 .status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
 .status-dot.yes{background:var(--ok)} .status-dot.no{background:var(--bad)} .status-dot.na{background:var(--idle)}
 
@@ -437,6 +448,27 @@ const AUTO_BALANCE = {
 };
 
 let pm, burn, inc, soon, gaps, byCat, maxBar;
+let PROJECTS = [];
+const PROJECTS_TSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSAwtbm5FlLGHXh3QyB7hwk9F-GTKs7gK6nPerYQZPHwWibhLe-TqJN7i6q1A3-YH-rKesPTUjODJJQ/pub?gid=555743489&single=true&output=tsv";
+function parseTsv(text) {
+  const lines = text.replace(/\r/g, "").split("\n").filter(l => l.length);
+  if (!lines.length) return [];
+  const rows = lines.slice(1).map(l => l.split("\t"));
+  return rows.filter(r => r[0]).map(r => ({
+    name: r[0] || "", status: (r[1] || "").trim(), pct: parseFloat((r[2] || "").replace(",", ".")) || null,
+    next: r[3] || "", updated: r[4] || "", notes: r[5] || "",
+  }));
+}
+async function loadProjects() {
+  try {
+    const res = await fetch(PROJECTS_TSV_URL, {cache: "no-store"});
+    if (!res.ok) throw new Error(res.status);
+    PROJECTS = parseTsv(await res.text());
+  } catch (e) {
+    PROJECTS = null; // не удалось подтянуть — покажем заметку, а не пустой блок
+  }
+  render();
+}
 function recompute() {
   pm = DATA.payments.map((p, i) => ({...p, _i: i, m: perMonth(p), d: daysTo(p.date)})).filter(p => !overrides[`hidden.${p._i}`]);
   burn = pm.reduce((a, p) => a + (p.m || 0), 0);
@@ -473,6 +505,18 @@ const SECTIONS = [
       <div class="kpi alert"><span class="v">${soon.length}</span><span class="s">сроков за 30 дней</span></div>
       <div class="kpi"><span class="v">${gaps}</span><span class="s">позиций без суммы</span></div>
     </div>` },
+  { id: "projects", title: "Проекты", badge: "", body: () => {
+    if (PROJECTS === null) return `<p class="note">Не удалось подтянуть статусы проектов (нет доступа к опубликованной Google-таблице). Остальной дашборд работает как обычно.</p>`;
+    if (!PROJECTS.length) return `<p class="note">Загружаю статусы проектов…</p>`;
+    const tag = s => s === "готово" ? "c-ok" : s === "в работе" ? "c-idle" : s === "нужен маркетинг" ? "c-warn" : s === "пауза" ? "c-bad" : "c-idle";
+    return PROJECTS.map(p => `
+      <div class="proj-card">
+        <div class="proj-head"><b>${p.name}</b>${p.status ? `<span class="chip ${tag(p.status)}">${p.status}</span>` : ""}</div>
+        ${p.pct != null ? `<div class="track"><div class="fill" style="width:${Math.min(100, p.pct)}%;background:var(--ink-3)"></div></div>` : ""}
+        ${p.next ? `<div class="proj-next">→ ${p.next}</div>` : ""}
+        ${p.notes ? `<div class="proj-meta">${p.notes}</div>` : ""}
+        ${p.updated ? `<div class="proj-meta">обновлено: ${p.updated}</div>` : ""}
+      </div>`).join(""); } },
   { id: "balance", title: "Колесо баланса", badge: "1–10", body: () => {
     const items = DATA.balance.map((b, i) => ({...b, _i: i}));
     const rated = items.filter(b => b.score != null);
@@ -519,12 +563,31 @@ const SECTIONS = [
       <li><span><b>ai2life.ru</b> — ждём итог аукциона на reg.ru, ставка уже сделана.</span></li>
     </ul>` },
   { id: "categories", title: "Категории расходов", badge: "₽/мес", body: () => `
-    <div class="bars">${byCat.map(x => {
+    <div class="sub">${byCat.map((x, ci) => {
       const hex = css(x.color);
-      return `<div class="bar"><span><b style="background:${hex}"></b>${x.name}</span>
-      <div class="track"><div class="fill" style="width:${(x.v / maxBar * 100).toFixed(1)}%;background:${hex}"></div></div>
-      <span class="n">${x.v ? rub(x.v) : x.n ? x.n + " поз." : "—"}</span></div>`;
+      const items = pm.filter(p => p.cat === x.name);
+      return `<details class="item" id="cat-${ci}">
+        <summary><b><span class="dot" style="background:${hex}"></span>${x.name}</b>
+        <span>${x.v ? rub(x.v) : x.n ? x.n + " поз." : "—"}</span></summary>
+        <div class="track" style="margin-bottom:8px"><div class="fill" style="width:${(x.v / maxBar * 100).toFixed(1)}%;background:${hex}"></div></div>
+        <ul class="cat-items">${items.map(p => `
+          <li id="pay-${p._i}"><span>${p.name}</span>${editableAmt(`payments.${p._i}.sum`, p.sum, p.cur === "RUB" ? "RUB" : (p.cur === "USD" ? "$" : "€"))}</li>`).join("")}
+        </ul>
+      </details>`;
     }).join("")}</div>` },
+  { id: "incomes", title: "Доходы", badge: "по статьям", body: () => {
+    const incItems = DATA.incomes.map((x, i) => ({...x, _i: i}));
+    const cats = [...new Set(DATA.incomes.map(x => x.cat))];
+    return `<div class="sub">${cats.map((c, ci) => {
+      const items = incItems.filter(x => x.cat === c);
+      const total = items.reduce((a, x) => a + (x.sum || 0), 0);
+      return `<details class="item" id="inccat-${ci}">
+        <summary><b>${c}</b><span>${total ? rub(total) : items.length + " поз."}</span></summary>
+        <ul class="cat-items">${items.map(x => `
+          <li id="inc-${x._i}"><span>${x.name}</span>${editableAmt(`incomes.${x._i}.sum`, x.sum, "RUB")}</li>`).join("")}
+        </ul>
+      </details>`;
+    }).join("")}</div>`; } },
   { id: "housing", title: "Жильё и коммунальные", badge: DATA.housing.length + " ед.", body: () => `
     <div class="sub">${DATA.housing.map((h, i) => `
       <details class="item">
@@ -714,10 +777,11 @@ document.getElementById("legend").innerHTML =
 let chart;
 function drawMap() {
   const ink = css("--ink"), line = css("--line"), sheet = css("--paper");
-  const leaf = (name, v, col) => ({
+  const leaf = (name, v, col, extra) => ({
     name: v ? `${name}\n${rub(v)}` : name,
     itemStyle: {color: v ? col : sheet, borderColor: col, borderWidth: v ? 0 : 1.5},
-    label: {color: ink}
+    label: {color: ink},
+    ...extra
   });
   const exp = DATA.categories.map(c => {
     const items = pm.filter(p => p.cat === c.name);
@@ -727,13 +791,14 @@ function drawMap() {
       name: `${c.name}\n${v ? rub(v) : items.length + " поз."}`,
       itemStyle: {color: col, borderColor: col},
       label: {color: ink, fontWeight: 600},
-      children: items.map(p => leaf(p.name, p.m, col))
+      children: items.map(p => leaf(p.name, p.m, col, {_pay: p._i}))
     };
   }).filter(x => x.children.length);
   const incCol = css("--cat-income");
+  const incItems = DATA.incomes.map((x, i) => ({...x, _i: i}));
   const incCats = [...new Set(DATA.incomes.map(i => i.cat))].map(c => ({
     name: c, itemStyle: {color: sheet, borderColor: incCol, borderWidth: 1.5}, label: {color: ink, fontWeight: 600},
-    children: DATA.incomes.filter(i => i.cat === c).map(i => leaf(i.name, i.sum, incCol))
+    children: incItems.filter(i => i.cat === c).map(i => leaf(i.name, i.sum, incCol, {_inc: i._i}))
   }));
   const root = {
     name: "Я", itemStyle: {color: ink, borderColor: ink}, label: {color: "#FFFFFF", fontWeight: 600},
@@ -757,6 +822,28 @@ function drawMap() {
       emphasis: {focus: "descendant"}
     }]
   }, true);
+  chart.off("click");
+  chart.on("click", params => {
+    const d = params.data;
+    if (!d || d.children) return; // клик по категории/корню — нечего открывать
+    if (d._pay != null) jumpToItem("categories", `pay-${d._pay}`);
+    else if (d._inc != null) jumpToItem("incomes", `inc-${d._inc}`);
+  });
+}
+/* Клик по листу MindMap -> разворачиваем нужный блок панели, открываем его
+   карточку категории и подсвечиваем строку, чтобы можно было сразу поправить сумму. */
+function jumpToItem(blockId, elId) {
+  if (collapsed[blockId]) { collapsed[blockId] = false; saveLayout(order, collapsed); }
+  render();
+  requestAnimationFrame(() => {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    const details = el.closest("details");
+    if (details) details.open = true;
+    el.scrollIntoView({behavior: "smooth", block: "center"});
+    el.classList.add("flash");
+    setTimeout(() => el.classList.remove("flash"), 1600);
+  });
 }
 const isMobile = () => innerWidth <= 760;
 if (isMobile()) {
@@ -767,6 +854,7 @@ if (isMobile()) {
 } else {
   document.getElementById("map").outerHTML = '<p class="note" style="padding:100px 40px 40px">Карта не загрузилась: нет доступа к cdnjs.cloudflare.com.</p>';
 }
+loadProjects();
 </script>
 </body>
 </html>
