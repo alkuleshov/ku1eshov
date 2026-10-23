@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Белый холст на весь экран — mind map в центре, сгруппированная по категориям.
+/* Белый холст на весь экран — mind map в центре, сгруппированная по категориям или проектам.
    Панель сводки плавает справа отдельной карточкой: блоки сворачиваются
    и переставляются по приоритету, порядок и состояние запоминаются локально. */
 :root{
@@ -43,9 +43,14 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
 .brand h1{font:600 clamp(18px,3.4vw,22px)/1.15 var(--f-display);margin:2px 0 0;letter-spacing:-.01em}
 .brand .meta{margin-top:6px;font:400 11.5px/1.5 var(--f-data);color:var(--ink-3)}
 .brand .meta b{color:var(--ink-2);font-weight:500}
+.brand .controls{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:auto}
+.pill-btn{appearance:none;border:1px solid var(--line);background:var(--paper);color:var(--ink-2);
+  font:500 10.5px/1 var(--f-data);padding:5px 9px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .15s}
+.pill-btn:hover{border-color:var(--ink-3);color:var(--ink)}
+.pill-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 
 .legend{position:fixed;left:max(20px,env(safe-area-inset-left,0px));bottom:max(20px,env(safe-area-inset-bottom,0px));z-index:5;
-  display:flex;flex-wrap:wrap;gap:8px 14px;max-width:320px}
+  display:flex;flex-wrap:wrap;gap:8px 14px;max-width:340px}
 .legend span{display:flex;align-items:center;gap:6px;font:400 11.5px var(--f-data);color:var(--ink-2)}
 .legend i{width:8px;height:8px;border-radius:50%;flex:none}
 
@@ -95,9 +100,17 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
 
 .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .kpi{border:1px solid var(--line);border-radius:12px;padding:12px 13px;min-width:0}
-.kpi .v{font:500 22px/1.05 var(--f-data);font-variant-numeric:tabular-nums;letter-spacing:-.02em;display:block}
+.kpi .v{font:500 20px/1.05 var(--f-data);font-variant-numeric:tabular-nums;letter-spacing:-.02em;display:block}
 .kpi .s{font-size:11.5px;color:var(--ink-2);display:block;margin-top:4px}
 .kpi.alert .v{color:var(--accent)}
+.kpi.ok .v{color:var(--ok)}
+
+.gateways{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--chip-bg)}
+.gateways-head{font:500 10px/1 var(--f-data);text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin-bottom:7px;display:flex;justify-content:space-between}
+.gw-list{display:grid;gap:6px}
+.gw-row{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px}
+.gw-row b{font-weight:500;color:var(--ink)}
+.gw-meta{font:400 11px var(--f-data);color:var(--ink-2);display:flex;align-items:center;gap:6px}
 
 .list{list-style:none;margin:0;padding:0}
 .row{display:grid;grid-template-columns:48px minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
@@ -113,9 +126,11 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
 .c-ok{background:var(--ok-soft);color:var(--ok)} .c-idle{background:var(--idle);color:var(--idle-ink)}
 .row.urgent .days{color:var(--accent)}
 
-.todo{display:grid;gap:9px;margin:0;padding:0;list-style:none}
-.todo li{display:grid;grid-template-columns:9px minmax(0,1fr);gap:9px;align-items:start;font-size:13px;line-height:1.45}
+.todo{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.todo li{display:grid;grid-template-columns:9px minmax(0,1fr) auto;gap:9px;align-items:start;font-size:12.5px;line-height:1.4}
 .todo li::before{content:"";width:7px;height:7px;margin-top:5px;border:1.5px solid var(--accent);transform:rotate(45deg);flex:none}
+.todo li.done{opacity:.45;text-decoration:line-through}
+.todo li.done::before{background:var(--ok);border-color:var(--ok)}
 
 .bars{display:grid;gap:8px}
 .bar{display:grid;grid-template-columns:96px minmax(0,1fr) 70px;gap:8px;align-items:center;font-size:12px}
@@ -153,12 +168,22 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
 .cat-items li{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--ink-2);border-radius:6px;padding:2px 4px}
 .flash{animation:flashBg 1.6s ease}
 @keyframes flashBg{0%{background:var(--warn-soft)}100%{background:transparent}}
-.proj-card{border:1px solid var(--line);border-radius:10px;padding:10px 11px;display:flex;flex-direction:column;gap:5px}
+
+.proj-card{border:1px solid var(--line);border-radius:10px;padding:10px 11px;display:flex;flex-direction:column;gap:6px}
 .proj-card + .proj-card{margin-top:8px}
+.proj-card.warn-border{border-color:var(--warn)}
 .proj-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .proj-head b{font-size:13px}
 .proj-next{font-size:11.5px;color:var(--ink-2)}
-.proj-meta{font-size:10.5px;color:var(--ink-3)}
+.proj-meta{font-size:10.5px;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between}
+.proj-links{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.proj-tag{font:400 10px/1.2 var(--f-data);background:var(--chip-bg);color:var(--ink-2);padding:2px 6px;border-radius:4px;display:inline-flex;align-items:center;gap:4px}
+.proj-tag.urgent{background:var(--warn-soft);color:var(--warn)}
+.proj-actions{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:2px;padding-top:6px;border-top:1px dashed var(--line)}
+.ai-btn{appearance:none;border:1px solid var(--line);background:var(--paper);color:var(--ink-2);font:500 10px/1 var(--f-data);
+  padding:4px 7px;border-radius:5px;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.ai-btn:hover{border-color:var(--accent);color:var(--accent)}
+
 .status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
 .status-dot.yes{background:var(--ok)} .status-dot.no{background:var(--bad)} .status-dot.na{background:var(--idle)}
 
@@ -176,6 +201,24 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
 .wheel-cols li b{color:var(--ink);font-weight:600;flex:none}
 .auto-tag{font-size:9.5px;color:var(--ink-3);margin-left:5px;font-style:italic}
 
+/* Подвал-справочник внизу правой панели (вместо перегрузки главного экрана статичными карточками) */
+.panel-footer{padding:12px 10px 8px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px}
+.ref-link{appearance:none;border:1px solid var(--line);background:var(--chip-bg);color:var(--ink-2);
+  font:500 11px/1.2 var(--f-body);padding:6px 10px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;text-decoration:none}
+.ref-link:hover{background:var(--line);color:var(--ink)}
+
+/* Модальное окно справочника и ИИ-синхронизации */
+.modal-backdrop{position:fixed;inset:0;z-index:50;background:rgba(21,32,43,.35);backdrop-filter:blur(2px);
+  display:none;align-items:center;justify-content:center;padding:16px}
+.modal-backdrop.open{display:flex}
+.modal{background:var(--panel);border:1px solid var(--panel-line);border-radius:18px;width:100%;max-width:460px;
+  max-height:85vh;display:flex;flex-direction:column;box-shadow:0 20px 50px rgba(21,32,43,.18);overflow:hidden}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.modal-head h3{margin:0;font:500 14px/1.2 var(--f-display)}
+.modal-body{padding:16px;overflow-y:auto;display:grid;gap:12px}
+.ai-textarea{width:100%;min-height:76px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:400 12px/1.4 var(--f-data);color:var(--ink);resize:vertical}
+.ai-textarea:focus{outline:none;border-color:var(--accent)}
+
 /* Мобильная версия — mind map не показываем (смысла на узком экране нет),
    вместо холста+плавающей карточки — обычная страница-приложение: шапка
    сверху, список карточек под ней, крупные тач-таргеты, без наложений. */
@@ -186,6 +229,7 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
             max(18px,env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));
     gap:14px}
   .canvas,.legend{display:none}
+  .js-map-mode{display:none}
 
   .brand{position:static;order:1;pointer-events:auto;max-width:none;padding:2px 2px 4px}
   .brand .label{font-size:11px}
@@ -207,7 +251,7 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
   .block-body{padding:0 16px 18px}
   .kpis{grid-template-columns:1fr 1fr;gap:10px}
   .kpi{padding:14px 15px;border-radius:14px}
-  .kpi .v{font-size:24px}
+  .kpi .v{font-size:22px}
   .row{grid-template-columns:44px minmax(0,1fr) auto auto;padding:12px 0}
   .sub .item{border-radius:14px;padding:13px 14px}
   .ch{border-radius:14px;padding:13px 14px}
@@ -216,12 +260,17 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
 </head>
 <body>
 
-<div class="canvas"><div id="map" role="img" aria-label="Карта расходов и доходов, сгруппированная по категориям"></div></div>
+<div class="canvas"><div id="map" role="img" aria-label="Карта расходов, доходов и проектов"></div></div>
 
 <div class="brand">
-  <div class="label">Панель управления</div>
+  <div class="label">Панель управления · Life OS</div>
   <h1>Пространство Кулешова</h1>
   <div class="meta">срез на <b id="today"></b><br>курс <span id="fx-usd"></span> &nbsp; <span id="fx-eur"></span></div>
+  <div class="controls">
+    <button class="pill-btn js-map-mode active" data-mode="categories" title="Группировать карту по категориям расходов и доходов">Карта: Категории</button>
+    <button class="pill-btn js-map-mode" data-mode="projects" title="Группировать карту вокруг проектов, их серверов и доменов">Карта: Проекты</button>
+    <button class="pill-btn js-open-modal" data-modal="ai-sync" title="Вставить статус-лог из Claude, Gemini или ChatGPT">⚡ ИИ-коммит</button>
+  </div>
 </div>
 
 <div class="legend" id="legend"></div>
@@ -229,7 +278,23 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
 
 <aside class="panel" aria-label="Сводка">
   <div class="panel-in" id="panel-in"></div>
+  <div class="panel-footer" id="panel-footer">
+    <button class="ref-link js-open-modal" data-modal="legal">📁 Статус и ИП</button>
+    <button class="ref-link js-open-modal" data-modal="diplomas">🎓 Дипломы</button>
+    <button class="ref-link js-open-modal" data-modal="housing">🏠 Жильё и ЖКХ</button>
+    <button class="ref-link js-open-modal" data-modal="channels">⚡ Каналы и Таблица</button>
+  </div>
 </aside>
+
+<div class="modal-backdrop" id="modal-backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h3 id="modal-title">Справочник</h3>
+      <button class="iconbtn" id="modal-close" aria-label="Закрыть"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
 
 <script>
 /* На мобильном mind map скрыт (см. @media ниже) — echarts (~1MB) не грузим вовсе, экономим трафик. */
@@ -246,34 +311,34 @@ const DATA = {
   fx: { RUB: 1, USD: 82.14, EUR: 92.17 },
   fxPrev: { USD: 82.14, EUR: 92.14 },
   payments: [
-    {name:"HostVDS: Париж, Канзас, Амстердам",cat:"Инфраструктура",sum:6,cur:"USD",per:"месяц",date:"2026-12-14",where:"hostvds.com"},
-    {name:"Timeweb Cloud: DocSreda",cat:"Инфраструктура",sum:800,cur:"RUB",per:"месяц",date:"2026-11-22",where:"timeweb.cloud"},
-    {name:"Claude API",cat:"AI-сервисы",sum:null,cur:"USD",per:"месяц",date:null,where:"platform.claude.com"},
-    {name:"nanakulidzhanova.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2026-11-19",where:"reg.ru"},
-    {name:"pbsreda.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2027-01-24",where:"reg.ru"},
-    {name:"ai2arch.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2027-06-18",where:"reg.ru"},
-    {name:"aleksandrkuleshov.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2027-08-09",where:"reg.ru"},
-    {name:"ku1eshov.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2027-08-10",where:"reg.ru"},
-    {name:"docsreda.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2027-09-17",where:"reg.ru"},
-    {name:"ai2edu.tech",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2027-09-17",where:"reg.ru"},
-    {name:"ai2start.ru",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2027-10-16",where:"reg.ru"},
-    {name:"c52.space",cat:"Домены",sum:null,cur:"RUB",per:"год",date:"2028-01-17",where:"reg.ru"},
-    {name:"ai2life.ru (аукцион, ставка сделана)",cat:"Домены",sum:null,cur:"RUB",per:"разово",date:null,where:"аукцион reg.ru"},
-    {name:"Аванс УСН за 9 месяцев",cat:"Налоги ИП",sum:null,cur:"RUB",per:"разово",date:"2026-10-28",where:"ЕНС"},
-    {name:"Фиксированные взносы ИП",cat:"Налоги ИП",sum:57390,cur:"RUB",per:"год",date:"2026-12-28",where:"ЕНС"},
-    {name:"Патент 2026: доплата 2/3",cat:"Налоги ИП",sum:null,cur:"RUB",per:"разово",date:null,where:"ЕНС"},
-    {name:"УСН за 2026: доплата",cat:"Налоги ИП",sum:null,cur:"RUB",per:"разово",date:"2027-04-28",where:"ЕНС"},
-    {name:"1% взносов свыше 300 тыс. ₽",cat:"Налоги ИП",sum:null,cur:"RUB",per:"разово",date:"2027-07-01",where:"ЕНС"},
-    {name:"Имущественные налоги за 2025",cat:"Налоги личные",sum:1872,cur:"RUB",per:"разово",date:"2026-12-01",where:"Госуслуги"}
+    {name:"HostVDS: Париж, Канзас, Амстердам",cat:"Инфраструктура",project:"Инфраструктура / VDS",sum:6,cur:"USD",per:"месяц",date:"2026-12-14",where:"hostvds.com"},
+    {name:"Timeweb Cloud: DocSreda",cat:"Инфраструктура",project:"DocSreda",sum:800,cur:"RUB",per:"месяц",date:"2026-11-22",where:"timeweb.cloud"},
+    {name:"Claude API",cat:"AI-сервисы",project:"AI-разработка",sum:null,cur:"USD",per:"месяц",date:null,where:"platform.claude.com"},
+    {name:"nanakulidzhanova.ru",cat:"Домены",project:"Клиентские / Личные",sum:null,cur:"RUB",per:"год",date:"2026-11-19",where:"reg.ru"},
+    {name:"pbsreda.ru",cat:"Домены",project:"DocSreda",sum:null,cur:"RUB",per:"год",date:"2027-01-24",where:"reg.ru"},
+    {name:"ai2arch.ru",cat:"Домены",project:"ai2arch",sum:null,cur:"RUB",per:"год",date:"2027-06-18",where:"reg.ru"},
+    {name:"aleksandrkuleshov.ru",cat:"Домены",project:"Личный бренд",sum:null,cur:"RUB",per:"год",date:"2027-08-09",where:"reg.ru"},
+    {name:"ku1eshov.ru",cat:"Домены",project:"Личный бренд",sum:null,cur:"RUB",per:"год",date:"2027-08-10",where:"reg.ru"},
+    {name:"docsreda.ru",cat:"Домены",project:"DocSreda",sum:null,cur:"RUB",per:"год",date:"2027-09-17",where:"reg.ru"},
+    {name:"ai2edu.tech",cat:"Домены",project:"ai2edu.tech",sum:null,cur:"RUB",per:"год",date:"2027-09-17",where:"reg.ru"},
+    {name:"ai2start.ru",cat:"Домены",project:"ai2edu.tech",sum:null,cur:"RUB",per:"год",date:"2027-10-16",where:"reg.ru"},
+    {name:"c52.space",cat:"Домены",project:"c52.space",sum:null,cur:"RUB",per:"год",date:"2028-01-17",where:"reg.ru"},
+    {name:"ai2life.ru (аукцион, ставка сделана)",cat:"Домены",project:"Личный бренд",sum:null,cur:"RUB",per:"разово",date:null,where:"аукцион reg.ru"},
+    {name:"Аванс УСН за 9 месяцев",cat:"Налоги ИП",project:"ИП и Налоги",sum:null,cur:"RUB",per:"разово",date:"2026-10-28",where:"ЕНС"},
+    {name:"Фиксированные взносы ИП",cat:"Налоги ИП",project:"ИП и Налоги",sum:57390,cur:"RUB",per:"год",date:"2026-12-28",where:"ЕНС"},
+    {name:"Патент 2026: доплата 2/3",cat:"Налоги ИП",project:"ИП и Налоги",sum:null,cur:"RUB",per:"разово",date:null,where:"ЕНС"},
+    {name:"УСН за 2026: доплата",cat:"Налоги ИП",project:"ИП и Налоги",sum:null,cur:"RUB",per:"разово",date:"2027-04-28",where:"ЕНС"},
+    {name:"1% взносов свыше 300 тыс. ₽",cat:"Налоги ИП",project:"ИП и Налоги",sum:null,cur:"RUB",per:"разово",date:"2027-07-01",where:"ЕНС"},
+    {name:"Имущественные налоги за 2025",cat:"Налоги личные",project:"Личное",sum:1872,cur:"RUB",per:"разово",date:"2026-12-01",where:"Госуслуги"}
   ],
   incomes: [
-    {name:"Курсы ai2arch (ЮФУ ААИ)",cat:"Обучение",sum:null},
-    {name:"Лекции РАНХиГС",cat:"Лекции",sum:null},
-    {name:"МГМУ_311",cat:"Преподавание",sum:null},
-    {name:"ЮРИУ, ДПО",cat:"Преподавание",sum:null},
-    {name:"Тренинги Иннополис",cat:"Тренинги",sum:null},
-    {name:"ai2edu.tech",cat:"Продукт",sum:null},
-    {name:"Бот-планировщик",cat:"Продукт",sum:null}
+    {name:"Курсы ai2arch (ЮФУ ААИ)",cat:"Обучение",project:"ai2arch",sum:null},
+    {name:"Лекции РАНХиГС",cat:"Лекции",project:"Преподавание и ВУЗы",sum:null},
+    {name:"МГМУ_311",cat:"Преподавание",project:"Преподавание и ВУЗы",sum:null},
+    {name:"ЮРИУ, ДПО",cat:"Преподавание",project:"Преподавание и ВУЗы",sum:null},
+    {name:"Тренинги Иннополис",cat:"Тренинги",project:"Преподавание и ВУЗы",sum:null},
+    {name:"ai2edu.tech",cat:"Продукт",project:"ai2edu.tech",sum:null},
+    {name:"Бот-планировщик",cat:"Продукт",project:"Бот-планировщик",sum:null}
   ],
   categories: [
     {name:"Инфраструктура", color:"--cat-infra"},
@@ -284,6 +349,20 @@ const DATA = {
     {name:"Налоги ИП", color:"--cat-tax-ip"},
     {name:"Налоги личные", color:"--cat-tax-pers"},
     {name:"Связь и быт", color:"--cat-life"}
+  ],
+  gateways: [
+    {name:"ЕНС (ФНС)", balance:null, cur:"RUB", status:"проверить к 28.10", where:"ЛК ИП / Банк"},
+    {name:"reg.ru (Домены)", balance:0, cur:"RUB", status:"привязать карту", where:"reg.ru"},
+    {name:"Timeweb Cloud", balance:null, cur:"RUB", status:"списание 22.11", where:"timeweb.cloud"},
+    {name:"Зарубежная карта (USD)", balance:null, cur:"USD", status:"Claude + HostVDS", where:"platform.claude.com"}
+  ],
+  todos: [
+    {id:"t1", text:"<b>nanakulidzhanova.ru</b> продлить или отпустить, до 19.11."},
+    {id:"t2", text:"<b>Аванс УСН</b> за 9 мес: уведомление до 26.10, оплата до 28.10."},
+    {id:"t3", text:"<b>Claude Console</b> — обновить карту, автопополнение отключено."},
+    {id:"t4", text:"<b>reg.ru</b> — баланс 0 ₽, проверить карту для автопродления."},
+    {id:"t5", text:"<b>Патент 2026</b> — внести дату и статус оплаты 1/3."},
+    {id:"t6", text:"<b>ai2life.ru</b> — ждём итог аукциона на reg.ru, ставка уже сделана."}
   ],
   housing: [
     {name:"Квартира на Университетском", addr:null, status:"своё жильё", utilities:null, payDay:null, where:null}
@@ -323,7 +402,7 @@ function applyOverrides() {
   for (const [path, val] of Object.entries(overrides)) {
     const [group, idx, field] = path.split(".");
     const arr = DATA[group];
-    if (arr && arr[idx] !== undefined) arr[idx][field] = val;
+    if (arr && arr[idx] !== undefined && field) arr[idx][field] = val;
   }
 }
 applyOverrides();
@@ -335,6 +414,7 @@ const perMonth = p => {
   const k = DATA.fx[p.cur] ?? 1, s = p.sum * k;
   return p.per === "месяц" ? s : p.per === "квартал" ? s / 3 : p.per === "год" ? s / 12 : 0;
 };
+const rawRub = p => p.sum == null ? 0 : p.sum * (DATA.fx[p.cur] ?? 1);
 const today = new Date(); today.setHours(0,0,0,0);
 const daysTo = d => d ? Math.round((new Date(d + "T00:00:00") - today) / 864e5) : null;
 const fmtDate = d => new Date(d + "T00:00:00").toLocaleDateString("ru-RU", {day:"2-digit", month:"2-digit"});
@@ -365,7 +445,7 @@ function escAttr(s) {
 /* ---------- парсинг чисел/дат в русской локали таблиц ---------- */
 function parseRuNum(s) {
   if (s == null) return null;
-  const t = String(s).replace(/[\s ]/g, "").replace(",", ".").trim();
+  const t = String(s).replace(/[\s\u00A0]/g, "").replace(",", ".").trim();
   if (!t) return null;
   const n = parseFloat(t);
   return isNaN(n) ? null : n;
@@ -386,16 +466,14 @@ function curSym(cur) { return cur === "RUB" ? "RUB" : cur === "USD" ? "$" : cur 
 /* ---------- редактируемое значение: клик — поле ввода — сохранить в localStorage ---------- */
 function editableAmt(path, sum, unit, locked) {
   const fmt = () => unit === "number" ? String(sum) : unit === "RUB" || unit === undefined ? rub(sum) : `${sum} ${unit}`;
-  if (sum != null) return fmt();
+  if (sum != null) return `<span class="editval js-edit" data-path="${path}" data-unit="${unit || "RUB"}" title="Нажми, чтобы изменить значение">${fmt()}</span>`;
   if (locked) return `<span class="editnote" title="Подтягивается из таблицы — впиши сумму через бота или в чате">— нет данных в таблице</span>`;
   return `<span class="editval js-edit" data-path="${path}" data-unit="${unit || "RUB"}" title="Нажми, чтобы вписать значение">— ввести</span>`;
 }
 function editableText(path, val, placeholder) {
-  if (val) return val;
+  if (val) return `<span class="editval js-edit" data-path="${path}" data-unit="text" title="Нажми, чтобы изменить">${val}</span>`;
   return `<span class="editval js-edit" data-path="${path}" data-unit="text" title="Нажми, чтобы вписать значение">${placeholder || "— ввести"}</span>`;
 }
-/* В отличие от editableAmt — кликабельно всегда, даже когда значение уже есть
-   (для «Колеса баланса»: автосчёт можно переопределить вручную в любой момент). */
 function clickableNumber(path, val, suffix) {
   const label = val != null ? `${val}${suffix || ""}` : "— ввести";
   return `<span class="editval js-edit" data-path="${path}" data-unit="number" title="Нажми, чтобы изменить значение">${label}</span>`;
@@ -438,11 +516,11 @@ function wheelSvg(items, size) {
     <polygon class="shape" points="${shapePts}"/>${dots}${labels}</svg>`;
 }
 
-/* ---------- автозаполнение «Колеса баланса» из реальных данных дашборда ----------
-   Сферы без объективного источника (здоровье, семья, обучение, отдых, межд. рынок)
-   остаются ручной оценкой. Там, где источник есть — считаем автоматически при
-   каждом recompute(); ручная правка через клик по значению «пришпиливает» число
-   (overrides) и отключает автосчёт для этой сферы, пока правку не стёрли. */
+let pm, burn, opBurn, taxReserveMonth, cash30, inc, soon, urgent14, gaps, byCat, maxBar;
+let PROJECTS = [];
+const PROJECTS_TSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSAwtbm5FlLGHXh3QyB7hwk9F-GTKs7gK6nPerYQZPHwWibhLe-TqJN7i6q1A3-YH-rKesPTUjODJJQ/pub?gid=555743489&single=true&output=tsv";
+
+/* ---------- автозаполнение «Колеса баланса» из реальных данных дашборда ---------- */
 const clamp10 = v => Math.max(0, Math.min(10, Math.round(v * 10) / 10));
 const AUTO_BALANCE = {
   "Финансы": () => {
@@ -452,10 +530,13 @@ const AUTO_BALANCE = {
     return clamp10(10 - overdue * 3 - urgent * 1 - gapsRatio * 5);
   },
   "Бизнес и проекты": () => {
-    const dom = pm.filter(p => p.cat === "Домены");
+    const dom = pm.filter(p => p.cat === "Домены" || p.cat === "Инфраструктура");
     const overdue = dom.filter(p => p.d != null && p.d < 0).length;
     const urgent = dom.filter(p => p.d != null && p.d >= 0 && p.d <= 14).length;
-    return clamp10(10 - overdue * 3 - urgent * 1.2);
+    const projAvg = Array.isArray(PROJECTS) && PROJECTS.length
+      ? PROJECTS.reduce((a, p) => a + (p.pct || 50), 0) / PROJECTS.length / 10
+      : 8;
+    return clamp10(projAvg - overdue * 2.5 - urgent * 0.8 + 1.5);
   },
   "Личная инфраструктура (Life OS)": () => {
     const fields = [
@@ -468,35 +549,56 @@ const AUTO_BALANCE = {
     const filled = fields.filter(v => v != null && v !== "").length;
     return clamp10((filled / fields.length) * 10);
   },
+  "Международный рынок": () => {
+    const hasApostil = DATA.diplomas.some(d => d.apostil === true) ? 3 : 0;
+    const intlVds = pm.some(p => p.cur === "USD" || p.cur === "EUR") ? 4 : 0;
+    return clamp10(hasApostil + intlVds);
+  }
 };
 
-let pm, burn, inc, soon, gaps, byCat, maxBar;
-let PROJECTS = [];
-const PROJECTS_TSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSAwtbm5FlLGHXh3QyB7hwk9F-GTKs7gK6nPerYQZPHwWibhLe-TqJN7i6q1A3-YH-rKesPTUjODJJQ/pub?gid=555743489&single=true&output=tsv";
 function parseTsv(text) {
   const lines = text.replace(/\r/g, "").split("\n").filter(l => l.length);
   if (!lines.length) return [];
   const rows = lines.slice(1).map(l => l.split("\t"));
-  return rows.filter(r => r[0]).map(r => ({
+  return rows.filter(r => r[0]).map((r, idx) => ({
+    _i: idx,
     name: r[0] || "", status: (r[1] || "").trim(), pct: parseFloat((r[2] || "").replace(",", ".")) || null,
     next: r[3] || "", updated: r[4] || "", notes: r[5] || "",
   }));
+}
+function applyProjectOverrides() {
+  if (!Array.isArray(PROJECTS)) return;
+  PROJECTS.forEach((p, idx) => {
+    if (overrides[`proj.${idx}.pct`] !== undefined) p.pct = overrides[`proj.${idx}.pct`];
+    if (overrides[`proj.${idx}.next`] !== undefined) p.next = overrides[`proj.${idx}.next`];
+    if (overrides[`proj.${idx}.status`] !== undefined) p.status = overrides[`proj.${idx}.status`];
+    if (overrides[`proj.${idx}.notes`] !== undefined) p.notes = overrides[`proj.${idx}.notes`];
+    if (overrides[`proj.${idx}.updated`] !== undefined) p.updated = overrides[`proj.${idx}.updated`];
+  });
 }
 async function loadProjects() {
   try {
     const res = await fetch(PROJECTS_TSV_URL, {cache: "no-store"});
     if (!res.ok) throw new Error(res.status);
     PROJECTS = parseTsv(await res.text());
+    applyProjectOverrides();
   } catch (e) {
-    PROJECTS = null; // не удалось подтянуть — покажем заметку, а не пустой блок
+    /* Фолбэк-проекты на основе экосистемы домена/доходов, если таблица недоступна офлайн */
+    PROJECTS = [
+      {_i:0, name:"DocSreda", status:"используется", pct:75, next:"Автопродление Timeweb и развитие продукта", updated:"октябрь 2026", notes:"Timeweb Cloud + docsreda.ru + pbsreda.ru"},
+      {_i:1, name:"ai2edu.tech", status:"MVP", pct:60, next:"Упаковка тарифов и подключение оплат", updated:"октябрь 2026", notes:"ai2edu.tech + ai2start.ru"},
+      {_i:2, name:"ai2arch", status:"стабильно", pct:85, next:"Поток ЮФУ ААИ и обновление программы", updated:"октябрь 2026", notes:"Курсы + домен ai2arch.ru"},
+      {_i:3, name:"Бот-планировщик", status:"рост", pct:70, next:"Парсинг ИИ-коммитов и запись в Google Sheets", updated:"октябрь 2026", notes:"@kulplans_bot + синхронизация оплат"}
+    ];
+    applyProjectOverrides();
   }
+  recompute();
   render();
+  if (window.echarts && typeof drawMap === "function" && innerWidth > 760) drawMap();
 }
 
-/* ---------- Платежи/Доходы — подтягиваются из тех же вкладок Google Sheets,
-   что правит бот и Claude в чате. Больше не нужно вписывать суммы руками:
-   правка — через бота (/payments) или через чат с доступом к таблице. ---------- */
-let SHEET_SYNC = { payments: null, incomes: null }; // null = ещё не пробовали/не получилось
+/* ---------- Платежи/Доходы — подтягиваются из тех же вкладок Google Sheets ---------- */
+let SHEET_SYNC = { payments: null, incomes: null };
 const PAYMENTS_TSV_URL = "";
 const INCOMES_TSV_URL = "";
 
@@ -534,7 +636,7 @@ async function loadPayments() {
     applyOverrides();
     SHEET_SYNC.payments = true;
   } catch (e) {
-    SHEET_SYNC.payments = false; // не удалось — останутся прежние (встроенные) данные
+    SHEET_SYNC.payments = false;
   }
   recompute(); render(); renderFx();
   if (window.echarts && typeof drawMap === "function" && innerWidth > 760) drawMap();
@@ -553,11 +655,32 @@ async function loadIncomes() {
   recompute(); render(); renderFx();
   if (window.echarts && typeof drawMap === "function" && innerWidth > 760) drawMap();
 }
+
+function matchProjectItems(projName) {
+  const key = projName.toLowerCase().replace(/\..*$/, "").trim();
+  const pays = pm.filter(p => {
+    const pProj = (p.project || "").toLowerCase();
+    const pName = p.name.toLowerCase();
+    return (pProj && pProj.includes(key)) || pName.includes(key);
+  });
+  const incs = DATA.incomes.filter(i => {
+    const iProj = (i.project || "").toLowerCase();
+    const iName = i.name.toLowerCase();
+    return (iProj && iProj.includes(key)) || iName.includes(key);
+  });
+  return { pays, incs };
+}
+
 function recompute() {
   pm = DATA.payments.map((p, i) => ({...p, _i: i, m: perMonth(p), d: daysTo(p.date)})).filter(p => !overrides[`hidden.${p._i}`] && !isArchivedStatus(p.status));
   burn = pm.reduce((a, p) => a + (p.m || 0), 0);
+  /* Разделяем операционный месячный расход (серверы, ИИ, подписки) и налоговый/годовой резерв */
+  opBurn = pm.filter(p => p.per === "месяц").reduce((a, p) => a + (p.m || 0), 0);
+  taxReserveMonth = pm.filter(p => p.per !== "месяц").reduce((a, p) => a + (p.m || 0), 0);
   inc = DATA.incomes.reduce((a, i) => a + (i.sum || 0), 0);
   soon = pm.filter(p => p.d != null && p.d >= 0 && p.d <= 30);
+  urgent14 = pm.filter(p => p.d != null && p.d <= 14);
+  cash30 = soon.reduce((a, p) => a + rawRub(p), 0);
   gaps = pm.filter(p => p.sum == null).length;
   byCat = DATA.categories.map(c => ({...c, v: pm.filter(p => p.cat === c.name).reduce((a, p) => a + (p.m || 0), 0), n: pm.filter(p => p.cat === c.name).length}));
   maxBar = Math.max(...byCat.map(x => x.v), 1);
@@ -565,7 +688,7 @@ function recompute() {
   DATA.balance.forEach((b, i) => {
     const calc = AUTO_BALANCE[b.name];
     if (!calc) return;
-    if (`balance.${i}.score` in overrides) { b.auto = false; return; } // вручную переопределено — не трогаем
+    if (`balance.${i}.score` in overrides) { b.auto = false; return; }
     b.score = calc();
     b.auto = true;
   });
@@ -573,38 +696,145 @@ function recompute() {
 recompute();
 
 /* ---------- сворачиваемые и переставляемые блоки панели ---------- */
-/* Шеврон (сворачивает/разворачивает) — просто "галочка" без штока.
-   Стрелки вверх/вниз (двигают блок) — со штоком, чтобы не путать с шевроном. */
 const ICON_CHEV = '<svg class="chev" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const ICON_UP = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 13V5M4.5 8.5L8 5l3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const ICON_DOWN = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 3v8M4.5 7.5L8 11l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const ICON_GRIP = '<svg viewBox="0 0 16 16" fill="currentColor"><circle cx="5" cy="4" r="1.3"/><circle cx="11" cy="4" r="1.3"/><circle cx="5" cy="8" r="1.3"/><circle cx="11" cy="8" r="1.3"/><circle cx="5" cy="12" r="1.3"/><circle cx="11" cy="12" r="1.3"/></svg>';
 const ICON_X = '<svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+const ICON_CHECK = '<svg viewBox="0 0 16 16" fill="none"><path d="M3.5 8.5l3 3 6-6.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 const SECTIONS = [
-  { id: "summary", title: "Сводка", badge: "", body: () => `
+  { id: "summary", title: "Финансовое ядро и шлюзы", badge: "ликвидность", body: () => `
     <div class="kpis">
-      <div class="kpi"><span class="v">${rub(burn)}</span><span class="s">₽ в месяц, расходы</span></div>
-      <div class="kpi"><span class="v">${inc ? rub(inc) : "—"}</span><span class="s">${inc ? "₽ в месяц, доходы" : "7 источников, суммы не внесены"}</span></div>
-      <div class="kpi alert"><span class="v">${soon.length}</span><span class="s">сроков за 30 дней</span></div>
-      <div class="kpi"><span class="v">${gaps}</span><span class="s">позиций без суммы</span></div>
+      <div class="kpi"><span class="v">${rub(opBurn)}</span><span class="s">Операционка / мес (+${rub(taxReserveMonth)} в резерв)</span></div>
+      <div class="kpi ${inc > burn ? "ok" : ""}"><span class="v">${inc ? rub(inc) : "—"}</span><span class="s">${inc ? `Доходы (поток: ${rub(inc - burn)})` : "7 источников, внести суммы"}</span></div>
+      <div class="kpi alert"><span class="v">${cash30 ? rub(cash30) : soon.length + " шт."}</span><span class="s">К оплате за 30 дн. (${soon.length} счетов)</span></div>
+      <div class="kpi"><span class="v">${gaps}</span><span class="s">Позиций без точной суммы</span></div>
+    </div>
+    <div class="gateways">
+      <div class="gateways-head"><span>Точки списания (Шлюзы)</span><span>Баланс / Статус</span></div>
+      <div class="gw-list">
+        ${DATA.gateways.map((g, gi) => `
+          <div class="gw-row">
+            <b>${g.name}</b>
+            <div class="gw-meta">
+              <span>${g.status}</span> · 
+              <b>${editableAmt(`gateways.${gi}.balance`, g.balance, curSym(g.cur), false)}</b>
+            </div>
+          </div>`).join("")}
+      </div>
     </div>` },
-  { id: "projects", title: "Проекты", badge: "", body: () => {
-    if (PROJECTS === null) return `<p class="note">Не удалось подтянуть статусы проектов (нет доступа к опубликованной Google-таблице). Остальной дашборд работает как обычно.</p>`;
+
+  { id: "upcoming", title: "Фокус: Оплаты и Решения", badge: `${urgent14.length} гор.`, body: () => {
+    const up = pm.filter(p => p.d != null && p.d > -30).sort((a, b) => a.d - b.d).slice(0, 8);
+    const hiddenList = DATA.payments
+      .map((p, i) => ({...p, _i: i}))
+      .filter(p => overrides[`hidden.${p._i}`]);
+    const hiddenBlock = hiddenList.length ? `
+      <details class="hidden-restore">
+        <summary>${ICON_CHEV} Скрытые / Оплаченные (${hiddenList.length})</summary>
+        <ul>${hiddenList.map(p => `
+          <li><span>${p.name}</span><button class="iconbtn js-restore" data-i="${p._i}">Вернуть</button></li>`).join("")}
+        </ul>
+      </details>` : "";
+    const activeTodos = DATA.todos.filter(t => !overrides[`todo.${t.id}`]);
+    const doneTodos = DATA.todos.filter(t => overrides[`todo.${t.id}`]);
+    return `
+      <ul class="list">${up.map(p => {
+        const [t, c] = status(p.d);
+        const amount = editableAmt(`payments.${p._i}.sum`, p.sum, curSym(p.cur), !!SHEET_SYNC.payments);
+        const note = p.status && !isArchivedStatus(p.status) ? p.status : "";
+        return `<li class="row${p.d <= 14 ? " urgent" : ""}">
+          <div class="days">${p.d}<small>${fmtDate(p.date)}</small></div>
+          <div class="what"><b>${p.name}</b><span>${p.project ? p.project + " · " : ""}${p.where || p.cat}</span><br><span class="chip ${c}">${t}</span>${note ? `<span class="editnote">${note}</span>` : ""}</div>
+          <div class="amt">${amount}</div>
+          <button class="iconbtn js-hide" data-i="${p._i}" data-name="${escAttr(p.name)}" title="Отметить оплаченным или скрыть из активного списка">${ICON_X}</button></li>`;
+      }).join("")}</ul>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)">
+        <div style="font:500 10.5px/1 var(--f-data);text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin-bottom:8px">Требует решения (${activeTodos.length})</div>
+        <ul class="todo">
+          ${activeTodos.map(t => `
+            <li>
+              <span>${t.text}</span>
+              <button class="iconbtn js-todo-toggle" data-id="${t.id}" title="Вопрос решён">${ICON_CHECK}</button>
+            </li>`).join("")}
+        </ul>
+        ${doneTodos.length ? `<details class="hidden-restore"><summary>${ICON_CHEV} Решённые задачи (${doneTodos.length})</summary>
+          <ul class="todo" style="margin-top:6px">${doneTodos.map(t => `<li class="done"><span>${t.text}</span><button class="iconbtn js-todo-toggle" data-id="${t.id}" title="Вернуть в работу">↺</button></li>`).join("")}</ul>
+        </details>` : ""}
+      </div>
+      ${hiddenBlock}`; } },
+
+  { id: "projects", title: "Проекты и ИИ-разработка", badge: "% и связки", body: () => {
+    if (PROJECTS === null) return `<p class="note">Не удалось подтянуть статусы проектов (нет доступа к опубликованной Google-таблице).</p>`;
     if (!PROJECTS.length) return `<p class="note">Загружаю статусы проектов…</p>`;
     const tag = s => ({
       "идея": "c-idle", "валидация": "c-idle", "MVP": "c-warn", "используется": "c-ok",
       "рост": "c-warn", "стабильно": "c-ok", "пауза": "c-bad", "закрыт": "c-bad",
     })[s] || "c-idle";
-    return PROJECTS.map(p => `
-      <div class="proj-card">
-        <div class="proj-head"><b>${p.name}</b>${p.status ? `<span class="chip ${tag(p.status)}">${p.status}</span>` : ""}</div>
-        ${p.pct != null ? `<div class="track"><div class="fill" style="width:${Math.min(100, p.pct)}%;background:var(--ink-3)"></div></div>` : ""}
-        ${p.next ? `<div class="proj-next">→ ${p.next}</div>` : ""}
-        ${p.notes ? `<div class="proj-meta">${p.notes}</div>` : ""}
-        ${p.updated ? `<div class="proj-meta">обновлено: ${p.updated}</div>` : ""}
-      </div>`).join(""); } },
-  { id: "balance", title: "Колесо баланса", badge: "1–10", body: () => {
+    return PROJECTS.map((p, idx) => {
+      const pIdx = p._i !== undefined ? p._i : idx;
+      const { pays, incs } = matchProjectItems(p.name);
+      const hasUrgent = pays.some(x => x.d != null && x.d <= 14);
+      const projBurn = pays.reduce((a, x) => a + (x.m || 0), 0);
+      const projInc = incs.reduce((a, x) => a + (x.sum || 0), 0);
+      return `
+      <div class="proj-card${hasUrgent ? " warn-border" : ""}">
+        <div class="proj-head">
+          <b>${p.name}</b>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font:500 11px var(--f-data);color:var(--ink-2)">${clickableNumber(`proj.${pIdx}.pct`, p.pct ?? 0, "%")}</span>
+            ${p.status ? `<span class="chip ${tag(p.status)}" style="margin-top:0">${p.status}</span>` : ""}
+          </div>
+        </div>
+        <div class="track"><div class="fill" style="width:${Math.min(100, p.pct || 0)}%;background:${hasUrgent ? "var(--warn)" : "var(--ok)"}"></div></div>
+        <div class="proj-next">→ ${editableText(`proj.${pIdx}.next`, p.next, "указать следующий шаг")}</div>
+        ${pays.length || incs.length ? `
+          <div class="proj-links">
+            ${pays.map(x => `<span class="proj-tag${x.d != null && x.d <= 14 ? " urgent" : ""}" title="Привязанный расход/домен">🖥 ${x.name.split(":")[0]} ${x.d != null ? `(${x.d}д)` : ""}</span>`).join("")}
+            ${incs.map(x => `<span class="proj-tag" style="color:var(--ok)" title="Источник дохода">＋ ${x.name}</span>`).join("")}
+          </div>` : ""}
+        <div class="proj-actions">
+          <span class="proj-meta">
+            ${projBurn ? `расход: ${rub(projBurn)}/м` : "инфра: ок"}
+            ${projInc ? ` · доход: ${rub(projInc)}` : ""}
+            ${p.updated ? ` · ${p.updated}` : ""}
+          </span>
+          <button class="ai-btn js-copy-ai" data-idx="${idx}" title="Скопировать промпт с контекстом проекта для Claude / Gemini / ChatGPT">📋 Контекст для ИИ</button>
+        </div>
+      </div>`;
+    }).join(""); } },
+
+  { id: "categories", title: "Категории расходов и Доходы", badge: "₽/мес", body: () => {
+    const incItems = DATA.incomes.map((x, i) => ({...x, _i: i}));
+    const incCats = [...new Set(DATA.incomes.map(x => x.cat))];
+    return `
+    <div style="font:500 10.5px/1 var(--f-data);text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin-bottom:8px">Структура расходов (${rub(burn)}/мес)</div>
+    <div class="sub">${byCat.map((x, ci) => {
+      const hex = css(x.color);
+      const items = pm.filter(p => p.cat === x.name);
+      return `<details class="item" id="cat-${ci}">
+        <summary><b><span class="dot" style="background:${hex}"></span>${x.name}</b>
+        <span>${x.v ? rub(x.v) : x.n ? x.n + " поз." : "—"}</span></summary>
+        <div class="track" style="margin-bottom:8px"><div class="fill" style="width:${(x.v / maxBar * 100).toFixed(1)}%;background:${hex}"></div></div>
+        <ul class="cat-items">${items.map(p => `
+          <li id="pay-${p._i}"><span>${p.name}${p.where ? `<span class="editnote">${p.where}${p.project ? " · " + p.project : ""}</span>` : ""}</span>${editableAmt(`payments.${p._i}.sum`, p.sum, curSym(p.cur), !!SHEET_SYNC.payments)}</li>`).join("")}
+        </ul>
+      </details>`;
+    }).join("")}</div>
+    <div style="font:500 10.5px/1 var(--f-data);text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin:14px 0 8px">Источники дохода (${inc ? rub(inc) : "внести суммы"})</div>
+    <div class="sub">${incCats.map((c, ci) => {
+      const items = incItems.filter(x => x.cat === c);
+      const total = items.reduce((a, x) => a + (x.sum || 0), 0);
+      return `<details class="item" id="inccat-${ci}">
+        <summary><b><span class="dot" style="background:var(--cat-income)"></span>${c}</b><span>${total ? rub(total) : items.length + " поз."}</span></summary>
+        <ul class="cat-items">${items.map(x => `
+          <li id="inc-${x._i}"><span>${x.name}</span>${editableAmt(`incomes.${x._i}.sum`, x.sum, curSym(x.cur), !!SHEET_SYNC.incomes)}</li>`).join("")}
+        </ul>
+      </details>`;
+    }).join("")}</div>`; } },
+
+  { id: "balance", title: "Колесо баланса (Индекс Life OS)", badge: "1–10", body: () => {
     const items = DATA.balance.map((b, i) => ({...b, _i: i}));
     const rated = items.filter(b => b.score != null);
     const avg = rated.length ? rated.reduce((a, b) => a + b.score, 0) / rated.length : null;
@@ -614,102 +844,14 @@ const SECTIONS = [
     const line = b => `<li><span>${b.name}${b.auto ? '<span class="auto-tag" title="Посчитано автоматически по данным дашборда — клик переопределяет вручную">· авто</span>' : ""}</span>
       <b>${clickableNumber(`balance.${b._i}.score`, b.score, "/10")}</b></li>`;
     return `${wheelSvg(items, 290)}
-      ${avg != null ? `<p style="text-align:center;margin:-4px 0 12px;font:500 11.5px var(--f-data);color:var(--ink-3)">среднее: ${avg.toFixed(1)}/10</p>` : ""}
+      ${avg != null ? `<p style="text-align:center;margin:-4px 0 12px;font:500 11.5px var(--f-data);color:var(--ink-3)">индекс устойчивости: ${avg.toFixed(1)}/10</p>` : ""}
       <div class="wheel-cols">
         <div><h3>Подтянуть</h3><ul>${weak.length ? weak.map(line).join("") : '<li style="color:var(--ink-3)">—</li>'}</ul></div>
         <div><h3>В порядке</h3><ul>${strong.length ? strong.map(line).join("") : '<li style="color:var(--ink-3)">—</li>'}</ul></div>
-      </div>`; } },
-  { id: "upcoming", title: "Ближайшие сроки", badge: "дней", body: () => {
-    const up = pm.filter(p => p.d != null && p.d > -30).sort((a, b) => a.d - b.d).slice(0, 7);
-    const hiddenList = DATA.payments
-      .map((p, i) => ({...p, _i: i}))
-      .filter(p => overrides[`hidden.${p._i}`]);
-    const hiddenBlock = hiddenList.length ? `
-      <details class="hidden-restore">
-        <summary>${ICON_CHEV} Скрытые (${hiddenList.length})</summary>
-        <ul>${hiddenList.map(p => `
-          <li><span>${p.name}</span><button class="iconbtn js-restore" data-i="${p._i}">Вернуть</button></li>`).join("")}
-        </ul>
-      </details>` : "";
-    return `<ul class="list">${up.map(p => {
-      const [t, c] = status(p.d);
-      const amount = editableAmt(`payments.${p._i}.sum`, p.sum, curSym(p.cur), !!SHEET_SYNC.payments);
-      const note = p.status && !isArchivedStatus(p.status) ? p.status : "";
-      return `<li class="row${p.d <= 14 ? " urgent" : ""}">
-        <div class="days">${p.d}<small>${fmtDate(p.date)}</small></div>
-        <div class="what"><b>${p.name}</b><span>${p.cat}</span><br><span class="chip ${c}">${t}</span>${note ? `<span class="editnote">${note}</span>` : ""}</div>
-        <div class="amt">${amount}</div>
-        <button class="iconbtn js-hide" data-i="${p._i}" data-name="${escAttr(p.name)}" title="Убрать из списка — не планирую продлевать/платить">${ICON_X}</button></li>`;
-    }).join("")}</ul>${hiddenBlock}`; } },
-  { id: "todo", title: "Требует решения", badge: "", body: () => `
-    <ul class="todo">
-      <li><span><b>nanakulidzhanova.ru</b> продлить или отпустить, до 19.11.</span></li>
-      <li><span><b>Аванс УСН</b> за 9 мес: уведомление до 26.10, оплата до 28.10.</span></li>
-      <li><span><b>Claude Console</b> — обновить карту, автопополнение отключено.</span></li>
-      <li><span><b>reg.ru</b> — баланс 0 ₽, проверить карту для автопродления.</span></li>
-      <li><span><b>Патент 2026</b> — внести дату и статус оплаты 1/3.</span></li>
-      <li><span><b>ai2life.ru</b> — ждём итог аукциона на reg.ru, ставка уже сделана.</span></li>
-    </ul>` },
-  { id: "categories", title: "Категории расходов", badge: "₽/мес", body: () => `
-    <div class="sub">${byCat.map((x, ci) => {
-      const hex = css(x.color);
-      const items = pm.filter(p => p.cat === x.name);
-      return `<details class="item" id="cat-${ci}">
-        <summary><b><span class="dot" style="background:${hex}"></span>${x.name}</b>
-        <span>${x.v ? rub(x.v) : x.n ? x.n + " поз." : "—"}</span></summary>
-        <div class="track" style="margin-bottom:8px"><div class="fill" style="width:${(x.v / maxBar * 100).toFixed(1)}%;background:${hex}"></div></div>
-        <ul class="cat-items">${items.map(p => `
-          <li id="pay-${p._i}"><span>${p.name}${p.where ? `<span class="editnote">${p.where}</span>` : ""}</span>${editableAmt(`payments.${p._i}.sum`, p.sum, curSym(p.cur), !!SHEET_SYNC.payments)}</li>`).join("")}
-        </ul>
-      </details>`;
-    }).join("")}</div>` },
-  { id: "incomes", title: "Доходы", badge: "по статьям", body: () => {
-    const incItems = DATA.incomes.map((x, i) => ({...x, _i: i}));
-    const cats = [...new Set(DATA.incomes.map(x => x.cat))];
-    return `<div class="sub">${cats.map((c, ci) => {
-      const items = incItems.filter(x => x.cat === c);
-      const total = items.reduce((a, x) => a + (x.sum || 0), 0);
-      return `<details class="item" id="inccat-${ci}">
-        <summary><b>${c}</b><span>${total ? rub(total) : items.length + " поз."}</span></summary>
-        <ul class="cat-items">${items.map(x => `
-          <li id="inc-${x._i}"><span>${x.name}</span>${editableAmt(`incomes.${x._i}.sum`, x.sum, curSym(x.cur), !!SHEET_SYNC.incomes)}</li>`).join("")}
-        </ul>
-      </details>`;
-    }).join("")}</div>`; } },
-  { id: "housing", title: "Жильё и коммунальные", badge: DATA.housing.length + " ед.", body: () => `
-    <div class="sub">${DATA.housing.map((h, i) => `
-      <details class="item">
-        <summary><b>${h.name}</b><span>${editableAmt(`housing.${i}.utilities`, h.utilities, "RUB")}/мес</span></summary>
-        <div class="meta">Адрес: ${editableText(`housing.${i}.addr`, h.addr)}</div>
-        <div class="meta">Статус: ${h.status || "—"}</div>
-        <div class="meta">День платежа: ${editableText(`housing.${i}.payDay`, h.payDay)}</div>
-        <div class="meta">Где платить: ${editableText(`housing.${i}.where`, h.where)}</div>
-      </details>`).join("")}</div>` },
-  { id: "legal", title: "Статус и документы", badge: "", body: () => `
-    <div class="sub">${DATA.legal.map(l => `
-      <div class="item"><b>${l.name}${l.value ? ` — ${l.value}` : ""}</b>
-        <div class="meta">${l.detail || ""}</div>
-        <div class="meta">Срок/дата продления: ${l.expiry ? fmtDate(l.expiry) : '<span class="editnote">пока не внесено</span>'}</div>
-      </div>`).join("")}</div>` },
-  { id: "diplomas", title: "Дипломы", badge: "", body: () => `
-    <div class="sub">${DATA.diplomas.map(d => {
-      const dot = d.apostil === true ? "yes" : d.apostil === false ? "no" : "na";
-      const label = d.apostil === true ? "апостилирован" : d.apostil === false ? "не апостилирован" : "статус неизвестен";
-      return `<div class="item"><b>${d.name}</b>
-        <div class="meta">${d.org || "вуз уточнить"}${d.year ? ", " + d.year : ""}</div>
-        <div class="meta"><span class="status-dot ${dot}"></span>${label}</div>
-        <div class="meta">${d.note || ""}</div></div>`;
-    }).join("")}</div>` },
-  { id: "channels", title: "Каналы", badge: "", body: () => `
-    <div class="channels">
-      <div class="ch"><b>Telegram · @kulplans_bot</b><p>Голос или текст → строка в таблице и событие в «Оплаты».</p></div>
-      <div class="ch"><b>Claude · Google Sheets</b><p>Любой чат читает и правит ту же таблицу.</p></div>
-      <div class="ch"><b>iCloud «Оплаты»</b><p>Даты из таблицы, напоминания за 3 дня и за день.</p></div>
-      <div class="ch"><b>ku1eshov.ru/space</b><p>«Платежи» и «Доходы» подтягиваются напрямую из той же таблицы, что бот и чат, — правки тут делай через бота или в чате. Остальные блоки (Жильё, Документы, Дипломы, Колесо баланса) пока правятся прямо тут и живут только в этом браузере.</p></div>
-    </div>` }
+      </div>`; } }
 ];
 
-const STORE_KEY = "prostranstvo-kuleshova-panel-v1";
+const STORE_KEY = "prostranstvo-kuleshova-panel-v2";
 function loadLayout() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
@@ -727,7 +869,8 @@ const saved = loadLayout();
 const byId = Object.fromEntries(SECTIONS.map(s => [s.id, s]));
 let order = saved && saved.order.every(id => byId[id]) && saved.order.length === SECTIONS.length
   ? saved.order.slice() : SECTIONS.map(s => s.id);
-let collapsed = saved ? { ...saved.collapsed } : {};
+/* По умолчанию аналитические блоки («Категории» и «Колесо баланса») можно свернуть, чтобы фокус был на деньгах и проектах */
+let collapsed = saved ? { ...saved.collapsed } : { categories: true, balance: true };
 
 const panelIn = document.getElementById("panel-in");
 
@@ -751,36 +894,81 @@ function render() {
 render();
 renderFx();
 
-panelIn.addEventListener("click", e => {
-  const editTarget = e.target.closest(".js-edit");
-  if (editTarget && !editTarget.querySelector("input")) {
+function bindInlineEdit(container, onCommit) {
+  container.addEventListener("click", e => {
+    const editTarget = e.target.closest(".js-edit");
+    if (!editTarget || editTarget.querySelector("input")) return;
     const path = editTarget.dataset.path, unit = editTarget.dataset.unit;
     const input = document.createElement("input");
     input.type = unit === "text" ? "text" : "number";
-    input.placeholder = unit === "text" ? "значение" : "сумма";
+    input.placeholder = unit === "text" ? "значение" : "число";
     editTarget.textContent = "";
     editTarget.appendChild(input);
     input.focus();
     const commit = () => {
       const raw = input.value.trim();
-      if (raw === "") return render();
+      if (raw === "") { onCommit(); return; }
       overrides[path] = unit === "text" ? raw : parseFloat(raw.replace(",", "."));
       saveOverrides(overrides);
       applyOverrides();
+      applyProjectOverrides();
       recompute();
-      render();
+      onCommit();
       renderFx();
-      if (window.echarts) drawMap();
+      if (window.echarts && typeof drawMap === "function") drawMap();
     };
     input.addEventListener("keydown", ev => { if (ev.key === "Enter") commit(); });
     input.addEventListener("blur", commit);
+  });
+}
+bindInlineEdit(panelIn, render);
+
+panelIn.addEventListener("click", e => {
+  if (e.target.closest(".js-edit")) return;
+
+  const copyBtn = e.target.closest(".js-copy-ai");
+  if (copyBtn && Array.isArray(PROJECTS)) {
+    const idx = parseInt(copyBtn.dataset.idx, 10);
+    const p = PROJECTS[idx];
+    if (p) {
+      const { pays, incs } = matchProjectItems(p.name);
+      const infraStr = pays.map(x => `${x.name} (${x.where || x.cat}${x.date ? ", до " + x.date : ""})`).join("; ") || "не привязана";
+      const incStr = incs.map(x => x.name).join("; ") || "в разработке";
+      const prompt = [
+        `Контекст проекта из CRM «Пространство Кулешова»:`,
+        `• Проект: ${p.name}`,
+        `• Статус: ${p.status || "активен"} (Готовность: ${p.pct ?? 0}%)`,
+        `• Инфраструктура и домены: ${infraStr}`,
+        `• Монетизация: ${incStr}`,
+        `• Текущий фокус / Следующий шаг: ${p.next || "уточнить"}`,
+        `• Заметки: ${p.notes || "—"}`,
+        ``,
+        `По итогам нашей сессии сформируй короткий статус-лог для моей CRM в одну строку:`,
+        `#update | ${p.name} | %готовности | новый статус | следующий шаг | резюме что сделано`
+      ].join("\n");
+      navigator.clipboard?.writeText(prompt);
+      const orig = copyBtn.textContent;
+      copyBtn.textContent = "✓ Скопировано";
+      setTimeout(() => { copyBtn.textContent = orig; }, 1600);
+    }
     return;
   }
+
+  const todoBtn = e.target.closest(".js-todo-toggle");
+  if (todoBtn) {
+    const id = todoBtn.dataset.id;
+    if (overrides[`todo.${id}`]) delete overrides[`todo.${id}`];
+    else overrides[`todo.${id}`] = true;
+    saveOverrides(overrides);
+    render();
+    return;
+  }
+
   const hideTarget = e.target.closest(".js-hide");
   if (hideTarget) {
     const i = hideTarget.dataset.i;
     const name = hideTarget.dataset.name || "эту позицию";
-    if (!confirm(`Убрать «${name}» из списка? Можно будет вернуть через «Скрытые» внизу блока.`)) return;
+    if (!confirm(`Убрать «${name}» из активного списка? Можно будет вернуть через «Скрытые» внизу блока.`)) return;
     overrides[`hidden.${i}`] = true;
     saveOverrides(overrides);
     recompute();
@@ -817,8 +1005,105 @@ panelIn.addEventListener("click", e => {
   }
 });
 
-/* drag handle — переупорядочивание мышью на десктопе; кнопки ▲▼ остаются основным
-   способом на тач-устройствах, где HTML5 drag-and-drop ненадёжен. */
+/* ---------- Модальное окно справочника (Статус, Дипломы, ЖКХ, Каналы, ИИ-коммит) ---------- */
+const modalBackdrop = document.getElementById("modal-backdrop");
+const modalTitle = document.getElementById("modal-title");
+const modalBody = document.getElementById("modal-body");
+let currentModal = null;
+
+function renderModalContent(type) {
+  currentModal = type;
+  if (type === "legal") {
+    modalTitle.textContent = "Статус, ИП и Документы";
+    modalBody.innerHTML = `<div class="sub">${DATA.legal.map((l, i) => `
+      <div class="item"><b>${l.name}${l.value ? ` — ${l.value}` : ""}</b>
+        <div class="meta">${editableText(`legal.${i}.detail`, l.detail, "добавить детали")}</div>
+        <div class="meta">Срок/продление: ${editableText(`legal.${i}.expiry`, l.expiry, "пока не внесено")}</div>
+      </div>`).join("")}</div>`;
+  } else if (type === "diplomas") {
+    modalTitle.textContent = "Дипломы и сертификаты";
+    modalBody.innerHTML = `<div class="sub">${DATA.diplomas.map((d, i) => {
+      const dot = d.apostil === true ? "yes" : d.apostil === false ? "no" : "na";
+      const label = d.apostil === true ? "апостилирован" : d.apostil === false ? "не апостилирован" : "статус неизвестен";
+      return `<div class="item"><b>${d.name}</b>
+        <div class="meta">ВУЗ: ${editableText(`diplomas.${i}.org`, d.org, "вуз уточнить")} · Год: ${editableAmt(`diplomas.${i}.year`, d.year, "number")}</div>
+        <div class="meta"><span class="status-dot ${dot}"></span>${label}</div>
+        <div class="meta">${editableText(`diplomas.${i}.note`, d.note, "примечание")}</div></div>`;
+    }).join("")}</div>`;
+  } else if (type === "housing") {
+    modalTitle.textContent = "Жильё и коммунальные";
+    modalBody.innerHTML = `<div class="sub">${DATA.housing.map((h, i) => `
+      <div class="item">
+        <b>${h.name}</b>
+        <div class="meta">Платеж: <b>${editableAmt(`housing.${i}.utilities`, h.utilities, "RUB")}/мес</b></div>
+        <div class="meta">Адрес: ${editableText(`housing.${i}.addr`, h.addr)}</div>
+        <div class="meta">Статус: ${h.status || "—"}</div>
+        <div class="meta">День платежа: ${editableText(`housing.${i}.payDay`, h.payDay)}</div>
+        <div class="meta">Где платить: ${editableText(`housing.${i}.where`, h.where)}</div>
+      </div>`).join("")}</div>`;
+  } else if (type === "channels") {
+    modalTitle.textContent = "Каналы связи и Архитектура";
+    modalBody.innerHTML = `<div class="channels">
+      <div class="ch"><b>Telegram · @kulplans_bot</b><p>Голос, текст или строка <code>#update</code> из нейросети → строка в таблице и событие в календаре «Оплаты».</p></div>
+      <div class="ch"><b>Claude / Gemini / ChatGPT · Google Sheets</b><p>Любая нейросеть получает контекст по кнопке «📋 Контекст для ИИ» на карточке проекта и возвращает статус-лог.</p></div>
+      <div class="ch"><b>iCloud «Оплаты»</b><p>Даты из таблицы, автоматические напоминания за 3 дня и за день до списания.</p></div>
+      <div class="ch"><b>ku1eshov.ru/space</b><p>Единый командный пункт: связывает проекты, серверы, домены и налоговый резерв.</p></div>
+    </div>`;
+  } else if (type === "ai-sync") {
+    modalTitle.textContent = "⚡ Быстрый ИИ-коммит из нейросети";
+    modalBody.innerHTML = `
+      <p style="margin:0;font-size:12.5px;color:var(--ink-2)">Вставьте строку отчета из Claude, ChatGPT или Gemini в формате:<br>
+      <code style="font-size:11px;color:var(--ink)">#update | Проект | 80% | статус | следующий шаг | заметка</code></p>
+      <textarea class="ai-textarea" id="ai-log-input" placeholder="#update | DocSreda | 85% | используется | Настроить автобэкап БД | Обновили интерфейс"></textarea>
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button class="pill-btn active" id="ai-log-apply">Применить к проекту</button>
+      </div>`;
+    const applyBtn = document.getElementById("ai-log-apply");
+    if (applyBtn) {
+      applyBtn.addEventListener("click", () => {
+        const raw = (document.getElementById("ai-log-input")?.value || "").trim();
+        if (!raw) return;
+        const parts = raw.replace(/^#update\s*\|?\s*/i, "").split("|").map(s => s.trim());
+        if (parts.length >= 2 && Array.isArray(PROJECTS)) {
+          const [pName, pPct, pStatus, pNext, pNotes] = parts;
+          let idx = PROJECTS.findIndex(x => x.name.toLowerCase() === pName.toLowerCase());
+          if (idx === -1) {
+            idx = PROJECTS.length;
+            PROJECTS.push({_i: idx, name: pName, status: "MVP", pct: 50, next: "", updated: "", notes: ""});
+          }
+          const numPct = parseFloat((pPct || "").replace("%", "").replace(",", "."));
+          if (!isNaN(numPct)) overrides[`proj.${idx}.pct`] = numPct;
+          if (pStatus) overrides[`proj.${idx}.status`] = pStatus;
+          if (pNext) overrides[`proj.${idx}.next`] = pNext;
+          if (pNotes) overrides[`proj.${idx}.notes`] = pNotes;
+          overrides[`proj.${idx}.updated`] = today.toLocaleDateString("ru-RU", {day:"2-digit", month:"2-digit"});
+          saveOverrides(overrides);
+          applyProjectOverrides();
+          recompute();
+          render();
+          if (window.echarts && typeof drawMap === "function") drawMap();
+          modalBackdrop.classList.remove("open");
+        }
+      });
+    }
+  }
+}
+
+bindInlineEdit(modalBody, () => { if (currentModal) renderModalContent(currentModal); render(); });
+
+document.addEventListener("click", e => {
+  const trigger = e.target.closest(".js-open-modal");
+  if (trigger) {
+    renderModalContent(trigger.dataset.modal);
+    modalBackdrop.classList.add("open");
+    return;
+  }
+  if (e.target === modalBackdrop || e.target.closest("#modal-close")) {
+    modalBackdrop.classList.remove("open");
+  }
+});
+
+/* drag handle — переупорядочивание мышью на десктопе */
 let dragId = null;
 panelIn.addEventListener("dragstart", e => {
   const block = e.target.closest(".block");
@@ -857,44 +1142,91 @@ panelIn.addEventListener("drop", e => {
   render();
 });
 
-/* ---------- легенда и mind map ---------- */
+/* ---------- легенда и mind map (2 режима: Категории / Проекты) ---------- */
 document.getElementById("legend").innerHTML =
   DATA.categories.map(c => `<span><i style="background:${css(c.color)}"></i>${c.name}</span>`).join("") +
   `<span><i style="background:${css('--cat-income')}"></i>Доходы</span>`;
 
 let chart;
+let mapMode = "categories";
+
+document.querySelectorAll(".js-map-mode").forEach(btn => {
+  btn.addEventListener("click", () => {
+    mapMode = btn.dataset.mode;
+    document.querySelectorAll(".js-map-mode").forEach(b => b.classList.toggle("active", b === btn));
+    if (window.echarts && typeof drawMap === "function") drawMap();
+  });
+});
+
 function drawMap() {
   const ink = css("--ink"), line = css("--line"), sheet = css("--paper");
+  const incCol = css("--cat-income");
   const leaf = (name, v, col, extra) => ({
     name: v ? `${name}\n${rub(v)}` : name,
     itemStyle: {color: v ? col : sheet, borderColor: col, borderWidth: v ? 0 : 1.5},
     label: {color: ink},
     ...extra
   });
-  const exp = DATA.categories.map(c => {
-    const items = pm.filter(p => p.cat === c.name);
-    const v = items.reduce((a, p) => a + (p.m || 0), 0);
-    const col = css(c.color);
-    return {
-      name: `${c.name}\n${v ? rub(v) : items.length + " поз."}`,
-      itemStyle: {color: col, borderColor: col},
-      label: {color: ink, fontWeight: 600},
-      children: items.map(p => leaf(p.name, p.m, col, {_pay: p._i}))
+
+  let root;
+  if (mapMode === "projects") {
+    const projGroups = {};
+    pm.forEach(p => {
+      const g = p.project || p.cat || "Прочее";
+      if (!projGroups[g]) projGroups[g] = { pays: [], incs: [] };
+      projGroups[g].pays.push(p);
+    });
+    DATA.incomes.forEach((incItem, idx) => {
+      const g = incItem.project || incItem.cat || "Доходы";
+      if (!projGroups[g]) projGroups[g] = { pays: [], incs: [] };
+      projGroups[g].incs.push({...incItem, _i: idx});
+    });
+    const children = Object.entries(projGroups).map(([gName, grp]) => {
+      const vPay = grp.pays.reduce((a, p) => a + (p.m || 0), 0);
+      const col = grp.incs.length && !grp.pays.length ? incCol : css("--cat-infra");
+      const nodes = [
+        ...grp.pays.map(p => leaf(p.name, p.m, css("--cat-domains"), {_pay: p._i})),
+        ...grp.incs.map(i => leaf(`+ ${i.name}`, i.sum, incCol, {_inc: i._i}))
+      ];
+      return {
+        name: vPay ? `${gName}\n-${rub(vPay)}/м` : gName,
+        itemStyle: {color: col, borderColor: col},
+        label: {color: ink, fontWeight: 600},
+        children: nodes
+      };
+    });
+    root = {
+      name: "Экосистема\nПроектов",
+      itemStyle: {color: ink, borderColor: ink},
+      label: {color: "#FFFFFF", fontWeight: 600},
+      children
     };
-  }).filter(x => x.children.length);
-  const incCol = css("--cat-income");
-  const incItems = DATA.incomes.map((x, i) => ({...x, _i: i}));
-  const incCats = [...new Set(DATA.incomes.map(i => i.cat))].map(c => ({
-    name: c, itemStyle: {color: sheet, borderColor: incCol, borderWidth: 1.5}, label: {color: ink, fontWeight: 600},
-    children: incItems.filter(i => i.cat === c).map(i => leaf(i.name, i.sum, incCol, {_inc: i._i}))
-  }));
-  const root = {
-    name: "Я", itemStyle: {color: ink, borderColor: ink}, label: {color: "#FFFFFF", fontWeight: 600},
-    children: [
-      {name: `Расходы\n${rub(burn)}/мес`, itemStyle: {color: ink, borderColor: ink}, label: {color: ink, fontWeight: 600}, children: exp},
-      {name: "Доходы\nсуммы не внесены", itemStyle: {color: ink, borderColor: ink}, label: {color: ink, fontWeight: 600}, children: incCats}
-    ]
-  };
+  } else {
+    const exp = DATA.categories.map(c => {
+      const items = pm.filter(p => p.cat === c.name);
+      const v = items.reduce((a, p) => a + (p.m || 0), 0);
+      const col = css(c.color);
+      return {
+        name: `${c.name}\n${v ? rub(v) : items.length + " поз."}`,
+        itemStyle: {color: col, borderColor: col},
+        label: {color: ink, fontWeight: 600},
+        children: items.map(p => leaf(p.name, p.m, col, {_pay: p._i}))
+      };
+    }).filter(x => x.children.length);
+    const incItems = DATA.incomes.map((x, i) => ({...x, _i: i}));
+    const incCats = [...new Set(DATA.incomes.map(i => i.cat))].map(c => ({
+      name: c, itemStyle: {color: sheet, borderColor: incCol, borderWidth: 1.5}, label: {color: ink, fontWeight: 600},
+      children: incItems.filter(i => i.cat === c).map(i => leaf(i.name, i.sum, incCol, {_inc: i._i}))
+    }));
+    root = {
+      name: "Я", itemStyle: {color: ink, borderColor: ink}, label: {color: "#FFFFFF", fontWeight: 600},
+      children: [
+        {name: `Расходы\n${rub(burn)}/мес`, itemStyle: {color: ink, borderColor: ink}, label: {color: ink, fontWeight: 600}, children: exp},
+        {name: `Доходы\n${inc ? rub(inc) : "суммы не внесены"}`, itemStyle: {color: ink, borderColor: ink}, label: {color: ink, fontWeight: 600}, children: incCats}
+      ]
+    };
+  }
+
   const narrow = innerWidth < 760;
   chart = chart || echarts.init(document.getElementById("map"), null, {renderer: "svg"});
   chart.setOption({
@@ -913,13 +1245,12 @@ function drawMap() {
   chart.off("click");
   chart.on("click", params => {
     const d = params.data;
-    if (!d || d.children) return; // клик по категории/корню — нечего открывать
+    if (!d || d.children) return;
     if (d._pay != null) jumpToItem("categories", `pay-${d._pay}`);
-    else if (d._inc != null) jumpToItem("incomes", `inc-${d._inc}`);
+    else if (d._inc != null) jumpToItem("categories", `inc-${d._inc}`);
   });
 }
-/* Клик по листу MindMap -> разворачиваем нужный блок панели, открываем его
-   карточку категории и подсвечиваем строку, чтобы можно было сразу поправить сумму. */
+
 function jumpToItem(blockId, elId) {
   if (collapsed[blockId]) { collapsed[blockId] = false; saveLayout(order, collapsed); }
   render();
@@ -933,9 +1264,10 @@ function jumpToItem(blockId, elId) {
     setTimeout(() => el.classList.remove("flash"), 1600);
   });
 }
+
 const isMobile = () => innerWidth <= 760;
 if (isMobile()) {
-  document.querySelector(".canvas").remove(); // на мобильном mind map не нужен — экономим загрузку echarts
+  document.querySelector(".canvas").remove();
 } else if (window.echarts) {
   drawMap();
   addEventListener("resize", () => { if (isMobile()) return; chart && chart.resize(); });
