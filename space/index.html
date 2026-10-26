@@ -519,6 +519,22 @@ function wheelSvg(items, size) {
 let pm, burn, opBurn, taxReserveMonth, cash30, inc, soon, urgent14, gaps, byCat, maxBar;
 let PROJECTS = [];
 const PROJECTS_TSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSAwtbm5FlLGHXh3QyB7hwk9F-GTKs7gK6nPerYQZPHwWibhLe-TqJN7i6q1A3-YH-rKesPTUjODJJQ/pub?gid=555743489&single=true&output=tsv";
+/* Веб-апп Apps Script (doPost) — пишет прямо в тот же Sheet, минуя localStorage.
+   Пока URL пуст, "ИИ-коммит" и "Применить" тихо падают обратно на override (как раньше). */
+const PROJECTS_WRITE_URL = "";
+const PROJECTS_WRITE_TOKEN = "EWgoaRG6819e8eaoJbqe15_EKRoEnnWl";
+async function writeProjectUpdate(payload) {
+  if (!PROJECTS_WRITE_URL) return { ok: false, error: "no-url" };
+  try {
+    const res = await fetch(PROJECTS_WRITE_URL, {
+      method: "POST",
+      body: JSON.stringify({ token: PROJECTS_WRITE_TOKEN, action: "update_project", ...payload }),
+    });
+    return await res.json();
+  } catch (e) {
+    return { ok: false, error: String(e) };
+  }
+}
 
 /* ---------- автозаполнение «Колеса баланса» из реальных данных дашборда ---------- */
 const clamp10 = v => Math.max(0, Math.min(10, Math.round(v * 10) / 10));
@@ -1055,23 +1071,44 @@ function renderModalContent(type) {
       <p style="margin:0;font-size:12.5px;color:var(--ink-2)">Вставьте строку отчета из Claude, ChatGPT или Gemini в формате:<br>
       <code style="font-size:11px;color:var(--ink)">#update | Проект | 80% | статус | следующий шаг | заметка</code></p>
       <textarea class="ai-textarea" id="ai-log-input" placeholder="#update | DocSreda | 85% | используется | Настроить автобэкап БД | Обновили интерфейс"></textarea>
-      <div style="display:flex;justify-content:flex-end;gap:8px">
+      <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px">
+        <span id="ai-log-status" style="font-size:11px;color:var(--ink-3)"></span>
         <button class="pill-btn active" id="ai-log-apply">Применить к проекту</button>
       </div>`;
     const applyBtn = document.getElementById("ai-log-apply");
     if (applyBtn) {
-      applyBtn.addEventListener("click", () => {
+      applyBtn.addEventListener("click", async () => {
         const raw = (document.getElementById("ai-log-input")?.value || "").trim();
         if (!raw) return;
         const parts = raw.replace(/^#update\s*\|?\s*/i, "").split("|").map(s => s.trim());
-        if (parts.length >= 2 && Array.isArray(PROJECTS)) {
-          const [pName, pPct, pStatus, pNext, pNotes] = parts;
-          let idx = PROJECTS.findIndex(x => x.name.toLowerCase() === pName.toLowerCase());
-          if (idx === -1) {
-            idx = PROJECTS.length;
-            PROJECTS.push({_i: idx, name: pName, status: "MVP", pct: 50, next: "", updated: "", notes: ""});
-          }
-          const numPct = parseFloat((pPct || "").replace("%", "").replace(",", "."));
+        if (parts.length < 2 || !Array.isArray(PROJECTS)) return;
+        const [pName, pPct, pStatus, pNext, pNotes] = parts;
+        const numPct = parseFloat((pPct || "").replace("%", "").replace(",", "."));
+        const statusEl = document.getElementById("ai-log-status");
+
+        applyBtn.disabled = true;
+        if (statusEl) statusEl.textContent = "пишу в таблицу…";
+        const result = await writeProjectUpdate({
+          name: pName, pct: isNaN(numPct) ? "" : numPct, status: pStatus || "", next: pNext || "", notes: pNotes || "",
+        });
+        applyBtn.disabled = false;
+
+        let idx = PROJECTS.findIndex(x => x.name.toLowerCase() === pName.toLowerCase());
+        if (idx === -1) {
+          idx = PROJECTS.length;
+          PROJECTS.push({_i: idx, name: pName, status: "MVP", pct: 50, next: "", updated: "", notes: ""});
+        }
+        if (result.ok) {
+          // Записалось в Sheet — правим локальную копию напрямую (без override),
+          // следующий loadProjects() просто подтвердит то же самое из таблицы.
+          if (!isNaN(numPct)) PROJECTS[idx].pct = numPct;
+          if (pStatus) PROJECTS[idx].status = pStatus;
+          if (pNext) PROJECTS[idx].next = pNext;
+          if (pNotes) PROJECTS[idx].notes = pNotes;
+          PROJECTS[idx].updated = today.toLocaleDateString("ru-RU", {day:"2-digit", month:"2-digit"});
+          if (statusEl) statusEl.textContent = "✓ записано в таблицу";
+        } else {
+          // Нет URL веб-аппа или запись не удалась — как раньше, только в этом браузере.
           if (!isNaN(numPct)) overrides[`proj.${idx}.pct`] = numPct;
           if (pStatus) overrides[`proj.${idx}.status`] = pStatus;
           if (pNext) overrides[`proj.${idx}.next`] = pNext;
@@ -1079,11 +1116,12 @@ function renderModalContent(type) {
           overrides[`proj.${idx}.updated`] = today.toLocaleDateString("ru-RU", {day:"2-digit", month:"2-digit"});
           saveOverrides(overrides);
           applyProjectOverrides();
-          recompute();
-          render();
-          if (window.echarts && typeof drawMap === "function") drawMap();
-          modalBackdrop.classList.remove("open");
+          if (statusEl) statusEl.textContent = result.error === "no-url" ? "сохранено только в этом браузере" : "не удалось записать в таблицу — сохранено только тут";
         }
+        recompute();
+        render();
+        if (window.echarts && typeof drawMap === "function") drawMap();
+        setTimeout(() => modalBackdrop.classList.remove("open"), 700);
       });
     }
   }
