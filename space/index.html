@@ -94,6 +94,14 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
 .iconbtn svg{width:14px;height:14px;display:block}
 .js-hide{color:var(--bad)}
 .js-hide:hover{background:var(--bad-soft);color:var(--bad)}
+.btn-done{appearance:none;border:1px solid var(--ok);background:var(--ok-soft);color:var(--ok);
+  font:600 11.5px/1 var(--f-data);padding:6px 12px;border-radius:8px;cursor:pointer;flex:none;
+  display:flex;align-items:center;gap:5px;transition:background .12s,color .12s}
+.btn-done:hover{background:var(--ok);color:#fff}
+.btn-done svg{width:13px;height:13px;display:block}
+.btn-skip{appearance:none;border:0;background:none;color:var(--ink-3);font:400 10.5px var(--f-data);
+  padding:4px 5px;cursor:pointer;flex:none;opacity:.7}
+.btn-skip:hover{opacity:1;color:var(--bad)}
 .hidden-restore{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--ink-3)}
 .hidden-restore summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:4px}
 .hidden-restore summary::-webkit-details-marker{display:none}
@@ -128,8 +136,10 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
 .gw-meta{font:400 11px var(--f-data);color:var(--ink-2);display:flex;align-items:center;gap:6px}
 
 .list{list-style:none;margin:0;padding:0}
-.row{display:grid;grid-template-columns:48px minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.row{display:flex;flex-direction:column;gap:6px;padding:9px 0;border-top:1px solid var(--line)}
 .row:first-child{border-top:0}
+.row-main{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:8px;align-items:start}
+.row-actions{display:flex;justify-content:flex-end;align-items:center;gap:12px}
 .days{font:500 15px/1 var(--f-data);font-variant-numeric:tabular-nums;text-align:right}
 .days small{display:block;font-size:9.5px;color:var(--ink-3);letter-spacing:.04em;margin-top:3px}
 .what{min-width:0}
@@ -279,7 +289,9 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
   .kpis{grid-template-columns:1fr 1fr;gap:10px}
   .kpi{padding:14px 15px;border-radius:14px}
   .kpi .v{font-size:22px}
-  .row{grid-template-columns:44px minmax(0,1fr) auto auto;padding:12px 0}
+  .row{padding:12px 0}
+  .row-main{grid-template-columns:44px minmax(0,1fr) auto}
+  .btn-done{padding:8px 14px;font-size:12.5px}
   .sub .item{border-radius:14px;padding:13px 14px}
   .ch{border-radius:14px;padding:13px 14px}
 }
@@ -569,24 +581,31 @@ async function writeProjectUpdate(payload) {
 /* Быстрая правка проекта кнопкой/кликом по шкале — пишет сразу в таблицу,
    с тем же откатом на override, что и "ИИ-коммит". patch — например {pct: 40}
    или {status: "MVP"}. Ничего печатать не нужно — для этого остаётся "⚡ ИИ-коммит". */
-async function quickUpdateProject(name, patch) {
+const _pctWriteSeq = {};
+function quickUpdateProject(name, patch) {
   if (!Array.isArray(PROJECTS)) return;
   const idx = PROJECTS.findIndex(x => x.name === name);
   if (idx === -1) return;
   const updatedStamp = today.toLocaleDateString("ru-RU", {day:"2-digit", month:"2-digit", year:"numeric"});
-  const result = await writeProjectUpdate({ name, ...patch });
-  if (result.ok) {
-    Object.assign(PROJECTS[idx], patch);
-    PROJECTS[idx].updated = updatedStamp;
-  } else {
-    Object.entries(patch).forEach(([k, v]) => { overrides[`proj.${idx}.${k}`] = v; });
-    overrides[`proj.${idx}.updated`] = updatedStamp;
-    saveOverrides(overrides);
-    applyProjectOverrides();
-  }
+
+  // Оптимистично применяем сразу — чтобы кнопки/трек реагировали мгновенно,
+  // не ожидая ответа сети (иначе клики кажутся "залипшими").
+  Object.assign(PROJECTS[idx], patch);
+  PROJECTS[idx].updated = updatedStamp;
   recompute();
   render();
   refreshCanvas();
+
+  const seq = (_pctWriteSeq[name] = (_pctWriteSeq[name] || 0) + 1);
+  writeProjectUpdate({ name, ...patch }).then(result => {
+    // Если позже успел прилететь ещё один клик — его запись главнее, не откатываем.
+    if (_pctWriteSeq[name] !== seq) return;
+    if (!result.ok) {
+      Object.entries(patch).forEach(([k, v]) => { overrides[`proj.${idx}.${k}`] = v; });
+      overrides[`proj.${idx}.updated`] = updatedStamp;
+      saveOverrides(overrides);
+    }
+  });
 }
 
 document.addEventListener("click", e => {
@@ -872,7 +891,7 @@ const SECTIONS = [
       <details class="hidden-restore">
         <summary>${ICON_CHEV} Скрытые / Оплаченные (${hiddenList.length})</summary>
         <ul>${hiddenList.map(p => `
-          <li><span>${p.name}</span><button class="iconbtn js-restore" data-i="${p._i}">Вернуть</button></li>`).join("")}
+          <li><span>${p.name} <small style="color:var(--ink-3)">— ${overrides[`paid.${p._i}`] ? "оплачено" : "пропущено"}</small></span><button class="iconbtn js-restore" data-i="${p._i}">Вернуть</button></li>`).join("")}
         </ul>
       </details>` : "";
     const activeTodos = DATA.todos.filter(t => !overrides[`todo.${t.id}`]);
@@ -883,10 +902,16 @@ const SECTIONS = [
         const amount = editableAmt(`payments.${p._i}.sum`, p.sum, curSym(p.cur), !!SHEET_SYNC.payments);
         const note = p.status && !isArchivedStatus(p.status) ? p.status : "";
         return `<li class="row${p.d <= 14 ? " urgent" : ""}">
-          <div class="days">${p.d}<small>${fmtDate(p.date)}</small></div>
-          <div class="what"><b>${p.name}</b><span>${p.project ? p.project + " · " : ""}${p.where || p.cat}</span><br><span class="chip ${c}">${t}</span>${note ? `<span class="editnote">${note}</span>` : ""}</div>
-          <div class="amt">${amount}</div>
-          <button class="iconbtn js-hide" data-i="${p._i}" data-name="${escAttr(p.name)}" title="Отметить оплаченным или скрыть из активного списка">${ICON_X}</button></li>`;
+          <div class="row-main">
+            <div class="days">${p.d}<small>${fmtDate(p.date)}</small></div>
+            <div class="what"><b>${p.name}</b><span>${p.project ? p.project + " · " : ""}${p.where || p.cat}</span><br><span class="chip ${c}">${t}</span>${note ? `<span class="editnote">${note}</span>` : ""}</div>
+            <div class="amt">${amount}</div>
+          </div>
+          <div class="row-actions">
+            <button class="btn-skip js-skip" data-i="${p._i}" data-name="${escAttr(p.name)}" title="Пропустить / отменить — без отметки об оплате">закрыть задачу ✕</button>
+            <button class="btn-done js-done" data-i="${p._i}" data-name="${escAttr(p.name)}" title="Отметить оплаченным">${ICON_CHECK} Оплачено</button>
+          </div>
+        </li>`;
       }).join("")}</ul>
       <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)">
         <div style="font:500 10.5px/1 var(--f-data);text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin-bottom:8px">Требует решения (${activeTodos.length})</div>
@@ -1102,12 +1127,25 @@ panelIn.addEventListener("click", e => {
     return;
   }
 
-  const hideTarget = e.target.closest(".js-hide");
-  if (hideTarget) {
-    const i = hideTarget.dataset.i;
-    const name = hideTarget.dataset.name || "эту позицию";
-    if (!confirm(`Убрать «${name}» из активного списка? Можно будет вернуть через «Скрытые» внизу блока.`)) return;
+  const doneTarget = e.target.closest(".js-done");
+  if (doneTarget) {
+    const i = doneTarget.dataset.i;
     overrides[`hidden.${i}`] = true;
+    overrides[`paid.${i}`] = true;
+    saveOverrides(overrides);
+    recompute();
+    render();
+    renderFx();
+    refreshCanvas();
+    return;
+  }
+  const skipTarget = e.target.closest(".js-skip");
+  if (skipTarget) {
+    const i = skipTarget.dataset.i;
+    const name = skipTarget.dataset.name || "эту позицию";
+    if (!confirm(`Закрыть «${name}» без отметки об оплате? Можно будет вернуть через «Скрытые» внизу блока.`)) return;
+    overrides[`hidden.${i}`] = true;
+    delete overrides[`paid.${i}`];
     saveOverrides(overrides);
     recompute();
     render();
@@ -1119,6 +1157,7 @@ panelIn.addEventListener("click", e => {
   if (restoreTarget) {
     const i = restoreTarget.dataset.i;
     delete overrides[`hidden.${i}`];
+    delete overrides[`paid.${i}`];
     saveOverrides(overrides);
     recompute();
     render();
