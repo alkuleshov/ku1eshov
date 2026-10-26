@@ -521,7 +521,7 @@ let PROJECTS = [];
 const PROJECTS_TSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSAwtbm5FlLGHXh3QyB7hwk9F-GTKs7gK6nPerYQZPHwWibhLe-TqJN7i6q1A3-YH-rKesPTUjODJJQ/pub?gid=555743489&single=true&output=tsv";
 /* Веб-апп Apps Script (doPost) — пишет прямо в тот же Sheet, минуя localStorage.
    Пока URL пуст, "ИИ-коммит" и "Применить" тихо падают обратно на override (как раньше). */
-const PROJECTS_WRITE_URL = "";
+const PROJECTS_WRITE_URL = "https://script.google.com/macros/s/AKfycbzMbrYnT3jxI4Sn9u2JNUOVcs12_1JTsBmYVjAgrz3obJjp_sB-aVaiHr4udhWjZJne/exec";
 const PROJECTS_WRITE_TOKEN = "EWgoaRG6819e8eaoJbqe15_EKRoEnnWl";
 async function writeProjectUpdate(payload) {
   if (!PROJECTS_WRITE_URL) return { ok: false, error: "no-url" };
@@ -615,8 +615,8 @@ async function loadProjects() {
 
 /* ---------- Платежи/Доходы — подтягиваются из тех же вкладок Google Sheets ---------- */
 let SHEET_SYNC = { payments: null, incomes: null };
-const PAYMENTS_TSV_URL = "";
-const INCOMES_TSV_URL = "";
+const PAYMENTS_TSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSAwtbm5FlLGHXh3QyB7hwk9F-GTKs7gK6nPerYQZPHwWibhLe-TqJN7i6q1A3-YH-rKesPTUjODJJQ/pub?gid=0&single=true&output=tsv";
+const INCOMES_TSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSAwtbm5FlLGHXh3QyB7hwk9F-GTKs7gK6nPerYQZPHwWibhLe-TqJN7i6q1A3-YH-rKesPTUjODJJQ/pub?gid=1&single=true&output=tsv";
 
 function parsePaymentsTsv(text) {
   const lines = text.replace(/\r/g, "").split("\n").filter(l => l.length);
