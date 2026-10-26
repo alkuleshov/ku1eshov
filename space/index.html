@@ -191,6 +191,10 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
 .proj-head b{font-size:13px}
 .proj-next{font-size:11.5px;color:var(--ink-2)}
 .proj-meta{font-size:10.5px;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between}
+.stale-badge{font:500 9.5px var(--f-data);color:var(--ink-3)}
+.stale-badge.warn{color:var(--warn)}
+.stale-badge.bad{color:var(--bad);font-weight:600}
+.proj-criteria{font-size:10.5px;color:var(--ink-3);margin-top:4px;font-style:italic}
 .proj-links{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
 .proj-tag{font:400 10px/1.2 var(--f-data);background:var(--chip-bg);color:var(--ink-2);padding:2px 6px;border-radius:4px;display:inline-flex;align-items:center;gap:4px}
 .proj-tag.urgent{background:var(--warn-soft);color:var(--warn)}
@@ -597,8 +601,48 @@ function parseTsv(text) {
   return rows.filter(r => r[0]).map((r, idx) => ({
     _i: idx,
     name: r[0] || "", status: (r[1] || "").trim(), pct: parseFloat((r[2] || "").replace(",", ".")) || null,
-    next: r[3] || "", updated: r[4] || "", notes: r[5] || "",
+    next: r[3] || "", updated: r[4] || "", notes: r[5] || "", criteria: r[6] || "",
   }));
+}
+/* ---------- "протухание" статуса проекта — сколько дней с последнего обновления ---------- */
+function parseAnyRuDate(s) {
+  const t = String(s || "").trim();
+  let m = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(t);
+  if (m) return new Date(`${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}T00:00:00`);
+  m = /^(\d{1,2})\.(\d{1,2})$/.exec(t);
+  if (m) return new Date(`${today.getFullYear()}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}T00:00:00`);
+  return null;
+}
+function daysSinceUpdate(s) {
+  const d = parseAnyRuDate(s);
+  if (!d || isNaN(d)) return null;
+  return Math.round((today - d) / 864e5);
+}
+function staleBadge(updatedStr) {
+  const days = daysSinceUpdate(updatedStr);
+  if (days == null) return updatedStr ? `<span class="stale-badge" title="Формат даты не распознан">${updatedStr}</span>` : "";
+  if (days <= 14) return `<span class="stale-badge ok">обновлено ${days === 0 ? "сегодня" : days + " дн. назад"}</span>`;
+  if (days <= 45) return `<span class="stale-badge warn">обновлено ${days} дн. назад</span>`;
+  return `<span class="stale-badge bad">не обновлялось ${days} дн.</span>`;
+}
+/* ---------- порядок внимания: горящие платежи и "протухшие" активные проекты наверх,
+   пауза/закрыт — всегда внизу, независимо от даты ---------- */
+function attentionScore(p, hasUrgent, days) {
+  const dormant = p.status === "закрыт" || p.status === "пауза";
+  if (dormant) return -1000 + Math.min(days ?? 0, 900) * 0.001;
+  let score = hasUrgent ? 1000 : 0;
+  score += days == null ? 999 : days;
+  return score;
+}
+function projectsForAttention() {
+  if (!Array.isArray(PROJECTS)) return [];
+  return PROJECTS.map((p, idx) => {
+    const pIdx = p._i !== undefined ? p._i : idx;
+    const { pays, incs } = matchProjectItems(p.name);
+    const hasUrgent = pays.some(x => x.d != null && x.d <= 14);
+    const days = daysSinceUpdate(p.updated);
+    return { p, idx, pIdx, pays, incs, hasUrgent, days, score: attentionScore(p, hasUrgent, days) };
+  }).sort((a, b) => b.score - a.score);
 }
 function applyProjectOverrides() {
   if (!Array.isArray(PROJECTS)) return;
@@ -807,10 +851,7 @@ const SECTIONS = [
   { id: "projects", title: "Проекты и ИИ-разработка", badge: "% и связки", body: () => {
     if (PROJECTS === null) return `<p class="note">Не удалось подтянуть статусы проектов (нет доступа к опубликованной Google-таблице).</p>`;
     if (!PROJECTS.length) return `<p class="note">Загружаю статусы проектов…</p>`;
-    return PROJECTS.map((p, idx) => {
-      const pIdx = p._i !== undefined ? p._i : idx;
-      const { pays, incs } = matchProjectItems(p.name);
-      const hasUrgent = pays.some(x => x.d != null && x.d <= 14);
+    return projectsForAttention().map(({ p, idx, pIdx, pays, incs, hasUrgent }) => {
       const projBurn = pays.reduce((a, x) => a + (x.m || 0), 0);
       const projInc = incs.reduce((a, x) => a + (x.sum || 0), 0);
       return `
@@ -824,6 +865,7 @@ const SECTIONS = [
         </div>
         <div class="track"><div class="fill" style="width:${Math.min(100, p.pct || 0)}%;background:${hasUrgent ? "var(--warn)" : "var(--ok)"}"></div></div>
         <div class="proj-next">→ ${editableText(`proj.${pIdx}.next`, p.next, "указать следующий шаг")}</div>
+        ${p.criteria ? `<div class="proj-criteria">цель 100%: ${p.criteria}</div>` : ""}
         ${pays.length || incs.length ? `
           <div class="proj-links">
             ${pays.map(x => `<span class="proj-tag${x.d != null && x.d <= 14 ? " urgent" : ""}" title="Привязанный расход/домен">🖥 ${x.name.split(":")[0]} ${x.d != null ? `(${x.d}д)` : ""}</span>`).join("")}
@@ -833,7 +875,7 @@ const SECTIONS = [
           <span class="proj-meta">
             ${projBurn ? `расход: ${rub(projBurn)}/м` : "инфра: ок"}
             ${projInc ? ` · доход: ${rub(projInc)}` : ""}
-            ${p.updated ? ` · ${p.updated}` : ""}
+            ${staleBadge(p.updated)}
           </span>
           <button class="ai-btn js-copy-ai" data-idx="${idx}" title="Скопировать промпт с контекстом проекта для Claude / Gemini / ChatGPT">📋 Контекст для ИИ</button>
         </div>
@@ -1124,7 +1166,7 @@ function renderModalContent(type) {
           if (pStatus) PROJECTS[idx].status = pStatus;
           if (pNext) PROJECTS[idx].next = pNext;
           if (pNotes) PROJECTS[idx].notes = pNotes;
-          PROJECTS[idx].updated = today.toLocaleDateString("ru-RU", {day:"2-digit", month:"2-digit"});
+          PROJECTS[idx].updated = today.toLocaleDateString("ru-RU", {day:"2-digit", month:"2-digit", year:"numeric"});
           if (statusEl) statusEl.textContent = "✓ записано в таблицу";
         } else {
           // Нет URL веб-аппа или запись не удалась — как раньше, только в этом браузере.
@@ -1132,7 +1174,7 @@ function renderModalContent(type) {
           if (pStatus) overrides[`proj.${idx}.status`] = pStatus;
           if (pNext) overrides[`proj.${idx}.next`] = pNext;
           if (pNotes) overrides[`proj.${idx}.notes`] = pNotes;
-          overrides[`proj.${idx}.updated`] = today.toLocaleDateString("ru-RU", {day:"2-digit", month:"2-digit"});
+          overrides[`proj.${idx}.updated`] = today.toLocaleDateString("ru-RU", {day:"2-digit", month:"2-digit", year:"numeric"});
           saveOverrides(overrides);
           applyProjectOverrides();
           if (statusEl) statusEl.textContent = result.error === "no-url" ? "сохранено только в этом браузере" : "не удалось записать в таблицу — сохранено только тут";
@@ -1210,14 +1252,10 @@ let mapMode = "board";
 function buildProjectsBoardHtml() {
   if (PROJECTS === null) return `<div class="board-empty"><p class="note">Не удалось подтянуть проекты (нет доступа к опубликованной Google-таблице).</p></div>`;
   if (!PROJECTS.length) return `<div class="board-empty"><p class="note">Загружаю проекты…</p></div>`;
-  const rows = PROJECTS.map((p, idx) => {
-    const pIdx = p._i !== undefined ? p._i : idx;
-    const { pays } = matchProjectItems(p.name);
-    const hasUrgent = pays.some(x => x.d != null && x.d <= 14);
+  const rows = projectsForAttention();
+  return `<div class="board">${rows.map(({ p, pIdx, hasUrgent }) => {
     const pct = Math.max(0, Math.min(100, p.pct || 0));
-    return { p, pIdx, hasUrgent, pct };
-  }).sort((a, b) => b.pct - a.pct);
-  return `<div class="board">${rows.map(({ p, pIdx, hasUrgent, pct }) => `
+    return `
     <div class="board-row js-board-row" data-idx="${pIdx}" title="Открыть карточку проекта в списке справа">
       <div class="board-top">
         <b>${p.name}</b>
@@ -1228,7 +1266,9 @@ function buildProjectsBoardHtml() {
         <span class="board-pct">${pct}%</span>
         <span class="board-next">→ ${p.next || "следующий шаг не указан"}</span>
       </div>
-    </div>`).join("")}</div>`;
+      <div class="board-bottom" style="margin-top:3px">${staleBadge(p.updated)}</div>
+    </div>`;
+  }).join("")}</div>`;
 }
 
 function refreshCanvas() {
