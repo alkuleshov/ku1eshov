@@ -37,6 +37,21 @@ html,body{height:100%;margin:0}
 body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);overflow:hidden}
 .canvas{position:fixed;inset:0;z-index:1}
 #map{position:absolute;inset:0;width:100%;height:100%}
+#map.board-mode{overflow-y:auto;box-sizing:border-box;padding:150px 400px 90px 44px}
+
+.board{display:flex;flex-direction:column;gap:10px;max-width:760px}
+.board-row{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.board-row:hover{border-color:var(--ink-3);box-shadow:0 2px 14px rgba(21,32,43,.06)}
+.board-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.board-top b{font:600 14.5px var(--f-display)}
+.board-track{height:8px;border-radius:5px;background:var(--chip-bg);overflow:hidden}
+.board-fill{height:100%;background:var(--ink);border-radius:5px;transition:width .4s}
+.board-fill.warn{background:var(--warn)}
+.board-bottom{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:7px}
+.board-pct{font:600 12px var(--f-data);color:var(--ink-2);flex:none}
+.board-next{font:400 12px var(--f-data);color:var(--ink-3);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board-empty{padding:40px}
+@media (max-width:1000px){ #map.board-mode{padding:150px 40px 90px 40px} }
 
 .brand{position:fixed;top:max(20px,env(safe-area-inset-top,0px));left:max(20px,env(safe-area-inset-left,0px));z-index:5;pointer-events:none;max-width:60vw}
 .brand .label{font:500 10.5px/1 var(--f-data);text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3)}
@@ -229,7 +244,7 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
             max(18px,env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));
     gap:14px}
   .canvas,.legend{display:none}
-  .js-map-mode{display:none}
+  #map-mode-select{display:none}
 
   .brand{position:static;order:1;pointer-events:auto;max-width:none;padding:2px 2px 4px}
   .brand .label{font-size:11px}
@@ -267,8 +282,11 @@ body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);ov
   <h1>Пространство Кулешова</h1>
   <div class="meta">срез на <b id="today"></b><br>курс <span id="fx-usd"></span> &nbsp; <span id="fx-eur"></span></div>
   <div class="controls">
-    <button class="pill-btn js-map-mode active" data-mode="categories" title="Группировать карту по категориям расходов и доходов">Карта: Категории</button>
-    <button class="pill-btn js-map-mode" data-mode="projects" title="Группировать карту вокруг проектов, их серверов и доменов">Карта: Проекты</button>
+    <select class="pill-btn" id="map-mode-select" title="Что показывать на холсте">
+      <option value="board">Проекты: прогресс</option>
+      <option value="categories">Карта: Категории</option>
+      <option value="projects">Карта: Проекты</option>
+    </select>
     <button class="pill-btn js-open-modal" data-modal="ai-sync" title="Вставить статус-лог из Claude, Gemini или ChatGPT">⚡ ИИ-коммит</button>
   </div>
 </div>
@@ -610,7 +628,7 @@ async function loadProjects() {
   }
   recompute();
   render();
-  if (window.echarts && typeof drawMap === "function" && innerWidth > 760) drawMap();
+  refreshCanvas();
 }
 
 /* ---------- Платежи/Доходы — подтягиваются из тех же вкладок Google Sheets ---------- */
@@ -655,7 +673,7 @@ async function loadPayments() {
     SHEET_SYNC.payments = false;
   }
   recompute(); render(); renderFx();
-  if (window.echarts && typeof drawMap === "function" && innerWidth > 760) drawMap();
+  refreshCanvas();
 }
 async function loadIncomes() {
   if (!INCOMES_TSV_URL) return;
@@ -669,7 +687,7 @@ async function loadIncomes() {
     SHEET_SYNC.incomes = false;
   }
   recompute(); render(); renderFx();
-  if (window.echarts && typeof drawMap === "function" && innerWidth > 760) drawMap();
+  refreshCanvas();
 }
 
 function matchProjectItems(projName) {
@@ -718,6 +736,11 @@ const ICON_DOWN = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 3v8M4.5 7.5L
 const ICON_GRIP = '<svg viewBox="0 0 16 16" fill="currentColor"><circle cx="5" cy="4" r="1.3"/><circle cx="11" cy="4" r="1.3"/><circle cx="5" cy="8" r="1.3"/><circle cx="11" cy="8" r="1.3"/><circle cx="5" cy="12" r="1.3"/><circle cx="11" cy="12" r="1.3"/></svg>';
 const ICON_X = '<svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
 const ICON_CHECK = '<svg viewBox="0 0 16 16" fill="none"><path d="M3.5 8.5l3 3 6-6.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const STAGE_TAG = {
+  "идея": "c-idle", "валидация": "c-idle", "MVP": "c-warn", "используется": "c-ok",
+  "рост": "c-warn", "стабильно": "c-ok", "пауза": "c-bad", "закрыт": "c-bad",
+};
+const stageTag = s => STAGE_TAG[s] || "c-idle";
 
 const SECTIONS = [
   { id: "summary", title: "Финансовое ядро и шлюзы", badge: "ликвидность", body: () => `
@@ -784,10 +807,6 @@ const SECTIONS = [
   { id: "projects", title: "Проекты и ИИ-разработка", badge: "% и связки", body: () => {
     if (PROJECTS === null) return `<p class="note">Не удалось подтянуть статусы проектов (нет доступа к опубликованной Google-таблице).</p>`;
     if (!PROJECTS.length) return `<p class="note">Загружаю статусы проектов…</p>`;
-    const tag = s => ({
-      "идея": "c-idle", "валидация": "c-idle", "MVP": "c-warn", "используется": "c-ok",
-      "рост": "c-warn", "стабильно": "c-ok", "пауза": "c-bad", "закрыт": "c-bad",
-    })[s] || "c-idle";
     return PROJECTS.map((p, idx) => {
       const pIdx = p._i !== undefined ? p._i : idx;
       const { pays, incs } = matchProjectItems(p.name);
@@ -795,12 +814,12 @@ const SECTIONS = [
       const projBurn = pays.reduce((a, x) => a + (x.m || 0), 0);
       const projInc = incs.reduce((a, x) => a + (x.sum || 0), 0);
       return `
-      <div class="proj-card${hasUrgent ? " warn-border" : ""}">
+      <div class="proj-card${hasUrgent ? " warn-border" : ""}" id="projcard-${pIdx}">
         <div class="proj-head">
           <b>${p.name}</b>
           <div style="display:flex;align-items:center;gap:6px">
             <span style="font:500 11px var(--f-data);color:var(--ink-2)">${clickableNumber(`proj.${pIdx}.pct`, p.pct ?? 0, "%")}</span>
-            ${p.status ? `<span class="chip ${tag(p.status)}" style="margin-top:0">${p.status}</span>` : ""}
+            ${p.status ? `<span class="chip ${stageTag(p.status)}" style="margin-top:0">${p.status}</span>` : ""}
           </div>
         </div>
         <div class="track"><div class="fill" style="width:${Math.min(100, p.pct || 0)}%;background:${hasUrgent ? "var(--warn)" : "var(--ok)"}"></div></div>
@@ -931,7 +950,7 @@ function bindInlineEdit(container, onCommit) {
       recompute();
       onCommit();
       renderFx();
-      if (window.echarts && typeof drawMap === "function") drawMap();
+      refreshCanvas();
     };
     input.addEventListener("keydown", ev => { if (ev.key === "Enter") commit(); });
     input.addEventListener("blur", commit);
@@ -990,7 +1009,7 @@ panelIn.addEventListener("click", e => {
     recompute();
     render();
     renderFx();
-    if (window.echarts) drawMap();
+    refreshCanvas();
     return;
   }
   const restoreTarget = e.target.closest(".js-restore");
@@ -1001,7 +1020,7 @@ panelIn.addEventListener("click", e => {
     recompute();
     render();
     renderFx();
-    if (window.echarts) drawMap();
+    refreshCanvas();
     return;
   }
   const block = e.target.closest(".block");
@@ -1120,7 +1139,7 @@ function renderModalContent(type) {
         }
         recompute();
         render();
-        if (window.echarts && typeof drawMap === "function") drawMap();
+        refreshCanvas();
         setTimeout(() => modalBackdrop.classList.remove("open"), 700);
       });
     }
@@ -1186,14 +1205,49 @@ document.getElementById("legend").innerHTML =
   `<span><i style="background:${css('--cat-income')}"></i>Доходы</span>`;
 
 let chart;
-let mapMode = "categories";
+let mapMode = "board";
 
-document.querySelectorAll(".js-map-mode").forEach(btn => {
-  btn.addEventListener("click", () => {
-    mapMode = btn.dataset.mode;
-    document.querySelectorAll(".js-map-mode").forEach(b => b.classList.toggle("active", b === btn));
+function buildProjectsBoardHtml() {
+  if (PROJECTS === null) return `<div class="board-empty"><p class="note">Не удалось подтянуть проекты (нет доступа к опубликованной Google-таблице).</p></div>`;
+  if (!PROJECTS.length) return `<div class="board-empty"><p class="note">Загружаю проекты…</p></div>`;
+  const rows = PROJECTS.map((p, idx) => {
+    const pIdx = p._i !== undefined ? p._i : idx;
+    const { pays } = matchProjectItems(p.name);
+    const hasUrgent = pays.some(x => x.d != null && x.d <= 14);
+    const pct = Math.max(0, Math.min(100, p.pct || 0));
+    return { p, pIdx, hasUrgent, pct };
+  }).sort((a, b) => b.pct - a.pct);
+  return `<div class="board">${rows.map(({ p, pIdx, hasUrgent, pct }) => `
+    <div class="board-row js-board-row" data-idx="${pIdx}" title="Открыть карточку проекта в списке справа">
+      <div class="board-top">
+        <b>${p.name}</b>
+        ${p.status ? `<span class="chip ${stageTag(p.status)}">${p.status}</span>` : ""}
+      </div>
+      <div class="board-track"><div class="board-fill${hasUrgent ? " warn" : ""}" style="width:${pct}%"></div></div>
+      <div class="board-bottom">
+        <span class="board-pct">${pct}%</span>
+        <span class="board-next">→ ${p.next || "следующий шаг не указан"}</span>
+      </div>
+    </div>`).join("")}</div>`;
+}
+
+function refreshCanvas() {
+  const mapEl = document.getElementById("map");
+  if (!mapEl) return; // мобильный — канвас убран целиком
+  if (mapMode === "board") {
+    if (chart) { chart.dispose(); chart = null; }
+    mapEl.classList.add("board-mode");
+    mapEl.innerHTML = buildProjectsBoardHtml();
+  } else {
+    mapEl.classList.remove("board-mode");
     if (window.echarts && typeof drawMap === "function") drawMap();
-  });
+    else mapEl.innerHTML = '<p class="note" style="padding:100px 40px 40px">Карта не загрузилась: нет доступа к cdnjs.cloudflare.com.</p>';
+  }
+}
+
+document.getElementById("map-mode-select").addEventListener("change", e => {
+  mapMode = e.target.value;
+  refreshCanvas();
 });
 
 function drawMap() {
@@ -1306,11 +1360,14 @@ function jumpToItem(blockId, elId) {
 const isMobile = () => innerWidth <= 760;
 if (isMobile()) {
   document.querySelector(".canvas").remove();
-} else if (window.echarts) {
-  drawMap();
-  addEventListener("resize", () => { if (isMobile()) return; chart && chart.resize(); });
 } else {
-  document.getElementById("map").outerHTML = '<p class="note" style="padding:100px 40px 40px">Карта не загрузилась: нет доступа к cdnjs.cloudflare.com.</p>';
+  document.querySelector(".canvas").addEventListener("click", e => {
+    const row = e.target.closest(".js-board-row");
+    if (!row) return;
+    jumpToItem("projects", `projcard-${row.dataset.idx}`);
+  });
+  refreshCanvas(); // по умолчанию — доска "Проекты: прогресс", без зависимости от echarts/CDN
+  addEventListener("resize", () => { if (isMobile()) return; chart && chart.resize(); });
 }
 loadProjects();
 loadPayments();
