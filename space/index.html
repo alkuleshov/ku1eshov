@@ -891,7 +891,7 @@ const SECTIONS = [
       <details class="hidden-restore">
         <summary>${ICON_CHEV} Скрытые / Оплаченные (${hiddenList.length})</summary>
         <ul>${hiddenList.map(p => `
-          <li><span>${p.name} <small style="color:var(--ink-3)">— ${overrides[`paid.${p._i}`] ? "оплачено" : "пропущено"}</small></span><button class="iconbtn js-restore" data-i="${p._i}">Вернуть</button></li>`).join("")}
+          <li><span>${p.name} <small style="color:var(--ink-3)">— ${overrides[`paid.${p._i}`] ? "сделано" : "пропущено"}</small></span><button class="iconbtn js-restore" data-i="${p._i}">Вернуть</button></li>`).join("")}
         </ul>
       </details>` : "";
     const activeTodos = DATA.todos.filter(t => !overrides[`todo.${t.id}`]);
@@ -909,7 +909,7 @@ const SECTIONS = [
           </div>
           <div class="row-actions">
             <button class="btn-skip js-skip" data-i="${p._i}" data-name="${escAttr(p.name)}" title="Пропустить / отменить — без отметки об оплате">закрыть задачу ✕</button>
-            <button class="btn-done js-done" data-i="${p._i}" data-name="${escAttr(p.name)}" title="Отметить оплаченным">${ICON_CHECK} Оплачено</button>
+            <button class="btn-done js-done" data-i="${p._i}" data-name="${escAttr(p.name)}" title="Отметить сделанным — оплата, продление, любое выполненное действие">${ICON_CHECK} Сделано</button>
           </div>
         </li>`;
       }).join("")}</ul>
