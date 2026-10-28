@@ -214,6 +214,14 @@
   .exam-skill .exam-skill-label{ font-size:10.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color: var(--gold); display:block; margin-bottom:6px; }
   .exam-skill p{ font-size:12.5px; line-height:1.55; color: rgba(10,15,26,.78); margin:0; }
 
+  .course-promo{ margin-top:18px; padding:16px 18px; background: linear-gradient(135deg, rgba(26,130,255,.07) 0%, #fff 60%); border:1px solid rgba(26,130,255,.22); border-radius:10px; }
+  .course-promo-kicker{ font-size:10.5px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color: var(--azure); margin-bottom:6px; }
+  .course-promo-title{ font-size:14px; font-weight:800; color: var(--navy); margin-bottom:7px; }
+  .course-promo p{ font-size:12.5px; line-height:1.6; color: rgba(10,15,26,.72); margin:0 0 13px; }
+  .course-promo-btn{ display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:800; color:#fff; background: var(--azure); padding:9px 16px; border-radius:7px; text-decoration:none; transition: transform .14s ease, box-shadow .14s ease; }
+  .course-promo-btn svg{ width:13px; height:13px; }
+  @media (hover:hover){ .course-promo-btn:hover{ transform: translateY(-1px); box-shadow: 0 6px 14px rgba(26,130,255,.3); } }
+
   hr.rule{ border:none; border-top:1px solid rgba(10,15,26,.12); margin: 30px 0; }
 
   footer{ margin-top: 40px; display:flex; align-items:center; justify-content:center; gap:6px; }
@@ -575,6 +583,16 @@
           <span class="exam-skill-label" data-i18n="examSkillLabel">🎯 Главный практический навык для зачёта</span>
           <p data-i18n="examSkillText">Умение взять любую вводную задачу (например: «Инвестор хочет построить логистический хаб на границе города») и разложить её по 5 шагам: <b>Данные → Экономика → Изменения в ПЗЗ/ППТ → Дорожный каркас → Схема финансирования (ГЧП) и снятие протестов.</b></p>
         </div>
+
+        <div class="course-promo">
+          <div class="course-promo-kicker" data-i18n="promoKicker">Если хочется глубже</div>
+          <div class="course-promo-title" data-i18n="promoTitle">Курсы лаборатории AI2ARCH</div>
+          <p data-i18n="promoText">Темы этой лекции — данные, мастер-планирование, КРТ и генеративные сценарии развития территорий — разбираются на практике на курсах лаборатории AI2ARCH: «ИИ в архитектуре» и «ИИ в редевелопменте» (аналитика данных и генеративный ИИ в разработке концепций территорий).</p>
+          <a class="course-promo-btn" href="https://ai2arch.ru" target="_blank" rel="noopener">
+            <span data-i18n="promoBtn">Курсы AI2ARCH — ai2arch.ru</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -706,6 +724,10 @@
           examB4i4: "Адаптивное управление: тактический урбанизм, сценарное планирование, элементы «умного города» и зелёной экономики в условиях VUCA-мира.",
           examSkillLabel: "🎯 Главный практический навык для зачёта",
           examSkillText: 'Умение взять любую вводную задачу (например: «Инвестор хочет построить логистический хаб на границе города») и разложить её по 5 шагам: <b>Данные → Экономика → Изменения в ПЗЗ/ППТ → Дорожный каркас → Схема финансирования (ГЧП) и снятие протестов.</b>',
+          promoKicker: "Если хочется глубже",
+          promoTitle: "Курсы лаборатории AI2ARCH",
+          promoText: "Темы этой лекции — данные, мастер-планирование, КРТ и генеративные сценарии развития территорий — разбираются на практике на курсах лаборатории AI2ARCH: «ИИ в архитектуре» и «ИИ в редевелопменте» (аналитика данных и генеративный ИИ в разработке концепций территорий).",
+          promoBtn: "Курсы AI2ARCH — ai2arch.ru",
           copyright: "© 2026 Александр Кулешов"
         },
         en: {
@@ -827,6 +849,10 @@
           examB4i4: "Adaptive management: tactical urbanism, scenario planning, smart-city and green-economy elements in a VUCA world.",
           examSkillLabel: "🎯 The core practical skill for the exam",
           examSkillText: 'The ability to take any given task (for example: "An investor wants to build a logistics hub on the edge of the city") and break it down into 5 steps: <b>Data → Economics → Zoning/planning changes → Road framework → Financing scheme (PPP) and defusing protest.</b>',
+          promoKicker: "Want to go deeper",
+          promoTitle: "AI2ARCH Lab courses",
+          promoText: "This lecture's themes — data, master planning, integrated territorial development, and generative scenarios for territory growth — are put into practice at the AI2ARCH lab's courses: \"AI in Architecture\" and \"AI in Redevelopment\" (data analytics and generative AI in concept development for territories).",
+          promoBtn: "AI2ARCH courses — ai2arch.ru",
           copyright: "© 2026 Alexander Kuleshov"
         }
       };
