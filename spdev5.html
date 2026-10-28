@@ -198,6 +198,22 @@
   .text-section p{ font-size:13px; line-height:1.65; color: rgba(10,15,26,.75); margin: 0 0 10px; }
   .text-section b{ color: var(--navy); }
 
+  .exam-prep{ margin: 32px 0 4px; padding: 22px 20px 24px; background:#fff; border:1px solid rgba(10,15,26,.1); border-radius:16px; box-shadow: 0 1px 3px rgba(10,15,26,.04); }
+  .exam-kicker{ font-size:10.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color: var(--gold); margin-bottom:6px; }
+  .exam-title{ font-size:16px; font-weight:800; color: var(--navy); margin:0 0 8px; }
+  .exam-intro{ font-size:12.5px; line-height:1.6; color: rgba(10,15,26,.65); margin:0 0 18px; }
+  .exam-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+  @media (max-width:640px){ .exam-grid{ grid-template-columns: 1fr; } }
+  .exam-block{ border-left:3px solid var(--azure); padding-left:14px; }
+  .exam-block h4{ font-size:13px; font-weight:800; color: var(--navy); margin:0 0 10px; }
+  .exam-block ul{ list-style:none; margin:0; padding:0; }
+  .exam-block li{ position:relative; padding-left:22px; font-size:12.5px; line-height:1.5; color: rgba(10,15,26,.72); margin-bottom:8px; }
+  .exam-block li::before{ content:""; position:absolute; left:0; top:2px; width:13px; height:13px; border:1.5px solid rgba(10,15,26,.28); border-radius:3px; }
+  .exam-skill{ margin-top:20px; padding:14px 16px; background: rgba(194,155,56,.08); border:1px solid rgba(194,155,56,.35); border-radius:10px; }
+  .exam-skill b{ color: var(--navy); }
+  .exam-skill .exam-skill-label{ font-size:10.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color: var(--gold); display:block; margin-bottom:6px; }
+  .exam-skill p{ font-size:12.5px; line-height:1.55; color: rgba(10,15,26,.78); margin:0; }
+
   hr.rule{ border:none; border-top:1px solid rgba(10,15,26,.12); margin: 30px 0; }
 
   footer{ margin-top: 40px; display:flex; align-items:center; justify-content:center; gap:6px; }
@@ -510,6 +526,56 @@
       <h2 data-i18n="t10_h">Итоги курса: пространственное развитие как создание ценности</h2>
       <p data-i18n="t10_p1">Управление пространственным развитием — целостная практика из пяти шагов: диагностика территории на основе больших данных и цифровых двойников; планирование и закрепление правил в ПЗЗ и стратегиях; использование мощных драйверов — КРТ, ОЭЗ, транспортных каркасов; управление и координация, включая привлечение инвестиций через ГЧП и снятие конфликтов; постоянная адаптация к трендам — зелёной экономике и гибридности.</p>
       <p data-i18n="t10_p2">Главная миссия управленца — создание комплексной ценности: экономической (налоги и инвестиции), социальной (безопасность и здоровье), экологической (устойчивость) и культурной (идентичность места). Решения, которые принимаются сегодня в кабинетах или на публичных слушаниях, формируют физическую, осязаемую среду, в которой будут жить следующие поколения.</p>
+
+      <div class="exam-prep">
+        <div class="exam-kicker" data-i18n="examKicker">Подготовка к зачёту</div>
+        <div class="exam-title" data-i18n="examTitle">📋 Чек-лист: что нужно знать к зачёту</div>
+        <p class="exam-intro" data-i18n="examIntro">Для успешной сдачи зачёта необходимо понимать не только теорию, но и логику применения этих инструментов на практике.</p>
+
+        <div class="exam-grid">
+          <div class="exam-block">
+            <h4 data-i18n="examB1h">Блок 1. Данные и мастер-планирование</h4>
+            <ul>
+              <li data-i18n="examB1i1">Data-driven подход: переход от интуитивного к доказательному градостроительству (Big Data, транзакции, треки).</li>
+              <li data-i18n="examB1i2">Цифровые двойники (Digital Twins): механика сценарного моделирования (What-If анализ).</li>
+              <li data-i18n="examB1i3">Мастер-план: отличие от генерального плана, структура документа и экономика инфраструктуры (капитализация земли).</li>
+              <li data-i18n="examB1i4">Человеческий капитал: городская среда как главный фактор конкуренции за кадры.</li>
+            </ul>
+          </div>
+          <div class="exam-block">
+            <h4 data-i18n="examB2h">Блок 2. Правовой каркас (172-ФЗ и Градкодекс)</h4>
+            <ul>
+              <li data-i18n="examB2i1">Иерархия документов: вертикаль от национальных целей до градостроительного плана земельного участка (ГПЗУ).</li>
+              <li data-i18n="examB2i2">Генплан vs. ПЗЗ: разница между функциональным и территориальным зонированием. Виды разрешённого использования (ВРИ) как инструмент власти.</li>
+              <li data-i18n="examB2i3">ППТ и ПМТ: роль красных линий, защита земель общего пользования и резервирование участков.</li>
+              <li data-i18n="examB2i4">Механизм КРТ: суть комплексного развития территорий и баланс финансовой модели (социальная нагрузка vs. ТЭП).</li>
+            </ul>
+          </div>
+          <div class="exam-block">
+            <h4 data-i18n="examB3h">Блок 3. Драйверы развития</h4>
+            <ul>
+              <li data-i18n="examB3i1">Транспортный каркас: оси освоения и феномен «часовой доступности».</li>
+              <li data-i18n="examB3i2">Редевелопмент: brownfield (промзоны) против greenfield (чистое поле).</li>
+              <li data-i18n="examB3i3">Особые режимы: принципы работы ОЭЗ, ТОР, индустриальных кластеров.</li>
+              <li data-i18n="examB3i4">Синергия: почему драйверы (инфраструктура, экономика, среда) не работают в изоляции.</li>
+            </ul>
+          </div>
+          <div class="exam-block">
+            <h4 data-i18n="examB4h">Блок 4. Финансы, институты и адаптивность</h4>
+            <ul>
+              <li data-i18n="examB4i1">ГЧП: распределение рисков, отличия концессии от договора жизненного цикла (ДЖЦ).</li>
+              <li data-i18n="examB4i2">Агломерации: парадокс «безбилетника» и инструменты межмуниципального сотрудничества.</li>
+              <li data-i18n="examB4i3">Работа с обществом: партиципаторное проектирование и преодоление NIMBY-синдрома.</li>
+              <li data-i18n="examB4i4">Адаптивное управление: тактический урбанизм, сценарное планирование, элементы «умного города» и зелёной экономики в условиях VUCA-мира.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="exam-skill">
+          <span class="exam-skill-label" data-i18n="examSkillLabel">🎯 Главный практический навык для зачёта</span>
+          <p data-i18n="examSkillText">Умение взять любую вводную задачу (например: «Инвестор хочет построить логистический хаб на границе города») и разложить её по 5 шагам: <b>Данные → Экономика → Изменения в ПЗЗ/ППТ → Дорожный каркас → Схема финансирования (ГЧП) и снятие протестов.</b></p>
+        </div>
+      </div>
     </div>
 
     <footer>
@@ -615,6 +681,31 @@
           t10_h: "Итоги курса: пространственное развитие как создание ценности",
           t10_p1: "Управление пространственным развитием — целостная практика из пяти шагов: диагностика территории на основе больших данных и цифровых двойников; планирование и закрепление правил в ПЗЗ и стратегиях; использование мощных драйверов — КРТ, ОЭЗ, транспортных каркасов; управление и координация, включая привлечение инвестиций через ГЧП и снятие конфликтов; постоянная адаптация к трендам — зелёной экономике и гибридности.",
           t10_p2: "Главная миссия управленца — создание комплексной ценности: экономической (налоги и инвестиции), социальной (безопасность и здоровье), экологической (устойчивость) и культурной (идентичность места). Решения, которые принимаются сегодня в кабинетах или на публичных слушаниях, формируют физическую, осязаемую среду, в которой будут жить следующие поколения.",
+          examKicker: "Подготовка к зачёту",
+          examTitle: "📋 Чек-лист: что нужно знать к зачёту",
+          examIntro: "Для успешной сдачи зачёта необходимо понимать не только теорию, но и логику применения этих инструментов на практике.",
+          examB1h: "Блок 1. Данные и мастер-планирование",
+          examB1i1: "Data-driven подход: переход от интуитивного к доказательному градостроительству (Big Data, транзакции, треки).",
+          examB1i2: "Цифровые двойники (Digital Twins): механика сценарного моделирования (What-If анализ).",
+          examB1i3: "Мастер-план: отличие от генерального плана, структура документа и экономика инфраструктуры (капитализация земли).",
+          examB1i4: "Человеческий капитал: городская среда как главный фактор конкуренции за кадры.",
+          examB2h: "Блок 2. Правовой каркас (172-ФЗ и Градкодекс)",
+          examB2i1: "Иерархия документов: вертикаль от национальных целей до градостроительного плана земельного участка (ГПЗУ).",
+          examB2i2: "Генплан vs. ПЗЗ: разница между функциональным и территориальным зонированием. Виды разрешённого использования (ВРИ) как инструмент власти.",
+          examB2i3: "ППТ и ПМТ: роль красных линий, защита земель общего пользования и резервирование участков.",
+          examB2i4: "Механизм КРТ: суть комплексного развития территорий и баланс финансовой модели (социальная нагрузка vs. ТЭП).",
+          examB3h: "Блок 3. Драйверы развития",
+          examB3i1: "Транспортный каркас: оси освоения и феномен «часовой доступности».",
+          examB3i2: "Редевелопмент: brownfield (промзоны) против greenfield (чистое поле).",
+          examB3i3: "Особые режимы: принципы работы ОЭЗ, ТОР, индустриальных кластеров.",
+          examB3i4: "Синергия: почему драйверы (инфраструктура, экономика, среда) не работают в изоляции.",
+          examB4h: "Блок 4. Финансы, институты и адаптивность",
+          examB4i1: "ГЧП: распределение рисков, отличия концессии от договора жизненного цикла (ДЖЦ).",
+          examB4i2: "Агломерации: парадокс «безбилетника» и инструменты межмуниципального сотрудничества.",
+          examB4i3: "Работа с обществом: партиципаторное проектирование и преодоление NIMBY-синдрома.",
+          examB4i4: "Адаптивное управление: тактический урбанизм, сценарное планирование, элементы «умного города» и зелёной экономики в условиях VUCA-мира.",
+          examSkillLabel: "🎯 Главный практический навык для зачёта",
+          examSkillText: 'Умение взять любую вводную задачу (например: «Инвестор хочет построить логистический хаб на границе города») и разложить её по 5 шагам: <b>Данные → Экономика → Изменения в ПЗЗ/ППТ → Дорожный каркас → Схема финансирования (ГЧП) и снятие протестов.</b>',
           copyright: "© 2026 Александр Кулешов"
         },
         en: {
@@ -711,6 +802,31 @@
           t10_h: "Course Conclusions: Spatial Development as Value Creation",
           t10_p1: "Managing spatial development is a coherent practice made of five steps: diagnosing a territory using big data and digital twins; planning and codifying the rules in zoning codes and strategies; deploying powerful drivers — redevelopment, special economic zones, transport frameworks; managing and coordinating, including raising investment through PPPs and defusing conflict; and continuously adapting to trends — the green economy and hybrid living.",
           t10_p2: "A manager's core mission is creating composite value: economic (tax revenue and investment), social (safety and health), environmental (resilience), and cultural (a place's identity). The decisions made today in an office, or at a public hearing, shape the physical, tangible environment the next generations will live in.",
+          examKicker: "Exam preparation",
+          examTitle: "📋 Checklist: what you need to know for the exam",
+          examIntro: "Passing the exam requires understanding not only the theory, but the logic of applying these tools in practice.",
+          examB1h: "Block 1. Data and master planning",
+          examB1i1: "Data-driven approach: the shift from intuitive to evidence-based urban planning (big data, transactions, mobility tracks).",
+          examB1i2: "Digital twins: the mechanics of scenario modeling (what-if analysis).",
+          examB1i3: "Master plan: how it differs from the general plan, its document structure, and infrastructure economics (land value capture).",
+          examB1i4: "Human capital: urban environment as the main factor in competing for talent.",
+          examB2h: "Block 2. Legal framework (Federal Law 172 and the Urban Planning Code)",
+          examB2i1: "Document hierarchy: the chain from national goals down to the site planning permit (GPZU).",
+          examB2i2: "General plan vs. zoning rules: the difference between functional and territorial zoning. Permitted land-use types as a tool of authority.",
+          examB2i3: "Area and territory planning projects: the role of red lines, protecting public-use land, and reserving sites.",
+          examB2i4: "Integrated territorial development (KRT): the mechanism's essence and the financial-model balance (social burden vs. feasibility indicators).",
+          examB3h: "Block 3. Development drivers",
+          examB3i1: "Transport framework: development axes and the «one-hour accessibility» phenomenon.",
+          examB3i2: "Redevelopment: brownfield (former industrial land) vs. greenfield (undeveloped land).",
+          examB3i3: "Special regimes: how special economic zones, advanced development territories, and industrial clusters work.",
+          examB3i4: "Synergy: why drivers (infrastructure, economy, environment) fail in isolation.",
+          examB4h: "Block 4. Finance, institutions and adaptability",
+          examB4i1: "PPPs: risk allocation, and how concessions differ from life-cycle contracts.",
+          examB4i2: "Agglomerations: the free-rider paradox and tools for inter-municipal cooperation.",
+          examB4i3: "Working with communities: participatory design and overcoming NIMBY resistance.",
+          examB4i4: "Adaptive management: tactical urbanism, scenario planning, smart-city and green-economy elements in a VUCA world.",
+          examSkillLabel: "🎯 The core practical skill for the exam",
+          examSkillText: 'The ability to take any given task (for example: "An investor wants to build a logistics hub on the edge of the city") and break it down into 5 steps: <b>Data → Economics → Zoning/planning changes → Road framework → Financing scheme (PPP) and defusing protest.</b>',
           copyright: "© 2026 Alexander Kuleshov"
         }
       };
