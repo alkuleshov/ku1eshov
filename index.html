@@ -44,6 +44,7 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--azure); outline-o
 @media (min-width:900px){ .wrap{ padding:0 32px; } }
 .cols{ position:absolute; top:0; bottom:0; left:16px; right:16px; display:grid; grid-template-columns:repeat(var(--cols),minmax(0,1fr)); pointer-events:none; z-index:0; }
 @media (min-width:900px){ .cols{ left:32px; right:32px; } }
+@media (max-width:899px){ .cols{ display:none; } }
 .cols i{ border-left:1px solid var(--grid); }
 .cols i:nth-child(n+5){ display:none; }
 @media (min-width:900px){ .cols i:nth-child(n+5){ display:block; } }
