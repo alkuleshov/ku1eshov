@@ -70,6 +70,7 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--azure); outline-o
 .hero-t .ink{ display:block; color:var(--ink); }
 .hero-t .gray{ display:block; color:var(--gray); margin-top:4px; }
 .status{ display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:800; letter-spacing:-.01em; line-height:1.1; }
+.status:hover span{ text-decoration:underline; text-underline-offset:3px; }
 .status i{ flex:none; width:9px; height:9px; border-radius:50%; background:var(--cobalt); }
 .cta{ padding:14px var(--pad) 18px; }
 .remote{ margin-top:10px; font-size:12.5px; font-weight:500; color:var(--muted); text-align:center; }
@@ -194,7 +195,7 @@ document.addEventListener('click',function(e){var a=e.target.closest?e.target.cl
   <div class="in">
 
     <header class="top row">
-      <div class="status"><i></i><span data-i18n="avail">Открыт к сотрудничеству</span></div>
+      <a class="status" href="https://t.me/alkuleshov" target="_blank" rel="noopener" data-goal="click_status_tg"><i></i><span data-i18n="avail">Открыт к сотрудничеству</span></a>
       <div class="langswitch" id="langswitch">
         <button type="button" data-lang="ru">RU</button>
         <button type="button" data-lang="en">EN</button>
