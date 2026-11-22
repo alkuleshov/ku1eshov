@@ -10,57 +10,37 @@
 <link rel="preload" href="assets/fonts/inter-tight-cyrillic-900-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/swiss.css">
 <style>
-.sect{ display:grid; grid-template-columns:repeat(var(--cols),minmax(0,1fr)); border-bottom:1px solid var(--grid); }
-.sect__n{ grid-column:1; padding:26px var(--pad) 18px; font-size:12px; font-weight:800; letter-spacing:.04em; color:var(--gray); }
-.sect__body{ grid-column:2 / -1; padding:22px var(--pad) 18px; min-width:0; }
-.sect__t{ margin:0; font-size:28px; font-weight:900; line-height:.95; letter-spacing:-.045em; }
-.sect__note{ margin:8px 0 0; font-size:12.5px; font-weight:500; line-height:1.35; color:var(--muted); }
+.rows{ display:block; }
 .row{ display:grid; grid-template-columns:repeat(var(--cols),minmax(0,1fr)); border-bottom:1px solid var(--grid); padding-bottom:20px; }
 .row > *{ min-width:0; padding-left:var(--pad); padding-right:var(--pad); }
 .row__y{ grid-column:1; grid-row:1 / 3; padding-top:18px; font-size:22px; font-weight:900; line-height:1; letter-spacing:-.05em; }
 .row__head{ grid-column:2 / -1; padding-top:18px; }
 .row__desc{ grid-column:2 / -1; }
-.row__t{ margin:0; font-size:20px; font-weight:800; line-height:1.04; letter-spacing:-.035em; }
+.tag{ position:relative; padding-left:14px; font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--ink); }
+.tag::before{ content:""; position:absolute; left:0; top:.35em; width:5px; height:5px; border-radius:50%; background:var(--ink); }
+.row__t{ margin:8px 0 0; font-size:20px; font-weight:800; line-height:1.04; letter-spacing:-.035em; }
 .row__r{ margin:6px 0 0; font-size:14.5px; font-weight:800; line-height:1.15; letter-spacing:-.025em; color:var(--gray); }
 .row__r a{ color:var(--ink); border-bottom:2px solid var(--ink); }
 .row__b{ margin:12px 0 0; font-size:13.5px; font-weight:500; line-height:1.45; color:var(--muted); }
 .row__list{ list-style:none; margin:12px 0 0; padding:0; }
 .row__list li{ padding:9px 0; border-top:1px solid var(--grid); font-size:12.5px; font-weight:500; line-height:1.4; color:var(--muted); }
 .row__list li:last-child{ border-bottom:1px solid var(--grid); }
-.row__list a{ color:var(--ink); border-bottom:1.5px solid var(--ink); }
 .row__links{ grid-column:2 / -1; display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
 .pill{ display:inline-flex; align-items:center; min-height:44px; padding:0 16px; border:1.5px solid var(--ink); border-radius:999px; font-size:13px; font-weight:800; letter-spacing:-.01em; }
 .pill:hover{ background:var(--cell); }
-.row--now{ background:var(--blush); }
-.row--now .row__b, .row--now .row__list li{ color:var(--ink); }
-.row--now .row__r{ color:var(--muted); }
-.row--now .row__list li{ border-color:rgba(10,15,26,.14); }
-.row--edu{ padding-bottom:18px; }
-.row__y--now{ font-size:13px; letter-spacing:-.01em; padding-top:22px; }
-.row--edu .row__t{ font-size:17px; }
-.row--edu .row__r{ font-size:13.5px; font-weight:500; letter-spacing:0; color:var(--muted); margin-top:5px; }
-.sect{ background:var(--panel); }
+.row--cur{ background:var(--blush); }
+.row--cur .row__b, .row--cur .row__list li{ color:var(--ink); }
+.row--cur .row__r{ color:var(--muted); }
 @media (min-width:900px){
-  .sect__n{ grid-column:1 / 3; padding:44px var(--pad) 24px; font-size:13px; }
-  .sect__body{ grid-column:3 / -1; padding:40px var(--pad) 24px; }
-  .sect__t{ font-size:clamp(36px,3.6vw,52px); }
-  .sect__note{ font-size:14px; }
   .row{ padding-bottom:34px; }
   .row__y{ grid-column:1 / 3; padding-top:30px; font-size:clamp(36px,3.8vw,56px); }
   .row__head{ grid-column:3 / 6; padding-top:32px; }
+  .row__t{ font-size:clamp(22px,2vw,30px); }
+  .row__r{ font-size:clamp(15px,1.3vw,18px); }
   .row__desc{ grid-column:6 / 9; grid-row:1 / 4; padding-top:32px; }
-  .row__links{ grid-column:3 / 6; grid-row:2; align-self:start; margin-top:20px; }
-  .row__t{ font-size:clamp(24px,2.2vw,32px); }
-  .row__r{ font-size:clamp(16px,1.35vw,19px); }
   .row__b{ margin-top:0; font-size:15px; }
   .row__list li{ font-size:13.5px; }
-  .row--edu{ padding-bottom:26px; }
-  .row--edu .row__y{ font-size:clamp(28px,2.6vw,40px); padding-top:26px; }
-  .row--edu .row__y--now{ font-size:clamp(15px,1.3vw,18px); padding-top:30px; }
-  .row--edu .row__head{ grid-column:3 / 9; padding-top:28px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 calc(var(--pad)*2); }
-  .row--edu .row__t{ font-size:clamp(19px,1.6vw,24px); }
-  .row--edu .row__r{ margin-top:2px; font-size:15px; }
-  .row--edu .row__desc{ display:none; }
+  .row__links{ grid-column:3 / 6; grid-row:2; align-self:start; margin-top:20px; }
 }
 </style>
 <!-- Yandex.Metrika counter -->
@@ -95,147 +75,98 @@ ym(114394332, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     <h1 class="page-title" data-i18n="pagetitle">Опыт и образование</h1>
     <p class="page-sub" data-i18n="pagesub">15 лет в архитектуре, девелопменте и городской среде</p>
 
-    <section class="sect">
-      <div class="sect__n">01</div>
-      <div class="sect__body"><h2 class="sect__t" data-i18n="s1t">Практика</h2><p class="sect__note" data-i18n="s1n">Год — точка старта. Все направления в работе.</p></div>
+    <section class="rows">
+      <article class="row">
+        <div class="row__y">2010</div>
+        <div class="row__head"><div class="tag" data-i18n="g0tag">Образование</div><h3 class="row__t" data-i18n="g0t">Бакалавриат по архитектуре</h3><p class="row__r" data-i18n="g0r">ЮФУ, квалификация архитектора-дизайнера, специальность «Дизайн архитектурной среды»</p></div>
+        <div class="row__desc"></div>
+        
+      </article>
+      <article class="row">
+        <div class="row__y">2011</div>
+        <div class="row__head"><div class="tag" data-i18n="g1tag">Практика</div><h3 class="row__t" data-i18n="g1t">Редевелопмент и креативные пространства</h3><p class="row__r" data-i18n="g1r">Креативный кластер C52 — сооснователь и партнёр</p></div>
+        <div class="row__desc"><p class="row__b" data-i18n="g1b">Первый креативный кластер на юге России, проекту 15 лет. Редевелопмент сложного объекта, устойчивое комьюнити, гранты, выступление на саммите European Creative Hubs Network в Белграде. Отсюда выросла основная практика: проекты редевелопмента и девелоперские паспорта объектов.</p></div>
+        <div class="row__links"><a class="pill" href="https://c52.space/" target="_blank" rel="noopener" data-i18n="g1k0">Сайт ↗</a><a class="pill" href="https://www.instagram.com/c52space/" target="_blank" rel="noopener" data-i18n="g1k1">Instagram ↗</a></div>
+      </article>
+      <article class="row">
+        <div class="row__y">2013</div>
+        <div class="row__head"><div class="tag" data-i18n="g2tag">Практика</div><h3 class="row__t" data-i18n="g2t">DobroCowork</h3><p class="row__r" data-i18n="g2r">Сеть первых коворкингов в Ростовской области — сооснователь</p></div>
+        <div class="row__desc"></div>
+        
+      </article>
+      <article class="row">
+        <div class="row__y">2016</div>
+        <div class="row__head"><div class="tag" data-i18n="g3tag">Практика</div><h3 class="row__t" data-i18n="g3t">Инженерный центр «Фабрика»</h3><p class="row__r" data-i18n="g3r">Консалтинг запуска, Ростов-на-Дону</p></div>
+        <div class="row__desc"></div>
+        
+      </article>
+      <article class="row">
+        <div class="row__y">2017</div>
+        <div class="row__head"><div class="tag" data-i18n="g4tag">Практика</div><h3 class="row__t" data-i18n="g4t">Благоустройство и КРТ</h3><p class="row__r" data-i18n="g4r">Проектное бюро «Среда» — сооснователь и руководитель</p></div>
+        <div class="row__desc"><p class="row__b" data-i18n="g4b">Комплексное благоустройство общественных пространств и дворов, развитие городской среды, комплексное развитие территорий (КРТ). 80+ проектов городской среды.</p></div>
+        
+      </article>
+      <article class="row">
+        <div class="row__y">2018</div>
+        <div class="row__head"><div class="tag" data-i18n="g5tag">Образование</div><h3 class="row__t" data-i18n="g5t">Президентская программа подготовки управленческих кадров</h3><p class="row__r" data-i18n="g5r">ЮФУ, диплом о профессиональной переподготовке: менеджмент, 550 часов</p></div>
+        <div class="row__desc"></div>
+        
+      </article>
+      <article class="row">
+        <div class="row__y">2019</div>
+        <div class="row__head"><div class="tag" data-i18n="g6tag">Практика</div><h3 class="row__t" data-i18n="g6t">Кластер «Колос»</h3><p class="row__r" data-i18n="g6r">Краснодар — сооснователь</p></div>
+        <div class="row__desc"></div>
+        <div class="row__links"><a class="pill" href="https://www.instagram.com/koloscc/" target="_blank" rel="noopener" data-i18n="g6k0">Instagram ↗</a></div>
+      </article>
+      <article class="row">
+        <div class="row__y">2019</div>
+        <div class="row__head"><div class="tag" data-i18n="g7tag">Образование</div><h3 class="row__t" data-i18n="g7t">Управление проектами редевелопмента</h3><p class="row__r" data-i18n="g7r">МИРБИС, курс, 30 часов, Москва</p></div>
+        <div class="row__desc"></div>
+        
+      </article>
+      <article class="row">
+        <div class="row__y">2021</div>
+        <div class="row__head"><div class="tag" data-i18n="g8tag">Практика</div><h3 class="row__t" data-i18n="g8t">P5</h3><p class="row__r" data-i18n="g8r">Ростов-на-Дону — сооснователь</p></div>
+        <div class="row__desc"></div>
+        
+      </article>
+      <article class="row">
+        <div class="row__y">2021</div>
+        <div class="row__head"><div class="tag" data-i18n="g9tag">Практика</div><h3 class="row__t" data-i18n="g9t">Технологическое предпринимательство</h3><p class="row__r" data-i18n="g9r">Трекер стартапов и тренер университетских программ</p></div>
+        <div class="row__desc"><p class="row__b" data-i18n="g9b">Тренер федеральных тренингов предпринимательских компетенций для студентов «Платформы университетского технологического предпринимательства»: проект МФТИ, оператор тренингов на местах — Университет Иннополис.</p><ul class="row__list"><li data-i18n="g9l0">14 акселерационных программ в России и Казахстане: Университет Иннополис, УрФУ, ТюмГУ, MOST, AlmaU</li><li data-i18n="g9l1">Акселератор «Т-Шейп» на площадке ДГТУ — соорганизатор: набор экспертов и программа</li></ul></div>
+        
+      </article>
+      <article class="row">
+        <div class="row__y">2022</div>
+        <div class="row__head"><div class="tag" data-i18n="g10tag">Образование</div><h3 class="row__t" data-i18n="g10t">Академия трекеров</h3><p class="row__r" data-i18n="g10r">Сертифицированный трекер стартапов</p></div>
+        <div class="row__desc"></div>
+        
+      </article>
+      <article class="row">
+        <div class="row__y">2025</div>
+        <div class="row__head"><div class="tag" data-i18n="g11tag">Образование</div><h3 class="row__t" data-i18n="g11t">Основы проектного управления в университете 2.0</h3><p class="row__r" data-i18n="g11r">ЮФУ, повышение квалификации, 72 часа</p></div>
+        <div class="row__desc"></div>
+        
+      </article>
+      <article class="row">
+        <div class="row__y">2025</div>
+        <div class="row__head"><div class="tag" data-i18n="g12tag">Образование</div><h3 class="row__t" data-i18n="g12t">Магистратура «Городской интерьер»</h3><p class="row__r" data-i18n="g12r">Академия архитектуры и искусств ЮФУ, магистрант с сентября 2025</p></div>
+        <div class="row__desc"></div>
+        
+      </article>
+      <article class="row">
+        <div class="row__y">2026</div>
+        <div class="row__head"><div class="tag" data-i18n="g13tag">Образование</div><h3 class="row__t" data-i18n="g13t">Педагогика в высшем и дополнительном образовании</h3><p class="row__r" data-i18n="g13r">ЮФУ, диплом о профессиональной переподготовке, 252 часа</p></div>
+        <div class="row__desc"></div>
+        
+      </article>
+      <article class="row row--cur">
+        <div class="row__y">2026</div>
+        <div class="row__head"><div class="tag" data-i18n="g14tag">Практика</div><h3 class="row__t" data-i18n="g14t">ИИ в архитектуре и девелопменте</h3><p class="row__r" data-i18n="g14r">AI2ARCH — основатель лаборатории проектного интеллекта</p></div>
+        <div class="row__desc"><p class="row__b" data-i18n="g14b">Анализ объектов для девелоперов и архитекторов, обучение команд бюро работе с ИИ. Исследую adaptive reuse — приспособление существующих зданий под новые функции — вместе с генеративными ИИ-инструментами.</p></div>
+        <div class="row__links"><a class="pill" href="https://ai2arch.ru" target="_blank" rel="noopener" data-i18n="g14k0">AI2ARCH ↗</a><a class="pill" href="lec.html" data-i18n="g14k1">Курсы и лекции →</a></div>
+      </article>
     </section>
-      <article class="row">
-        <div class="row__y" >2011</div>
-        <div class="row__head">
-          <h3 class="row__t" data-i18n="a1t">Редевелопмент и креативные пространства</h3>
-          <p class="row__r" data-i18n="a1r">Креативный кластер C52 — сооснователь и партнёр</p>
-        </div>
-        <div class="row__desc">
-          <p class="row__b" data-i18n="a1b">Первый креативный кластер на юге России, проекту 15 лет. Редевелопмент сложного объекта, устойчивое комьюнити, гранты, выступление на саммите European Creative Hubs Network в Белграде. Отсюда выросла основная практика: проекты редевелопмента и девелоперские паспорта объектов.</p>
-          <ul class="row__list"><li data-i18n="a1l3">2013 · DobroCowork, сеть первых коворкингов в Ростовской области — сооснователь</li><li data-i18n="a1l4">2016 · Инженерный центр «Фабрика» — консалтинг запуска</li><li data-i18n="a1l1">2019 · <a href="https://www.instagram.com/koloscc/" target="_blank" rel="noopener">«Колос»</a>, Краснодар — сооснователь</li><li data-i18n="a1l2">2021 · P5, Ростов-на-Дону — сооснователь</li></ul>
-        </div>
-        <div class="row__links"><a class="pill" href="https://c52.space/" target="_blank" rel="noopener" data-i18n="a1k1">Сайт ↗</a><a class="pill" href="https://www.instagram.com/c52space/" target="_blank" rel="noopener" data-i18n="a1k2">Instagram ↗</a></div>
-      </article>
-      <article class="row">
-        <div class="row__y" >2017</div>
-        <div class="row__head">
-          <h3 class="row__t" data-i18n="a2t">Благоустройство и КРТ</h3>
-          <p class="row__r" data-i18n="a2r">Проектное бюро «Среда» — сооснователь и руководитель</p>
-        </div>
-        <div class="row__desc">
-          <p class="row__b" data-i18n="a2b">Комплексное благоустройство общественных пространств и дворов, развитие городской среды, комплексное развитие территорий (КРТ). 80+ проектов городской среды.</p>
-          
-        </div>
-        
-      </article>
-      <article class="row">
-        <div class="row__y" >2021</div>
-        <div class="row__head">
-          <h3 class="row__t" data-i18n="a3t">Технологическое предпринимательство</h3>
-          <p class="row__r" data-i18n="a3r">Трекер стартапов и тренер университетских программ</p>
-        </div>
-        <div class="row__desc">
-          <p class="row__b" data-i18n="a3b">Тренер федеральных тренингов предпринимательских компетенций для студентов «Платформы университетского технологического предпринимательства»: проект МФТИ, оператор тренингов на местах — Университет Иннополис.</p>
-          <ul class="row__list"><li data-i18n="a3l1">14 акселерационных программ в России и Казахстане: Университет Иннополис, УрФУ, ТюмГУ, MOST, AlmaU</li><li data-i18n="a3l2">Акселератор «Т-Шейп» на площадке ДГТУ — соорганизатор: набор экспертов и программа</li></ul>
-        </div>
-        
-      </article>
-      <article class="row row--now">
-        <div class="row__y" >2026</div>
-        <div class="row__head">
-          <h3 class="row__t" data-i18n="a4t">ИИ в архитектуре и девелопменте</h3>
-          <p class="row__r" data-i18n="a4r">AI2ARCH — основатель лаборатории проектного интеллекта</p>
-        </div>
-        <div class="row__desc">
-          <p class="row__b" data-i18n="a4b">Анализ объектов для девелоперов и архитекторов, обучение команд бюро работе с ИИ. Исследую adaptive reuse — приспособление существующих зданий под новые функции — вместе с генеративными ИИ-инструментами.</p>
-          <ul class="row__list"><li data-i18n="a4l1">Курсы «ИИ в архитектуре» и «ИИ в редевелопменте» — программы ДПО ЮФУ</li><li data-i18n="a4l2">Лекции для магистратуры РАНХиГС и слушателей ДПО ЮРИУ РАНХиГС</li></ul>
-        </div>
-        <div class="row__links"><a class="pill" href="https://ai2arch.ru" target="_blank" rel="noopener" data-i18n="a4k1">AI2ARCH ↗</a><a class="pill" href="lec.html" data-i18n="a4k2">Курсы и лекции →</a></div>
-      </article>
-
-    <section class="sect sect--edu">
-      <div class="sect__n">02</div>
-      <div class="sect__body"><h2 class="sect__t" data-i18n="s2t">Образование и дипломы</h2><p class="sect__note" data-i18n="s2n">Год — выдача диплома или сертификата.</p></div>
-    </section>
-      <article class="row row--edu">
-        <div class="row__y" >2010</div>
-        <div class="row__head">
-          <h3 class="row__t" data-i18n="e0t">Южный федеральный университет</h3>
-          <p class="row__r" data-i18n="e0r">Диплом архитектора-дизайнера, специальность «Дизайн архитектурной среды», 2010</p>
-        </div>
-        <div class="row__desc">
-          
-          
-        </div>
-        
-      </article>
-      <article class="row row--edu">
-        <div class="row__y" >2018</div>
-        <div class="row__head">
-          <h3 class="row__t" data-i18n="e1t">Президентская программа подготовки управленческих кадров</h3>
-          <p class="row__r" data-i18n="e1r">Диплом о профессиональной переподготовке: менеджмент, 550 часов, ЮФУ</p>
-        </div>
-        <div class="row__desc">
-          
-          
-        </div>
-        
-      </article>
-      <article class="row row--edu">
-        <div class="row__y" >2019</div>
-        <div class="row__head">
-          <h3 class="row__t" data-i18n="e5t">МИРБИС</h3>
-          <p class="row__r" data-i18n="e5r">Курс «Управление проектами редевелопмента», 30 часов</p>
-        </div>
-        <div class="row__desc">
-          
-          
-        </div>
-        
-      </article>
-      <article class="row row--edu">
-        <div class="row__y" >2022</div>
-        <div class="row__head">
-          <h3 class="row__t" data-i18n="e2t">Академия трекеров</h3>
-          <p class="row__r" data-i18n="e2r">Сертифицированный трекер стартапов</p>
-        </div>
-        <div class="row__desc">
-          
-          
-        </div>
-        
-      </article>
-      <article class="row row--edu">
-        <div class="row__y" >2025</div>
-        <div class="row__head">
-          <h3 class="row__t" data-i18n="e6t">Южный федеральный университет</h3>
-          <p class="row__r" data-i18n="e6r">Повышение квалификации: «Основы проектного управления в университете 2.0», 72 часа, 2025</p>
-        </div>
-        <div class="row__desc">
-          
-          
-        </div>
-        
-      </article>
-      <article class="row row--edu">
-        <div class="row__y" >2025</div>
-        <div class="row__head">
-          <h3 class="row__t" data-i18n="e4t">Академия архитектуры и искусств ЮФУ</h3>
-          <p class="row__r" data-i18n="e4r">Магистрант с сентября 2025, «Городской интерьер»</p>
-        </div>
-        <div class="row__desc">
-          
-          
-        </div>
-        
-      </article>
-      <article class="row row--edu">
-        <div class="row__y" >2026</div>
-        <div class="row__head">
-          <h3 class="row__t" data-i18n="e3t">Южный федеральный университет</h3>
-          <p class="row__r" data-i18n="e3r">Диплом о профессиональной переподготовке: педагогическая деятельность в высшем и дополнительном образовании, 252 часа</p>
-        </div>
-        <div class="row__desc">
-          
-          
-        </div>
-        
-      </article>
 
     <footer>
       <svg class="compass" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1"><path d="M10 1 L11.4 8.6 L19 10 L11.4 11.4 L10 19 L8.6 11.4 L1 10 L8.6 8.6 Z"/></svg>
@@ -255,100 +186,126 @@ ym(114394332, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     "backlabel": "Александр Кулешов",
     "pagetitle": "Опыт и образование",
     "pagesub": "15 лет в архитектуре, девелопменте и городской среде",
-    "s1t": "Практика",
-    "s1n": "Год — точка старта. Все направления в работе.",
-    "s2t": "Образование и дипломы",
-    "s2n": "Год — выдача диплома или сертификата.",
-    "a1t": "Редевелопмент и креативные пространства",
-    "a1r": "Креативный кластер C52 — сооснователь и партнёр",
-    "a1b": "Первый креативный кластер на юге России, проекту 15 лет. Редевелопмент сложного объекта, устойчивое комьюнити, гранты, выступление на саммите European Creative Hubs Network в Белграде. Отсюда выросла основная практика: проекты редевелопмента и девелоперские паспорта объектов.",
-    "a1l1": "2019 · <a href=\"https://www.instagram.com/koloscc/\" target=\"_blank\" rel=\"noopener\">«Колос»</a>, Краснодар — сооснователь",
-    "a1l2": "2021 · P5, Ростов-на-Дону — сооснователь",
-    "a1l3": "2013 · DobroCowork, сеть первых коворкингов в Ростовской области — сооснователь",
-    "a1l4": "2016 · Инженерный центр «Фабрика» — консалтинг запуска",
-    "a1k1": "Сайт ↗",
-    "a1k2": "Instagram ↗",
-    "a2t": "Благоустройство и КРТ",
-    "a2r": "Проектное бюро «Среда» — сооснователь и руководитель",
-    "a2b": "Комплексное благоустройство общественных пространств и дворов, развитие городской среды, комплексное развитие территорий (КРТ). 80+ проектов городской среды.",
-    "a3t": "Технологическое предпринимательство",
-    "a3r": "Трекер стартапов и тренер университетских программ",
-    "a3b": "Тренер федеральных тренингов предпринимательских компетенций для студентов «Платформы университетского технологического предпринимательства»: проект МФТИ, оператор тренингов на местах — Университет Иннополис.",
-    "a3l1": "14 акселерационных программ в России и Казахстане: Университет Иннополис, УрФУ, ТюмГУ, MOST, AlmaU",
-    "a3l2": "Акселератор «Т-Шейп» на площадке ДГТУ — соорганизатор: набор экспертов и программа",
-    "a4t": "ИИ в архитектуре и девелопменте",
-    "a4r": "AI2ARCH — основатель лаборатории проектного интеллекта",
-    "a4b": "Анализ объектов для девелоперов и архитекторов, обучение команд бюро работе с ИИ. Исследую adaptive reuse — приспособление существующих зданий под новые функции — вместе с генеративными ИИ-инструментами.",
-    "a4l1": "Курсы «ИИ в архитектуре» и «ИИ в редевелопменте» — программы ДПО ЮФУ",
-    "a4l2": "Лекции для магистратуры РАНХиГС и слушателей ДПО ЮРИУ РАНХиГС",
-    "a4k1": "AI2ARCH ↗",
-    "a4k2": "Курсы и лекции →",
-    "e6t": "Южный федеральный университет",
-    "e6r": "Повышение квалификации: «Основы проектного управления в университете 2.0», 72 часа, 2025",
-    "e4t": "Академия архитектуры и искусств ЮФУ",
-    "e4r": "Магистрант с сентября 2025, «Городской интерьер»",
-    "yrnow": "Сейчас",
-    "e0t": "Южный федеральный университет",
-    "e0r": "Диплом архитектора-дизайнера, специальность «Дизайн архитектурной среды», 2010",
-    "e1t": "Президентская программа подготовки управленческих кадров",
-    "e1r": "Диплом о профессиональной переподготовке: менеджмент, 550 часов, ЮФУ",
-    "e5t": "МИРБИС",
-    "e5r": "Курс «Управление проектами редевелопмента», 30 часов",
-    "e2t": "Академия трекеров",
-    "e2r": "Сертифицированный трекер стартапов",
-    "e3t": "Южный федеральный университет",
-    "e3r": "Диплом о профессиональной переподготовке: педагогическая деятельность в высшем и дополнительном образовании, 252 часа",
-    "copyright": "© 2026 Александр Кулешов"
+    "copyright": "© 2026 Александр Кулешов",
+    "g0tag": "Образование",
+    "g0t": "Бакалавриат по архитектуре",
+    "g0r": "ЮФУ, квалификация архитектора-дизайнера, специальность «Дизайн архитектурной среды»",
+    "g1tag": "Практика",
+    "g1t": "Редевелопмент и креативные пространства",
+    "g1r": "Креативный кластер C52 — сооснователь и партнёр",
+    "g1b": "Первый креативный кластер на юге России, проекту 15 лет. Редевелопмент сложного объекта, устойчивое комьюнити, гранты, выступление на саммите European Creative Hubs Network в Белграде. Отсюда выросла основная практика: проекты редевелопмента и девелоперские паспорта объектов.",
+    "g1k0": "Сайт ↗",
+    "g1k1": "Instagram ↗",
+    "g2tag": "Практика",
+    "g2t": "DobroCowork",
+    "g2r": "Сеть первых коворкингов в Ростовской области — сооснователь",
+    "g3tag": "Практика",
+    "g3t": "Инженерный центр «Фабрика»",
+    "g3r": "Консалтинг запуска, Ростов-на-Дону",
+    "g4tag": "Практика",
+    "g4t": "Благоустройство и КРТ",
+    "g4r": "Проектное бюро «Среда» — сооснователь и руководитель",
+    "g4b": "Комплексное благоустройство общественных пространств и дворов, развитие городской среды, комплексное развитие территорий (КРТ). 80+ проектов городской среды.",
+    "g5tag": "Образование",
+    "g5t": "Президентская программа подготовки управленческих кадров",
+    "g5r": "ЮФУ, диплом о профессиональной переподготовке: менеджмент, 550 часов",
+    "g6tag": "Практика",
+    "g6t": "Кластер «Колос»",
+    "g6r": "Краснодар — сооснователь",
+    "g6k0": "Instagram ↗",
+    "g7tag": "Образование",
+    "g7t": "Управление проектами редевелопмента",
+    "g7r": "МИРБИС, курс, 30 часов, Москва",
+    "g8tag": "Практика",
+    "g8t": "P5",
+    "g8r": "Ростов-на-Дону — сооснователь",
+    "g9tag": "Практика",
+    "g9t": "Технологическое предпринимательство",
+    "g9r": "Трекер стартапов и тренер университетских программ",
+    "g9b": "Тренер федеральных тренингов предпринимательских компетенций для студентов «Платформы университетского технологического предпринимательства»: проект МФТИ, оператор тренингов на местах — Университет Иннополис.",
+    "g9l0": "14 акселерационных программ в России и Казахстане: Университет Иннополис, УрФУ, ТюмГУ, MOST, AlmaU",
+    "g9l1": "Акселератор «Т-Шейп» на площадке ДГТУ — соорганизатор: набор экспертов и программа",
+    "g10tag": "Образование",
+    "g10t": "Академия трекеров",
+    "g10r": "Сертифицированный трекер стартапов",
+    "g11tag": "Образование",
+    "g11t": "Основы проектного управления в университете 2.0",
+    "g11r": "ЮФУ, повышение квалификации, 72 часа",
+    "g12tag": "Образование",
+    "g12t": "Магистратура «Городской интерьер»",
+    "g12r": "Академия архитектуры и искусств ЮФУ, магистрант с сентября 2025",
+    "g13tag": "Образование",
+    "g13t": "Педагогика в высшем и дополнительном образовании",
+    "g13r": "ЮФУ, диплом о профессиональной переподготовке, 252 часа",
+    "g14tag": "Практика",
+    "g14t": "ИИ в архитектуре и девелопменте",
+    "g14r": "AI2ARCH — основатель лаборатории проектного интеллекта",
+    "g14b": "Анализ объектов для девелоперов и архитекторов, обучение команд бюро работе с ИИ. Исследую adaptive reuse — приспособление существующих зданий под новые функции — вместе с генеративными ИИ-инструментами.",
+    "g14k0": "AI2ARCH ↗",
+    "g14k1": "Курсы и лекции →"
   },
   "en": {
     "title": "Alexander Kuleshov — Experience & Education",
     "backlabel": "Alexander Kuleshov",
     "pagetitle": "Experience & education",
     "pagesub": "15 years in architecture, development and the urban environment",
-    "s1t": "Practice",
-    "s1n": "Year marks the start. Every line of work is still active.",
-    "s2t": "Education & diplomas",
-    "s2n": "Year the diploma or certificate was issued.",
-    "a1t": "Redevelopment & creative spaces",
-    "a1r": "C52 creative cluster — co-founder and partner",
-    "a1b": "The first creative cluster in southern Russia, now 15 years old. Redevelopment of a complex building, a resilient community, grants, and a talk at the European Creative Hubs Network summit in Belgrade. This grew into my core practice: redevelopment projects and developer passports for properties.",
-    "a1l1": "2019 · <a href=\"https://www.instagram.com/koloscc/\" target=\"_blank\" rel=\"noopener\">Kolos</a>, Krasnodar — co-founder",
-    "a1l2": "2021 · P5, Rostov-on-Don — co-founder",
-    "a1l3": "2013 · DobroCowork, network of the first coworkings in the Rostov region — co-founder",
-    "a1l4": "2016 · Fabrika Engineering Center — launch consulting",
-    "a1k1": "Website ↗",
-    "a1k2": "Instagram ↗",
-    "a2t": "Public realm & urban regeneration",
-    "a2r": "Sreda design bureau — co-founder and director",
-    "a2b": "Public spaces and courtyards, urban environment development, and integrated urban regeneration (KRT). 80+ urban-space projects.",
-    "a3t": "Tech entrepreneurship",
-    "a3r": "Startup tracker and university program trainer",
-    "a3b": "Trainer in federal entrepreneurial-competency trainings for students under the University Technological Entrepreneurship Platform: a MIPT project, with Innopolis University as the on-site training operator.",
-    "a3l1": "14 accelerator programs in Russia and Kazakhstan: Innopolis University, UrFU, Tyumen State University, MOST, AlmaU",
-    "a3l2": "T-Shape accelerator at DSTU — co-organizer: expert recruitment and program design",
-    "a4t": "AI in architecture & development",
-    "a4r": "AI2ARCH — founder of a design intelligence lab",
-    "a4b": "Site analysis for developers and architects, AI training for design teams. Exploring adaptive reuse — repurposing existing buildings for new functions — together with generative AI tools.",
-    "a4l1": "“AI in Architecture” and “AI in Redevelopment” — SFedU continuing-education programs",
-    "a4l2": "Lectures for RANEPA master’s students and its South-Russian Institute of Management",
-    "a4k1": "AI2ARCH ↗",
-    "a4k2": "Courses & lectures →",
-    "e6t": "Southern Federal University",
-    "e6r": "Professional development: “Fundamentals of Project Management in University 2.0”, 72 hours, 2025",
-    "e4t": "SFedU Academy of Architecture and Arts",
-    "e4r": "Master’s student since September 2025, Urban Interior",
-    "yrnow": "Now",
-    "e0t": "Southern Federal University",
-    "e0r": "Architect-designer diploma, specialty “Architectural Environment Design”, 2010",
-    "e1t": "Presidential Program for Management Training",
-    "e1r": "Professional retraining diploma in management, 550 hours, SFedU",
-    "e5t": "MIRBIS",
-    "e5r": "Course “Redevelopment Project Management”, 30 hours",
-    "e2t": "Trackers Academy",
-    "e2r": "Certified startup tracker",
-    "e3t": "Southern Federal University",
-    "e3r": "Professional retraining diploma: teaching in higher and continuing education, 252 hours",
-    "copyright": "© 2026 Alexander Kuleshov"
+    "copyright": "© 2026 Alexander Kuleshov",
+    "g0tag": "Education",
+    "g0t": "Bachelor’s in architecture",
+    "g0r": "SFedU, architect-designer qualification, specialty “Architectural Environment Design”",
+    "g1tag": "Practice",
+    "g1t": "Redevelopment & creative spaces",
+    "g1r": "C52 creative cluster — co-founder and partner",
+    "g1b": "The first creative cluster in southern Russia, now 15 years old. Redevelopment of a complex building, a resilient community, grants, and a talk at the European Creative Hubs Network summit in Belgrade. This grew into my core practice: redevelopment projects and developer passports for properties.",
+    "g1k0": "Website ↗",
+    "g1k1": "Instagram ↗",
+    "g2tag": "Practice",
+    "g2t": "DobroCowork",
+    "g2r": "Network of the first coworkings in the Rostov region — co-founder",
+    "g3tag": "Practice",
+    "g3t": "Fabrika Engineering Center",
+    "g3r": "Launch consulting, Rostov-on-Don",
+    "g4tag": "Practice",
+    "g4t": "Public realm & urban regeneration",
+    "g4r": "Sreda design bureau — co-founder and director",
+    "g4b": "Public spaces and courtyards, urban environment development, and integrated urban regeneration (KRT). 80+ urban-space projects.",
+    "g5tag": "Education",
+    "g5t": "Presidential Program for Management Training",
+    "g5r": "SFedU, professional retraining diploma in management, 550 hours",
+    "g6tag": "Practice",
+    "g6t": "Kolos cluster",
+    "g6r": "Krasnodar — co-founder",
+    "g6k0": "Instagram ↗",
+    "g7tag": "Education",
+    "g7t": "Redevelopment project management",
+    "g7r": "MIRBIS, course, 30 hours, Moscow",
+    "g8tag": "Practice",
+    "g8t": "P5",
+    "g8r": "Rostov-on-Don — co-founder",
+    "g9tag": "Practice",
+    "g9t": "Tech entrepreneurship",
+    "g9r": "Startup tracker and university program trainer",
+    "g9b": "Trainer in federal entrepreneurial-competency trainings for students under the University Technological Entrepreneurship Platform: a MIPT project, with Innopolis University as the on-site training operator.",
+    "g9l0": "14 accelerator programs in Russia and Kazakhstan: Innopolis University, UrFU, Tyumen State University, MOST, AlmaU",
+    "g9l1": "T-Shape accelerator at DSTU — co-organizer: expert recruitment and program design",
+    "g10tag": "Education",
+    "g10t": "Trackers Academy",
+    "g10r": "Certified startup tracker",
+    "g11tag": "Education",
+    "g11t": "Fundamentals of Project Management in University 2.0",
+    "g11r": "SFedU, professional development, 72 hours",
+    "g12tag": "Education",
+    "g12t": "Master’s program, Urban Interior",
+    "g12r": "SFedU Academy of Architecture and Arts, master’s student since September 2025",
+    "g13tag": "Education",
+    "g13t": "Teaching in higher and continuing education",
+    "g13r": "SFedU, professional retraining diploma, 252 hours",
+    "g14tag": "Practice",
+    "g14t": "AI in architecture & development",
+    "g14r": "AI2ARCH — founder of a design intelligence lab",
+    "g14b": "Site analysis for developers and architects, AI training for design teams. Exploring adaptive reuse — repurposing existing buildings for new functions — together with generative AI tools.",
+    "g14k0": "AI2ARCH ↗",
+    "g14k1": "Courses & lectures →"
   }
 };
 
